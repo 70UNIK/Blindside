@@ -37,7 +37,7 @@ BLINDSIDE.crossmod_rarities = {
 }
 
 function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,default_blind_key,spawn_rate)
-    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, text = text,spawn_rate = spawn_rate or 0}
+    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, loc_text = text,spawn_rate = spawn_rate or 0}
 
     --key for objtype is bld_obj_blindcard_crossmod_ + key in case you want to do like
     SMODS.ObjectType {
@@ -53,20 +53,6 @@ function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,de
         end,
     }
 end
---unfortunately you will still need to specify SMODS.ObjectType via this manually:
-
--- SMODS.ObjectType {
---     key = "unik_obj_blindcard_exotic",
---     default = "m_unik_blindside_legendary_golden_crown",
---     inject_card = function(self, center)
---         SMODS.ObjectType.inject_card(self, center)
---         SMODS.insert_pool(G.P_CENTER_POOLS['unik_obj_blindcard_exotic'], center)
---     end,
---     delete_card = function(self, center)
---         SMODS.ObjectType.delete_card(self, center)
---         SMODS.remove_pool(G.P_CENTER_POOLS['unik_obj_blindcard_exotic'], center.key)
---     end,
--- }
 
 --exclusive tag hook only when the tag is added the first time it is generated (reroll tags, toss tags)
 local vessel2 = add_tag
@@ -1281,18 +1267,24 @@ function BLINDSIDE.poll_enhancement(args)
     elseif args.legendary then
         rarity = 4
     else
+        local crossmodrarity = false
         for i = 1, #BLINDSIDE.crossmod_rarities do
             if args[BLINDSIDE.crossmod_rarities[i].key] then
                 rarity = BLINDSIDE.crossmod_rarities[i].weight
+                print(rarity)
+                crossmodrarity = true
             end
         end
-        if (rand < 0.85) then
-        rarity = 0
-        elseif rand <= 1 then --(rand < 0.999) then
-            rarity = 1
-        else
-            rarity = 2
+        if not crossmodrarity then
+            if (rand < 0.85) then
+            rarity = 0
+            elseif rand <= 1 then --(rand < 0.999) then
+                rarity = 1
+            else
+                rarity = 2
+            end
         end
+        
     end
 
     local available_enhancements = {}

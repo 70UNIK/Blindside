@@ -46,17 +46,22 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
             badges[#badges+1] = create_badge(localize('k_bld_rare'), G.C.RED, G.C.WHITE, 1 )
         else
             --crossmod functionality
+            local crossmodbadge = false
             for i = 1, #BLINDSIDE.crossmod_rarities do
                 if BLINDSIDE.crossmod_rarities[i].weight then
                     if card.config.center.weight == BLINDSIDE.crossmod_rarities[i].weight then
-                         badges[#badges+1] = create_badge(BLINDSIDE.crossmod_rarities[i].text, BLINDSIDE.crossmod_rarities[i].background_colour, BLINDSIDE.crossmod_rarities[i].text_colour, 1 )
-                         return
+                       
+                         badges[#badges+1] = create_badge(localize(BLINDSIDE.crossmod_rarities[i].loc_text), BLINDSIDE.crossmod_rarities[i].background_colour, BLINDSIDE.crossmod_rarities[i].text_colour, 1 )
+                         crossmodbadge = true
                     end
                 else
-                    warn("uh oh, looks like the weights of each of the crossmodrarities have not been made! Expect MAJOR ISSUES from thereforth")
+                    error("uh oh, looks like the weights of each of the crossmodrarities have not been made! Expect MAJOR ISSUES from thereforth")
                 end
             end
-            badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
+            if not crossmodbadge then
+                badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
+            end
+            
         end
     end,
     blindside_blind = true,
@@ -83,7 +88,7 @@ function BLINDSIDE.Blind:set_params()
         self.pools["bld_obj_blindcard_legendary"] = true
     end
     for i = 1, #BLINDSIDE.crossmod_rarities do
-        if BLINDSIDE.crossmod_rarities[i].key then
+        if self[BLINDSIDE.crossmod_rarities[i].key] then
             self.pools["bld_obj_blindcard_crossmod_" .. BLINDSIDE.crossmod_rarities[i].key] = true
         end
     end
@@ -92,7 +97,7 @@ function BLINDSIDE.Blind:set_params()
     if not self.basic and not self.hidden --[[and not self.curse]] then
         self.pools["bld_obj_blindcard_generate"] = true
 
-        if tableContains("Red", self.hues) or tableContains("Yellow", self.hues) or tableContains("Green", self.hues) then
+        if tableContains("Red", self.hues) or tableContains("Yellow", self.hues) or tableContains("Faded", self.hues) then
             self.pools["bld_obj_blindcard_warm"] = true
         end
 
@@ -130,9 +135,10 @@ function BLINDSIDE.Blind:set_params()
 
     --crossmod keys are 10000 + [key number in stack]
     for i = 1, #BLINDSIDE.crossmod_rarities do
-        if BLINDSIDE.crossmod_rarities[i].key then
-            self.weight = 10000 + i
-            BLINDSIDE.crossmod_rarities[i].weight = self.weight
+        BLINDSIDE.crossmod_rarities[i].weight = 10000 + i
+        if self[BLINDSIDE.crossmod_rarities[i].key] then
+            
+            self.weight = BLINDSIDE.crossmod_rarities[i].weight
         end
     end
 
