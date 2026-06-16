@@ -20,9 +20,22 @@
         },
         calculate = function(self, card, context)
             if context.cardarea == G.play and context.main_scoring then
-                card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.xchips_gain
+                --card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.xchips_gain
                 return {
-                    xchips = card.ability.extra.xchips - card.ability.extra.xchips_gain
+                    xchips = card.ability.extra.xchips,
+                    func = function ()
+                        if not context.blueprint then
+                            SMODS.scale_card(card, {
+                                ref_table = card.ability.extra,
+                                ref_value = "xchips",
+                                scalar_value = "xchips_gain",
+                                operation = '+',
+                                    no_message = true,
+
+                            })
+                        end
+                            
+                        end
                 }
             end
         end,

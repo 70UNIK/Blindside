@@ -6,43 +6,66 @@
             extra = {
                 value = 1,
                 xchips = 1,
-                xchips_increase = 0.1,
-                xchipsup = 0.1,
+                xchips_increase = 0.2,
+                xchipsup = 0.2,
             }
         },
         hues = {"Yellow"},
         hidden = true,
         legendary = true,
         calculate = function(self, card, context) 
-            if context.cardarea == G.play and context.main_scoring then
-                local step = 0
-                for i, held_card in pairs(G.hand.cards) do
-                    local stored_step = step
-                    G.E_MANAGER:add_event(Event({
-                        trigger = 'after',
-                        delay = 0.4,
-                        func = function()
-                            
-                            held_card:juice_up()
-                            held_card:flip()
-                            if not held_card.ability.extra then
-                                held_card.ability.extra = {temp_flipped = true}
-                            else
-                                if held_card.ability.extra.temp_flipped then
-                                    held_card.ability.extra.temp_flipped = false
-                                else
-                                    held_card.ability.extra.temp_flipped = true
-                                end
-                            end
-                            play_sound('chips1', 0.8 + (stored_step * 0.02))
-                            card:juice_up()
-                            G.ROOM.jiggle = G.ROOM.jiggle + 0.7    
-                            return true
-                        end
-                    }))
-                    step = step + 5
+            if context.cardarea == G.play and context.before and not context.blueprint and not context.blueprint_card then
+                local scoring = false
+                for i,v in pairs(context.scoring_hand) do
+                    if v == card then
+                        scoring = true
+                        break
+                    end
                 end
-                card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.xchips_increase * #G.hand.cards
+                if scoring then
+                    local step = 0
+                    for i, held_card in pairs(G.hand.cards) do
+                        local stored_step = step
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'after',
+                            delay = 0.4,
+                            func = function()
+                                
+                                held_card:juice_up()
+                                held_card:flip()
+                                if not held_card.ability.extra then
+                                    held_card.ability.extra = {temp_flipped = true}
+                                else
+                                    if held_card.ability.extra.temp_flipped then
+                                        held_card.ability.extra.temp_flipped = false
+                                    else
+                                        held_card.ability.extra.temp_flipped = true
+                                    end
+                                end
+                                play_sound('chips1', 0.8 + (stored_step * 0.02))
+                                card:juice_up()
+                                G.ROOM.jiggle = G.ROOM.jiggle + 0.7    
+                                return true
+                            end
+                        }))
+                        step = step + 5
+                    end
+                    SMODS.scale_card(card, {
+                        ref_table = card.ability.extra,
+                        ref_value = "xchips",
+                        scalar_value = "custom_scaler",
+                        scalar_table = {
+                            custom_scaler = card.ability.extra.xchips_increase * #G.hand.cards,
+                        },
+                        -- scalar_value = "xchips_gain",
+                        message_key = "a_xchips",
+                                message_colour = G.C.CHIPS,
+                            force_full_val = true,
+
+                    })
+                end
+            end
+            if context.cardarea == G.play and context.main_scoring then
                 return {
                     xchips = card.ability.extra.xchips,
                 }

@@ -12,7 +12,7 @@
         hues = {"Purple"},
         rare = true,
         calculate = function(self, card, context)
-            if context.modify_hand and context.scoring_hand then
+            if context.modify_hand and context.scoring_hand and not context.blueprint then
                 local i_scored = false
                 for key, value in pairs(context.scoring_hand) do
                     if value == card then
@@ -24,17 +24,23 @@
                     return
                 end
 
-                if G.GAME.current_round.discards_left > 0 then
+                if G.GAME.current_round.discards_left > 0  then
+                    SMODS.scale_card(card, {
+                                ref_table =card.ability.extra,
+                                ref_value = "xmult",
+                                scalar_value = "custom_scaler",
+                                scalar_table = {
+                                    custom_scaler = G.GAME.current_round.discards_left * card.ability.extra.xmult_gain,
+                                },
+                                message_key = "a_xmult",
+                                message_colour = G.C.MULT,
+                            })
+                            --ease_discard(-G.GAME.current_round.discards_left)
                     return {
                         message = localize('k_upgrade_ex'),
                         func = function ()
-                            G.E_MANAGER:add_event(Event({
-                                func = function ()
-                                    card.ability.extra.xmult = card.ability.extra.xmult + G.GAME.current_round.discards_left * card.ability.extra.xmult_gain
-                                    return true
-                                end
-                            }))
                             ease_discard(-G.GAME.current_round.discards_left)
+                        
                         end
                     }
                 end
