@@ -5,17 +5,6 @@ priority = 1
 
 ###transplanted my own fixes onto here
 
-[[patches]]
-[patches.regex]
-target = '=[SMODS Blindside "lib/utils/utils.lua"]'
-pattern = '''(.*)function BLINDSIDE.chipsupdate(.*)'''
-match_indent = true
-position = 'after'
-payload = '''
-
-G.GAME.blindside_current_operator = G.GAME.unik_current_operator or 0
-
-'''
 
 [[patches]]
 [patches.regex]
@@ -40,16 +29,6 @@ G.GAME.blindside_reroll_tags_consumed = 0
 --print("Free rerolls remaining:" .. G.GAME.round_resets.free_rerolls)
 G.GAME.shop_entered_already_blindside = nil
 
-'''
-
-[[patches]]
-[patches.pattern]
-target = 'game.lua'
-pattern = '''if v.small or v.big then bosses_used[k] = 0 end'''
-match_indent = true
-position = 'after'
-payload = '''
-if v.cursed then bosses_used[k] = 0 end
 '''
 
 ### Also, it appears blinds remaining face down even after they are played are not intentional, given a lot of chance effects only trigger if they are NOT face down.
@@ -92,7 +71,7 @@ target = 'functions/UI_definitions.lua'
 pattern = '''\'ph\_choose\_blind\_2\''''
 match_indent = true
 position = 'after'
-payload = '''.. (UNIK.hasBlindside() and '_blindside' or "")'''
+payload = '''.. (BLINDSIDE.hasBlindside() and '_blindside' or "")'''
 
 [[patches]]
 [patches.regex]
@@ -100,7 +79,7 @@ target = 'functions/UI_definitions.lua'
 pattern = '''\'ph_up_ante_2\''''
 match_indent = true
 position = 'after'
-payload = '''.. (UNIK.hasBlindside() and '_blindside' or "")'''
+payload = '''.. (BLINDSIDE.hasBlindside() and '_blindside' or "")'''
 
 [[patches]]
 [patches.regex]
@@ -108,4 +87,4 @@ target = 'functions/UI_definitions.lua'
 pattern = '''\'ph_up_ante_3\''''
 match_indent = true
 position = 'after'
-payload = '''.. (UNIK.hasBlindside() and '_blindside' or "")'''
+payload = '''.. (BLINDSIDE.hasBlindside() and '_blindside' or "")'''

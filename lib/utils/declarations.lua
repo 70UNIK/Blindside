@@ -567,6 +567,13 @@
         },
     }
 
+    --bld_obj_excludejokers for hidden "doubled_up jokers"
+    --bld_obj_relics for hidden "price tag tags"
+    --bld_obj_blindside for anything in blindside
+    function BLINDSIDE.addToPool(pool,key)
+        SMODS.ObjectTypes[pool].cards[#SMODS.ObjectTypes[pool].cards+1] = key
+    end
+
     SMODS.ObjectType {
         key = "bld_obj_blindcard_generate",
 	    default = "m_bld_flip",

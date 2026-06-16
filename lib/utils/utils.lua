@@ -305,48 +305,76 @@ function get_new_big(current)
     return boss
 end
 
+function BLINDSIDE.chipsmodifyV2(operation,silent)
+    --talisman bignum compat
+    if BLINDSIDE.has_talisman() then
+        G.GAME.blind.mult = to_big(G.GAME.blind.mult)
+    end
+    if operation.chips_base and operation.chips_base ~= 0 then
+             G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.basechips = math.max(1,G.GAME.blind.basechips+operation.chips_base*get_blind_amount(G.GAME.round_resets.ante)*G.GAME.starting_params.ante_scaling)
+            G.hand_text_area.blind_chip_text:juice_up()
+                G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
+                if not silent then play_sound('chips1',0.95,1) end
+                return true
+            end}))
+        end
+        if operation.chips and operation.chips ~= 0 then
+             G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.basechips = math.max(1,G.GAME.blind.basechips+operation.chips)
+            G.hand_text_area.blind_chip_text:juice_up()
+                G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
+                if not silent then play_sound('chips1',0.95,1) end
+                return true
+            end}))
+        end
+        if operation.mult and operation.mult ~= 0 then
+            G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+                G.GAME.blind.mult = math.max(1,G.GAME.blind.mult + operation.mult)
+            G.hand_text_area.blind_mult_text:juice_up()
+                G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
+                if not silent then play_sound('multhit1') end
+                return true
+            end}))
+        end
+        if operation.x_chips and operation.x_chips ~= 1 then
+            G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.basechips = math.max(1,G.GAME.blind.basechips*operation.x_chips)
+            G.hand_text_area.blind_chip_text:juice_up()
+                G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
+                if not silent then play_sound('xchips',0.95,1) end
+                return true
+            end}))
+        end
+       
+        if operation.x_mult and operation.x_mult ~= 1 then
+            G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.mult = math.max(1,G.GAME.blind.mult*operation.x_mult)
+            G.hand_text_area.blind_mult_text:juice_up()
+                G.GAME.blind.mult_text = G.GAME.blind.mult
+                if not silent then play_sound('multhit2',0.95,1) end
+                return true
+            end}))
+        end
 
+end
+--redoing the chipsmodifyfunction (except the old self) to become a lot more flexible and modular
 function BLINDSIDE.chipsmodify(mult, originalchips, xmult, xchips, silent)
+    --talisman bignum compat
     if BLINDSIDE.has_talisman() then
         G.GAME.blind.mult = to_big(G.GAME.blind.mult)
     end
     if mult and mult ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-            G.GAME.blind.mult = math.max(1,G.GAME.blind.mult + mult)
-        G.hand_text_area.blind_mult_text:juice_up()
-            G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
-            if not silent then play_sound('multhit1') end
-            return true
-        end}))
+        BLINDSIDE.chipsmodifyV2({mult = mult},silent)
     end
-    if xmult and xmult ~= 1 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-        G.GAME.blind.mult = math.max(G.GAME.blind.mult*xmult,1)
-        G.hand_text_area.blind_mult_text:juice_up()
-            G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
-            if not silent then play_sound('multhit2') end
-            return true
-        end}))
+    if xmult and xmult ~= 1 and xmult and xmult ~= 0 then
+        BLINDSIDE.chipsmodifyV2({x_mult = xmult},silent)
     end
-    if xchips and xchips ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-    if xchips and xchips > 0 then
-        G.GAME.blind.basechips = math.max(G.GAME.blind.basechips*xchips,1)
-    end
-        G.hand_text_area.blind_chip_text:juice_up()
-            G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
-            if not silent then play_sound('xchips') end
-            return true
-        end}))
+    if xchips and xchips ~= 1 and xchips and xchips ~= 0 then
+        BLINDSIDE.chipsmodifyV2({x_chips = xchips},silent)
     end
     if originalchips and originalchips ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-        G.GAME.blind.basechips =  math.max(G.GAME.blind.basechips + originalchips,1)
-        G.hand_text_area.blind_chip_text:juice_up()
-            G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
-            if not silent then play_sound('chips1') end
-            return true
-        end}))
+        BLINDSIDE.chipsmodifyV2({chips = originalchips},silent)
     end
 end
 
@@ -418,8 +446,8 @@ end
 
 
 function BLINDSIDE.chipsupdate()
-    G.GAME.blindside_current_operator = G.GAME.unik_current_operator or 0
-    local final_chips = BLINDSIDE.arrowfunction(G.GAME.unik_current_operator,G.GAME.blind.basechips,G.GAME.blind.mult) 
+    G.GAME.blindside_current_operator = G.GAME.blindside_current_operator or 0
+    local final_chips = BLINDSIDE.arrowfunction(G.GAME.blindside_current_operator,G.GAME.blind.basechips,G.GAME.blind.mult) 
     local chip_mod -- iterate over ~120 ticks
     if G.GAME.blind.chips then
         chip_mod = (final_chips - G.GAME.blind.chips) / 120
@@ -1511,7 +1539,7 @@ end
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
-        if (G.GAME.chips - G.GAME.blind.basechips*G.GAME.blind.mult >= 0 and not next(SMODS.find_card('j_bld_breadboard'))) or G.GAME.current_round.hands_left < 1 then
+        if (G.GAME.chips - BLINDSIDE.arrowfunction(G.GAME.blindside_current_operator,G.GAME.blind.basechips,G.GAME.blind.mult) >= 0 and not next(SMODS.find_card('j_bld_breadboard'))) or G.GAME.current_round.hands_left < 1 then
             G.STATE = G.STATES.NEW_ROUND
         else
             G.STATE = G.STATES.DRAW_TO_HAND

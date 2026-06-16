@@ -107,14 +107,14 @@ function BLINDSIDE.get_enhancements_with_exact_colors(colors,args)
         local good = true
         --crossmod
         for i = 1, #BLINDSIDE.crossmod_rarities do
-            if not args[BLINDSIDE.crossmod_rarities[i].key] and value[BLINDSIDE.crossmod_rarities[i].key] then
+            if (not args or (args and not args[BLINDSIDE.crossmod_rarities[i].key])) and value[BLINDSIDE.crossmod_rarities[i].key] then
                 good = false
             end
         end
-        if not args.legendary and value.legendary then
+        if (not args or (args and not args.legendary)) and value.legendary then
             good = false
         end
-        if not args.cursed and value.cursed then
+        if (not args or (args and not args.cursed)) and value.cursed then
             good = false
         end
         for key, color in pairs(colors) do

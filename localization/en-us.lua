@@ -210,6 +210,9 @@ return {
 			['k_downgrade_ex'] = "Downgrade!",
 			['bld_hand_contains'] = "Hand contains ",
 			['k_rounds'] = "Rounds",
+			ph_up_ante_2_blindside="Raise all Jokers",
+            ph_up_ante_3_blindside="Refresh Jokers",
+            ph_choose_blind_2_blindside="next Joker",
 			},
 		["v_dictionary"] = {
 			["a_rmult"] = "-#1#",
@@ -3415,7 +3418,7 @@ return {
 					{"{X:purple,C:white}Purple{}",
 					"{C:white,X:chips}X#1#{} Chips",
 					"to {C:attention}Joker"},
-					{"{C:attention}Stubborn"},
+					{"{C:red}Stubborn"},
 				},
 			},
 			["m_bld_thirst"] = {
@@ -3423,7 +3426,7 @@ return {
 				["text"] = {
 					{"{X:chips,C:white}Blue{}",
 					"{C:white,X:chips}X#1#{} Chips"},
-					{"{C:attention}Stubborn"},
+					{"{C:red}Stubborn"},
 				},
 			},
 			["m_bld_spent"] = {
@@ -3503,7 +3506,7 @@ return {
 					"{C:red}#1#{} Mult when",
 					"{C:attention}held in hand{},",
 					"then {C:attention}burns"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_bank"] = {
@@ -3632,7 +3635,7 @@ return {
 				["text"] = {
 					{"{X:money,C:white}Yellow{}",
 					"{C:money}#1#{} and {C:attention}burns"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_tax"] = {
@@ -3642,7 +3645,7 @@ return {
 					"Takes {C:attention}half{} of all held",
 					"money more than {C:money}$20{}",
 					"{C:inactive}(Currently {C:money}-$#1#{C:inactive})"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_tax_upgraded"] = {
@@ -3652,7 +3655,7 @@ return {
 					"{C:attention}Doubles{} held money if",
 					"you have {C:money}$10{} or less",
 					"{C:inactive}(Currently {C:money}+$#1#{C:inactive})"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_famous"] = {
@@ -3721,7 +3724,7 @@ return {
 					"{C:money}-$#1#{}, then {C:money}+$#2#{} for",
 					"every other {X:black,C:white}Crude{}",
 					"Blind in played hand"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_grind_upgraded"] = {
@@ -3731,7 +3734,7 @@ return {
 					"{C:money}+$#2#{} for every",
 					"other {X:black,C:white}Crude{} Blind",
 					"in played hand"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_work"] = {
