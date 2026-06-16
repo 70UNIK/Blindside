@@ -36,20 +36,20 @@ BLINDSIDE.crossmod_rarities = {
     --{key = 'unik_exotic', background_color = G.C.UNIK_EXOTIC, text_color = G.C.WHITE, text = localize('k_unik_exotic')}}
 }
 
-function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,default_blind_key)
-    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, text = text}
+function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,default_blind_key,spawn_rate)
+    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, text = text,spawn_rate = spawn_rate or 0}
 
-    --key for objtype is crossmod_blindside_obj_blindcard + key
+    --key for objtype is bld_obj_blindcard_crossmod_ + key in case you want to do like
     SMODS.ObjectType {
-        key = "crossmod_blindside_obj_blindcard" .. key,
+        key = "bld_obj_blindcard_crossmod_" .. key,
         default = default_blind_key,
         inject_card = function(self, center)
             SMODS.ObjectType.inject_card(self, center)
-            SMODS.insert_pool(G.P_CENTER_POOLS["crossmod_blindside_obj_blindcard" .. key], center)
+            SMODS.insert_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. key], center)
         end,
         delete_card = function(self, center)
             SMODS.ObjectType.delete_card(self, center)
-            SMODS.remove_pool(G.P_CENTER_POOLS["crossmod_blindside_obj_blindcard" .. key], center.key)
+            SMODS.remove_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. key], center.key)
         end,
     }
 end
@@ -313,28 +313,29 @@ function get_new_big(current)
     end
 
     local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
-    
+    if boss == 'bl_bld_gros_michel' or boss == 'bl_bld_cavendish' then
+        G.GAME.blindside_banana_generated = true
+    end
     return boss
 end
 
 
 function BLINDSIDE.chipsmodify(mult, originalchips, xmult, xchips, silent)
+    if BLINDSIDE.has_talisman() then
+        G.GAME.blind.mult = to_big(G.GAME.blind.mult)
+    end
     if mult and mult ~= 0 then
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-            if G.GAME.blind.mult ~= 1 or mult > 0 then
-                G.GAME.blind.mult = G.GAME.blind.mult + mult
-            end
+            G.GAME.blind.mult = math.max(1,G.GAME.blind.mult + mult)
         G.hand_text_area.blind_mult_text:juice_up()
             G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
             if not silent then play_sound('multhit1') end
             return true
         end}))
     end
-    if xmult and xmult ~= 0 then
+    if xmult and xmult ~= 1 then
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-    if xmult and xmult > 0 then
-        G.GAME.blind.mult = G.GAME.blind.mult*xmult
-    end
+        G.GAME.blind.mult = math.max(G.GAME.blind.mult*xmult,1)
         G.hand_text_area.blind_mult_text:juice_up()
             G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
             if not silent then play_sound('multhit2') end
@@ -344,7 +345,7 @@ function BLINDSIDE.chipsmodify(mult, originalchips, xmult, xchips, silent)
     if xchips and xchips ~= 0 then
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
     if xchips and xchips > 0 then
-        G.GAME.blind.basechips = G.GAME.blind.basechips*xchips
+        G.GAME.blind.basechips = math.max(G.GAME.blind.basechips*xchips,1)
     end
         G.hand_text_area.blind_chip_text:juice_up()
             G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
@@ -354,7 +355,7 @@ function BLINDSIDE.chipsmodify(mult, originalchips, xmult, xchips, silent)
     end
     if originalchips and originalchips ~= 0 then
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-        G.GAME.blind.basechips = G.GAME.blind.basechips + originalchips
+        G.GAME.blind.basechips =  math.max(G.GAME.blind.basechips + originalchips,1)
         G.hand_text_area.blind_chip_text:juice_up()
             G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
             if not silent then play_sound('chips1') end
@@ -577,6 +578,7 @@ function CardArea:emplace(card, ...)
 end
 
 G.FUNCS.blind_draw_from_deck_to_hand = function(e)
+    G.GAME.can_draw_tech = true
     if debug_print then print("blind-drawing: " .. tostring(e)) end
     BLINDSIDE.draw_queued = true
     local hand_space = e
@@ -706,39 +708,151 @@ G.FUNCS.blind_draw_from_deck_to_hand = function(e)
             return true
         end
     }))
-
-    if not BLINDSIDE.tech_temp then
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                if G.GAME.tech_draw_primary_buffer and G.GAME.tech_draw_primary_buffer > 0 then
-                    BLINDSIDE.tech_temp = true
-                    G.FUNCS.blind_draw_from_deck_to_hand(math.floor(G.GAME.tech_draw_primary_buffer))
-                    BLINDSIDE.tech_temp = nil
-                    G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_buffer
-                    G.GAME.tech_draw_buffer = 0
-                elseif G.GAME.tech_draw_buffer and G.GAME.tech_draw_buffer > 0 then
+    --replaced with a new function compatible with smods card drawing (will do so after it fills hand)
+    -- if not BLINDSIDE.tech_temp then
+    --     G.E_MANAGER:add_event(Event({
+    --         func = function()
+    --             if G.GAME.tech_draw_primary_buffer and G.GAME.tech_draw_primary_buffer > 0 then
+    --                 BLINDSIDE.tech_temp = true
+    --                 G.FUNCS.blind_draw_from_deck_to_hand(math.floor(G.GAME.tech_draw_primary_buffer))
+    --                 BLINDSIDE.tech_temp = nil
+    --                 G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_buffer
+    --                 G.GAME.tech_draw_buffer = 0
+    --             elseif G.GAME.tech_draw_buffer and G.GAME.tech_draw_buffer > 0 then
                     
-                end
-               return true
-            end
-        }))
+    --             end
+    --            return true
+    --         end
+    --     }))
 
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                G.E_MANAGER:add_event(Event({
-                    func = function()
-                        if not G.GAME.tech_draw_primary_buffer then
-                            G.GAME.tech_draw_primary_buffer = 0
-                        end
-                        G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_primary_buffer + (G.GAME.tech_draw_buffer or 0)
-                        G.GAME.tech_draw_buffer = 0
-                        return true
+    --     G.E_MANAGER:add_event(Event({
+    --         func = function()
+    --             G.E_MANAGER:add_event(Event({
+    --                 func = function()
+    --                     if not G.GAME.tech_draw_primary_buffer then
+    --                         G.GAME.tech_draw_primary_buffer = 0
+    --                     end
+    --                     G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_primary_buffer + (G.GAME.tech_draw_buffer or 0)
+    --                     G.GAME.tech_draw_buffer = 0
+    --                     return true
+    --                 end
+    --             }))
+    --             return true
+    --         end
+    --     }))
+    -- end
+end
+
+--reworking tech blinds to work with smods's draw card functionality, it will only draw once no space remains (ie: hackysack, toss tag, legendary magnet, epic bellows)
+function BLINDSIDE.tech_draw()
+    if not BLINDSIDE.tech_temp then
+        if BLINDSIDE.hasBlindside() and G.GAME.can_draw_tech then
+            --print("techdraw2")
+           -- print(G.GAME.tech_draw_primary_buffer)
+            G.GAME.can_draw_tech = nil
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    if G.GAME.tech_draw_primary_buffer and G.GAME.tech_draw_primary_buffer > 0 then
+                        
+                      --  print("techdraw3")
+                        BLINDSIDE.tech_temp = true
+                        G.FUNCS.blind_draw_from_deck_to_hand(math.floor(G.GAME.tech_draw_primary_buffer))
+                        BLINDSIDE.tech_temp = nil
+                        G.GAME.tech_draw_primary_buffer = 0
+                        --G.GAME.tech_draw_buffer = 0
+                    elseif G.GAME.tech_draw_buffer   and G.GAME.tech_draw_buffer > 0 then
+                        
                     end
-                }))
+                return true
+                end
+            }))
+
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            if not G.GAME.tech_draw_primary_buffer then
+                                G.GAME.tech_draw_primary_buffer = 0
+                            end
+                            G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_primary_buffer + (G.GAME.tech_draw_buffer or 0)
+                            G.GAME.tech_draw_buffer = 0
+                            G.E_MANAGER:add_event(Event({
+                                trigger = 'after',
+                                delay = 0.2,
+                                func = function()
+                                    save_run()
+                                    return true
+                                end
+                            }))
+                            return true
+                        end
+                    }))
+                    return true
+                end
+            }))
+        end
+    end
+end
+
+function BLINDSIDE.reshuffle()
+    if BLINDSIDE.hasBlindside() then
+        if #G.deck.cards < G.hand.config.card_limit - #G.hand.cards and G.hand.config.card_limit - #G.hand.cards >= 1 and #G.deck.cards <= 0 then
+            local discard_count = #G.discard.cards
+            for i=1, discard_count do --draw cards from deck
+                draw_card(G.discard, G.deck, i*100/discard_count,'up', nil ,nil, 0.005, i%2==0, nil, math.max((21-i)/20,0.7))
+            end
+            SMODS.calculate_context({reshuffle = true})
+            G.GAME.current_round.reshuffles_round = G.GAME.current_round.reshuffles_round + 1
+            delay(0.5)
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.7,
+            func = function()
+                G.deck:shuffle('beta'..G.GAME.round_resets.ante, true)
                 return true
             end
         }))
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    local cards_to_draw = {}
+                    local limit = G.hand.config.card_limit - #G.hand.cards
+                    local unfixed = not G.hand.config.fixed_limit
+                    local n = 0
+                    while n < #G.deck.cards do
+                        local card = G.deck.cards[#G.deck.cards-n]
+                        local mod = unfixed and (card.ability.card_limit - card.ability.extra_slots_used) or 0
+                        if limit - 1 + mod < 0 then
+                        else    
+                            limit = limit - 1 + mod
+                            table.insert(cards_to_draw, card)
+                            if limit <= 0 then break end
+                        end
+                        n = n + 1
+                    end
+                    hand_space = #cards_to_draw
+                    for i=1, hand_space do --draw cards from deckL
+                        if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK then 
+                            draw_card(G.deck,G.hand, i*100/hand_space,'up', true, cards_to_draw[i])
+                        else
+                            draw_card(G.deck,G.hand, i*100/hand_space,'up', true, cards_to_draw[i])
+                        end
+                    end
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.7,
+                        func = function()
+                            save_run()
+                            return true
+                        end
+                    }))
+                    return true
+                end
+            }))
+
+        end
     end
+    
 end
 
 
@@ -1167,6 +1281,11 @@ function BLINDSIDE.poll_enhancement(args)
     elseif args.legendary then
         rarity = 4
     else
+        for i = 1, #BLINDSIDE.crossmod_rarities do
+            if args[BLINDSIDE.crossmod_rarities[i].key] then
+                rarity = BLINDSIDE.crossmod_rarities[i].weight
+            end
+        end
         if (rand < 0.85) then
         rarity = 0
         elseif rand <= 1 then --(rand < 0.999) then
@@ -1186,8 +1305,15 @@ function BLINDSIDE.poll_enhancement(args)
                 assert(G.P_CENTERS[v], ("Could not find enhancement \"%s\"."):format(v))
                 local wght = G.P_CENTERS[v].weight or 5
                 local multicolor = #G.P_CENTERS[v].config.extra.hues > 1
-                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4)
-                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4
+                local good_crossmod_rarity = false
+                for i = 1, #BLINDSIDE.crossmod_rarities do
+                    if wght == BLINDSIDE.crossmod_rarities[i].weight and rarity == BLINDSIDE.crossmod_rarities[i].weight then
+                        good_crossmod_rarity = true
+                        break
+                    end
+                end
+                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
+                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity 
 
                 if good_colors and good_rarity then
                     enhance_option = { key = v, weight = 5 }
@@ -1198,12 +1324,26 @@ function BLINDSIDE.poll_enhancement(args)
                 assert(G.P_CENTERS[v.key], ("Could not find enhancement \"%s\"."):format(v.key))
                 local wght = v.weight or 5
                 local multicolor = #v.config.extra.hues > 1
-                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4)
-                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4
+                local good_crossmod_rarity = false
+                for i = 1, #BLINDSIDE.crossmod_rarities do
+                    if wght == BLINDSIDE.crossmod_rarities[i].weight and rarity == BLINDSIDE.crossmod_rarities[i].weight then
+                        good_crossmod_rarity = true
+                        break
+                    end
+                end
+                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
+                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity
 
                 if good_colors and good_rarity then
                     enhance_option = { key = v.key, weight = 5 }
                 else
+                    skip = true
+                end
+            end
+            --add in pool, banishing functions before here. Specifying skip = true makes it no longer spawn afterwards.
+            if not skip and  G.P_CENTERS[enhance_option.key].in_pool and type(G.P_CENTERS[enhance_option.key].in_pool) == 'function' then
+                if not SMODS.add_to_pool(G.P_CENTERS[enhance_option.key],args) then
+                -- print(enhance_option.key .. "NOT IN POOL!")
                     skip = true
                 end
             end

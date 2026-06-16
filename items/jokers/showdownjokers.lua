@@ -45,7 +45,8 @@ SMODS.Blind({
 local can_discardref = G.FUNCS.can_discard
 G.FUNCS.can_discard = function(e)
     for key, value in pairs(G.hand.highlighted) do
-        if value.config.center and value.config.center.config.extra and value.config.center.config.extra.stubborn then
+        --stubborn can be removed if desired
+        if value.ability and value.ability.extra and type(value.ability.extra) == 'table' and value.ability.extra.stubborn and value.config.center.config.extra.stubborn then
             e.config.colour = G.C.UI.BACKGROUND_INACTIVE
             e.config.button = nil
             return
@@ -71,13 +72,14 @@ BLINDSIDE.Joker({
         end
     end,
     joker_set = function ()
-        for i, v in pairs(G.GAME.tags) do
-            if v:apply_to_run({type = 'real_round_before_start', card = card}) then break end
-        end
+        -- for i, v in pairs(G.GAME.tags) do
+        --     if v:apply_to_run({type = 'real_round_before_start', card = card}) then break end
+        -- end
         if not G.GAME.blind.disabled then
             for i = 1, 8, 1 do
                 local enhancement = 'm_bld_king'
                 local card = SMODS.create_card { set = "Base", enhancement = enhancement, area = G.discard }
+                card:add_to_deck()
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 card.playing_card = G.playing_card
                 table.insert(G.playing_cards, card)
@@ -87,6 +89,7 @@ BLINDSIDE.Joker({
                     func = function()
                             card:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                             G.deck:emplace(card)
+                            card.ability.tribuolet_generated = true
                         return true
                     end
                 }))
@@ -94,6 +97,7 @@ BLINDSIDE.Joker({
             for i = 1, 8, 1 do
                 local enhancement = 'm_bld_queen'
                 local card = SMODS.create_card { set = "Base", enhancement = enhancement, area = G.discard }
+                card:add_to_deck()
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 card.playing_card = G.playing_card
                 table.insert(G.playing_cards, card)
@@ -103,9 +107,24 @@ BLINDSIDE.Joker({
                     func = function()
                             card:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                             G.deck:emplace(card)
+                            card.ability.tribuolet_generated = true
                         return true
                     end
                 }))
+            end
+        end
+    end,
+    disable = function(self)
+        for key, value in pairs(G.playing_cards) do
+            if value.ability.tribuolet_generated then
+                value:start_dissolve()
+            end
+        end
+    end,
+    joker_defeat = function ()
+        for key, value in pairs(G.playing_cards) do
+            if value.ability.tribuolet_generated then
+                value:start_dissolve()
             end
         end
     end,
@@ -362,9 +381,9 @@ BLINDSIDE.Joker({
         if context.after and not blind.disabled then
             local transformed = false
             for _, scored_card in ipairs(context.scoring_hand) do
-                if not scored_card.original then
-                    scored_card.original = copy3(scored_card.ability)
-                    scored_card.originaltype = copy3(scored_card.config.center)
+                if not scored_card.ability.chicot_original then
+                    scored_card.ability.chicot_original = copy3(scored_card.ability)
+                    scored_card.ability.originaltype = scored_card.config.center.key
                     transformed = true
                     local new_type = 'm_bld_big'
                     if scored_card:is_color("Red") or scored_card:is_color("Yellow") then
@@ -395,12 +414,21 @@ BLINDSIDE.Joker({
             end
         end
     end,
-    joker_defeat = function()
+    disable = function()
         for key, value in pairs(G.playing_cards) do
             if value.original then
                 value:set_ability(value.originaltype)
                 value.ability = copy3(value.original)
                 value.original = nil
+            end
+        end
+    end,
+    joker_defeat = function()
+        for key, value in pairs(G.playing_cards) do
+            if value.ability.chicot_original then
+                value:set_ability(value.ability.originaltype)
+                value.ability = copy3(value.ability.chicot_original)
+                value.ability.chicot_original = nil
             end
         end
     end

@@ -82,6 +82,12 @@ function BLINDSIDE.Blind:set_params()
     if self.legendary then
         self.pools["bld_obj_blindcard_legendary"] = true
     end
+    for i = 1, #BLINDSIDE.crossmod_rarities do
+        if BLINDSIDE.crossmod_rarities[i].key then
+            self.pools["bld_obj_blindcard_crossmod_" .. BLINDSIDE.crossmod_rarities[i].key] = true
+        end
+    end
+    
 
     if not self.basic and not self.hidden --[[and not self.curse]] then
         self.pools["bld_obj_blindcard_generate"] = true

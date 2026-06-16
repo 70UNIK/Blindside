@@ -41,23 +41,44 @@ SMODS.Consumable {
             end
         end
 
-        local enhancement = BLINDSIDE.get_first_enhancement_with_exact_colors(hues)
-        local rand = pseudorandom(pseudoseed('assimilate'))
+        local enhancements = BLINDSIDE.get_enhancements_with_exact_colors(hues)
+        if #enhancements == 0 then
+            error("UH OH, NO VALID HUE COMBO DETECTED! ")
+        end
+        local enhancement = pseudorandom_element(enhancements, pseudoseed("blindside_assimilate_" .. hues[1] .. hues[2]))
+        local rand = pseudorandom(pseudoseed('blindside_assimilate2_'  .. hues[1] .. hues[2]))
 
         local card
+        --merge trims and editions together. Upgrade if either one is upgraded
+        local upgraded = G.hand.highlighted[1].ability.extra.upgraded or G.hand.highlighted[2].ability.extra.upgraded or false
+        local trim = (not G.hand.highlighted[2].seal and G.hand.highlighted[1].seal) or (not G.hand.highlighted[1].seal and G.hand.highlighted[2].seal) or false
+        local edition = (not G.hand.highlighted[2].edition and G.hand.highlighted[1].edition  and G.hand.highlighted[1].edition.key) or 
+        (not G.hand.highlighted[1].edition and G.hand.highlighted[2].edition and G.hand.highlighted[2].edition.key) or false
         if rand > 0.5 then
             card = copy_card(G.hand.highlighted[1], nil, nil, G.playing_card)
             card:remove_sticker('bld_upgrade')
-            card:set_ability(enhancement)
-            if G.hand.highlighted[1].ability.extra.upgraded then
+            card:set_ability(G.P_CENTERS[enhancement])
+            if G.hand.highlighted[1].ability.extra.upgraded or upgraded then
                 upgrade_blinds({card}, nil, true)
+            end
+            if trim then
+                card:set_seal(trim, nil, true)
+            end
+            if edition then
+                card:set_edition(edition,true)
             end
         else
             card = copy_card(G.hand.highlighted[2], nil, nil, G.playing_card)
             card:remove_sticker('bld_upgrade')
             card:set_ability(enhancement)
-            if G.hand.highlighted[2].ability.extra.upgraded then
+            if G.hand.highlighted[2].ability.extra.upgraded or upgraded then
                 upgrade_blinds({card}, nil, true)
+            end
+            if trim then
+                card:set_seal(trim, nil, true)
+            end
+            if edition then
+                card:set_edition(edition,true)
             end
         end
         
@@ -77,16 +98,22 @@ SMODS.Consumable {
     end
 }
 
+--transplanted from my mod, utilises this
 function BLINDSIDE.get_enhancements_with_exact_colors(colors,args)
     local enhancements = {}
     local final = {}
     for key, value in pairs(G.P_CENTER_POOLS.bld_obj_blindcard_generate) do
         -- basically checks table equality
         local good = true
-        if not ancient and (value.unik_ancient or value.legendary or value.unik_exotic) then
+        --crossmod
+        for i = 1, #BLINDSIDE.crossmod_rarities do
+            if not args[BLINDSIDE.crossmod_rarities[i].key] and value[BLINDSIDE.crossmod_rarities[i].key] then
+                good = false
+            end
+        end
+        if not args.legendary and value.legendary then
             good = false
         end
-        
         if not args.cursed and value.cursed then
             good = false
         end

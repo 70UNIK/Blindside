@@ -15,7 +15,7 @@ BLINDSIDE.Joker({
         return { vars = { '6X Base' } }
     end,
     pool_override = function()
-        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante == 1
+        return not G.GAME.modifiers.enable_bld_tough_jokers and not G.GAME.blindside_banana_generated
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -93,7 +93,7 @@ BLINDSIDE.Joker({
     end,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante == 1
+        return G.GAME.modifiers.enable_bld_tough_jokers and not G.GAME.blindside_banana_generated
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -165,7 +165,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante ~= 1 and G.GAME.round_resets.ante % 2 == 1
+        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.blindside_banana_generated and G.GAME.round_resets.ante % 2 == 1
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -214,7 +214,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante % 2 == 0
+        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante % 2 == 0 and G.GAME.blindside_banana_generated
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -263,7 +263,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -320,7 +320,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -376,7 +376,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -432,7 +432,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -490,7 +490,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -546,7 +546,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or G.GAME.round_resets.ante > 7
     end,
     calculate = function(self, blind, context)
         local cond1 = context.poker_hands and has_group_of(3, context.poker_hands)
@@ -626,7 +626,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or G.GAME.round_resets.ante > 7
     end,
     calculate = function(self, blind, context)
         local cond2 = context.poker_hands and has_group_of(3, context.poker_hands)
@@ -706,7 +706,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or G.GAME.round_resets.ante > 7
     end,
     calculate = function(self, blind, context)
         local cond2 = context.poker_hands and has_group_of(5, context.poker_hands)
@@ -786,7 +786,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or G.GAME.round_resets.ante > 7
     end,
     calculate = function(self, blind, context)
         local cond1 = context.poker_hands and has_group_of(5, context.poker_hands)
@@ -866,7 +866,7 @@ BLINDSIDE.Joker({
     active = true,
     big = {min = 1},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or G.GAME.round_resets.ante > 7
     end,
     calculate = function(self, blind, context)
         local cond1 = context.poker_hands and has_group_of(2, context.poker_hands)
