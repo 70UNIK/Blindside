@@ -16,31 +16,17 @@ SMODS.Tag {
             return false
             end
         end,
-    set_ability = function (self, tag)
-        tag.config.extra.give = true
-        if tag.savetable then
-            tag.config.extra.give = false
-        end
-    end,
     apply = function(self, tag, context)
-        if tag.config.extra.give and #G.hand.cards > 0 then
-            tag.config.extra.give = false
+        if context.type == 'self_tag_added' then
             G.hand:change_size(1)
-            G.GAME.round_resets.temp_handsize = (G.GAME.round_resets.temp_handsize or 0) + 1
+            --print("+1 Handsize")
         end
         if context.type == 'shop_start' and not (next(SMODS.find_card("j_bld_taglock")) and not (G.GAME.blind.boss or G.GAME.last_joker)) then
+            --print("-1 Handsize")
+            G.hand:change_size(-1)
             tag:yep('+', G.C.GREEN, function() 
                 return true end)
             tag.triggered = true
-        end
-        if context.type == 'shop_start' and (next(SMODS.find_card("j_bld_taglock")) and not (G.GAME.blind.boss or G.GAME.last_joker)) then
-            tag.config.extra.give = true
-        end
-        if tag.config.extra.give and context.type == 'round_start_bonus' then
-            tag.config.extra.give = false
-            G.hand:change_size(1)
-            G.GAME.round_resets.temp_handsize = (G.GAME.round_resets.temp_handsize or 0) + 1
-            return true
         end
     end,
 }

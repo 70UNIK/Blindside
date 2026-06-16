@@ -76,3 +76,43 @@ SMODS.Consumable {
         }
     end
 }
+
+function BLINDSIDE.get_enhancements_with_exact_colors(colors,args)
+    local enhancements = {}
+    local final = {}
+    for key, value in pairs(G.P_CENTER_POOLS.bld_obj_blindcard_generate) do
+        -- basically checks table equality
+        local good = true
+        if not ancient and (value.unik_ancient or value.legendary or value.unik_exotic) then
+            good = false
+        end
+        
+        if not args.cursed and value.cursed then
+            good = false
+        end
+        for key, color in pairs(colors) do
+            if not tableContains(color, value.config.extra.hues) then
+                good = false
+                break
+            end
+        end
+        if good then
+            for key, color in pairs(value.config.extra.hues) do
+                if not tableContains(color, colors) then
+                    good = false
+                    break
+                end
+            end
+            if good and G.P_CENTERS[value.key] then
+                enhancements[value.key] = true
+            end
+        end
+    end
+    --convert to list
+    for i,v in pairs(enhancements) do
+        final[#final+1] = i
+    end
+    table.sort(final)
+    return final
+
+end

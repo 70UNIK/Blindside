@@ -1,26 +1,101 @@
-    function BLINDSIDE.is_blindside(string)
-        for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside.cards) do
-            if v == string or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_blind) or (G.P_BLINDS[string] and G.P_BLINDS[string].blindside_joker) then
-                return true
-            end
-        end
-    end
-
-    function BLINDSIDE.is_relic(string)
-        for _, v in ipairs(SMODS.ObjectTypes.bld_obj_relics.cards) do
-            if v == string then
+function BLINDSIDE.is_blindside(string)
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside.cards) do
+        if v == string or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_blind) or (G.P_BLINDS[string] and G.P_BLINDS[string].blindside_joker) then
             return true
-            end
         end
     end
+end
 
-    function BLINDSIDE.is_dupe(string)
-        for _, v in ipairs(SMODS.ObjectTypes.bld_obj_excludejokers.cards) do
-            if v == string then
-            return true
+function BLINDSIDE.is_relic(string)
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_relics.cards) do
+        if v == string then
+        return true
+        end
+    end
+end
+
+function BLINDSIDE.is_dupe(string)
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_excludejokers.cards) do
+        if v == string then
+        return true
+        end
+    end
+end
+
+--Checking if blindside is active
+function BLINDSIDE.hasBlindside()
+    if G and G.GAME and G.GAME.selected_back and G.GAME.selected_back.effect and G.GAME.selected_back.effect.center and G.GAME.selected_back.effect.center.config and G.GAME.selected_back.effect.center.config.extra then
+        if not G.GAME.selected_back.effect.center.config.extra.blindside then return false end
+        return true
+    end
+    return false
+end
+
+--add your crossmod rarities here:
+BLINDSIDE.crossmod_rarities = {
+    --{key = 'unik_exotic', background_color = G.C.UNIK_EXOTIC, text_color = G.C.WHITE, text = localize('k_unik_exotic')}}
+}
+
+function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,default_blind_key)
+    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, text = text}
+
+    --key for objtype is crossmod_blindside_obj_blindcard + key
+    SMODS.ObjectType {
+        key = "crossmod_blindside_obj_blindcard" .. key,
+        default = default_blind_key,
+        inject_card = function(self, center)
+            SMODS.ObjectType.inject_card(self, center)
+            SMODS.insert_pool(G.P_CENTER_POOLS["crossmod_blindside_obj_blindcard" .. key], center)
+        end,
+        delete_card = function(self, center)
+            SMODS.ObjectType.delete_card(self, center)
+            SMODS.remove_pool(G.P_CENTER_POOLS["crossmod_blindside_obj_blindcard" .. key], center.key)
+        end,
+    }
+end
+--unfortunately you will still need to specify SMODS.ObjectType via this manually:
+
+-- SMODS.ObjectType {
+--     key = "unik_obj_blindcard_exotic",
+--     default = "m_unik_blindside_legendary_golden_crown",
+--     inject_card = function(self, center)
+--         SMODS.ObjectType.inject_card(self, center)
+--         SMODS.insert_pool(G.P_CENTER_POOLS['unik_obj_blindcard_exotic'], center)
+--     end,
+--     delete_card = function(self, center)
+--         SMODS.ObjectType.delete_card(self, center)
+--         SMODS.remove_pool(G.P_CENTER_POOLS['unik_obj_blindcard_exotic'], center.key)
+--     end,
+-- }
+
+--exclusive tag hook only when the tag is added the first time it is generated (reroll tags, toss tags)
+local vessel2 = add_tag
+function add_tag(_tag)
+	local ret = vessel2(_tag)
+    if not _tag.ability or (_tag.ability and not _tag.ability.blindside_has_been_added) then
+        _tag:apply_to_run({type = 'self_tag_added', tag = _tag})
+        --hopefully this only applies ONCE!
+        _tag.ability.blindside_has_been_added = true
+    end
+    
+    return ret
+end
+
+--end_round utilities
+local end_roundref = end_round
+function end_round()
+    if BLINDSIDE.hasBlindside() then
+        G.GAME.blindside_add_bones_probability = 0
+        for i,v in pairs(G.playing_cards) do
+            if v.ability and v.ability.extra and type(v.ability.extra) == 'table' and v.ability.extra.ikeeptrackoftriggers then
+                v.ability.extra.ikeeptrackoftriggers = false
             end
         end
     end
+    local ret = end_roundref()
+
+    return ret
+end
 
     function BLINDSIDE.set_up_blindside()
             G.GAME.blind_rate = 4
@@ -288,8 +363,76 @@ function BLINDSIDE.chipsmodify(mult, originalchips, xmult, xchips, silent)
     end
 end
 
+--Adding functionality to modify the operator, at least temporarily
+function BLINDSIDE.arrowfunction(operator,first,second)
+    if operator == -1 then
+        return first + second
+    elseif operator == 0 then
+        return first * second
+    elseif operator == 1 then
+        return first ^ second
+    elseif operator == 2 and not BLINDSIDE.has_talisman() then
+        return first ^ (first ^ (second - 1))
+    elseif BLINDSIDE.has_talisman() then
+        return to_big(first):arrow(operator,to_big(second))
+    end
+    return first * second
+end
+
+function BLINDSIDE.joker_operator(arrow)
+     G.E_MANAGER:add_event(Event({trigger = 'immediate', delay = 0, func = function()
+        local container = G.HUD_blind:get_UIE_by_ID('blindside_operator_text_7777')
+        if container then
+            play_sound('button', 1.1, 0.65)
+            if arrow == -1 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "+"
+            elseif arrow > 0 and arrow <= 5 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                local exponents = ""
+                for i = 1, G.GAME.blindside_current_operator do
+                    exponents = exponents + "^"
+                end
+                container.config.text = exponents
+            elseif arrow > 5 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "{" .. G.GAME.blindside_current_operator .. "}"
+            else
+                G.GAME.blindside_current_operator = 0
+                container:juice_up()
+                container.config.text = "X"
+            end
+            G.HUD_blind:recalculate()
+        end
+        return true
+    end}))
+    
+end
+
+
+function BLINDSIDE.has_talisman()
+	if (SMODS.Mods["cdataman"] or {}).can_load or next(SMODS.find_mod("cdataman")) then
+		return true
+	end
+	if (SMODS.Mods["Amulet"] or {}).can_load then
+		return true
+	end
+	if (SMODS.Mods and SMODS.Mods.Talisman) or (SMODS.Mods.Talisman and SMODS.Mods.Talisman.can_load) then
+		return true
+	end
+	return false
+end
+
+
 function BLINDSIDE.chipsupdate()
-    local final_chips = G.GAME.blind.basechips*G.GAME.blind.mult
+    G.GAME.blindside_current_operator = G.GAME.unik_current_operator or 0
+    local final_chips = BLINDSIDE.arrowfunction(G.GAME.unik_current_operator,G.GAME.blind.basechips,G.GAME.blind.mult) 
     local chip_mod -- iterate over ~120 ticks
     if G.GAME.blind.chips then
         chip_mod = (final_chips - G.GAME.blind.chips) / 120
@@ -298,10 +441,10 @@ function BLINDSIDE.chipsupdate()
     end
     local step = 0
     local greater = false
-    if final_chips > G.GAME.blind.chips then
+    if final_chips and final_chips > G.GAME.blind.chips then
         greater = true
     end
-    if final_chips ~= G.GAME.blind.chips then
+    if final_chips and final_chips ~= G.GAME.blind.chips then
         G.E_MANAGER:add_event(Event({trigger = 'after', blocking = true, delay = 0.3, func = function()
             G.GAME.blind.chips = G.GAME.blind.chips + G.SETTINGS.GAMESPEED * chip_mod
             if G.GAME.blind.chips < final_chips and greater then
@@ -333,6 +476,8 @@ function BLINDSIDE.chipsupdate()
             chips_UI:juice_up()
             return true
         end}))
+    else
+        print("There was a problem with setting the final chips!")
     end
 end
 
@@ -699,6 +844,9 @@ function Card:start_burn(cardarea, cell_fix, dissolve_colours, silent, dissolve_
     end
 
     dissolve_colours = dissolve_colours or (type(self.destroyed) == 'table' and self.destroyed.colours) or nil
+     G.GAME.blinds_burned_this_run = G.GAME.blinds_burned_this_run or 0
+        G.GAME.blinds_burned_this_run = G.GAME.blinds_burned_this_run + 1
+        --print("burned: " .. G.GAME.blinds_burned_this_run)
     dissolve_time_fac = dissolve_time_fac or (type(self.destroyed) == 'table' and self.destroyed.time) or nil
     local dissolve_time = 0.7*(dissolve_time_fac or 1)
     self.dissolve = 0

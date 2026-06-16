@@ -34,7 +34,12 @@
             if not card.ability.extra.upgraded then
                 card.ability.extra.upgraded = true
             end
-        end
+        end,
+        replace_base_card = true,
+        no_rank = true,
+        no_suit = true,
+        overrides_base_rank = true,
+        blindside_blind = true,
     })
     
 ----------------------------------------------

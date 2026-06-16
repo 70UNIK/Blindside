@@ -45,6 +45,17 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
         elseif card.config.center.weight == 3 then
             badges[#badges+1] = create_badge(localize('k_bld_rare'), G.C.RED, G.C.WHITE, 1 )
         else
+            --crossmod functionality
+            for i = 1, #BLINDSIDE.crossmod_rarities do
+                if BLINDSIDE.crossmod_rarities[i].weight then
+                    if card.config.center.weight == BLINDSIDE.crossmod_rarities[i].weight then
+                         badges[#badges+1] = create_badge(BLINDSIDE.crossmod_rarities[i].text, BLINDSIDE.crossmod_rarities[i].background_colour, BLINDSIDE.crossmod_rarities[i].text_colour, 1 )
+                         return
+                    end
+                else
+                    warn("uh oh, looks like the weights of each of the crossmodrarities have not been made! Expect MAJOR ISSUES from thereforth")
+                end
+            end
             badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
         end
     end,
@@ -109,6 +120,14 @@ function BLINDSIDE.Blind:set_params()
     
     if self.legendary then
         self.weight = 99 -- secret code for "i am legendary"
+    end
+
+    --crossmod keys are 10000 + [key number in stack]
+    for i = 1, #BLINDSIDE.crossmod_rarities do
+        if BLINDSIDE.crossmod_rarities[i].key then
+            self.weight = 10000 + i
+            BLINDSIDE.crossmod_rarities[i].weight = self.weight
+        end
     end
 
     return self

@@ -249,7 +249,7 @@ function Blind:set_assist_blind(blind, reset, silent)
         self:set_text()
 
         local obj = self.config.blind
-        self.children.animatedSprite = AnimatedSprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ANIMATION_ATLAS[obj.config.atlas] or G.ANIMATION_ATLAS['bld_joker'],  obj.config.pos)
+        self.children.animatedSprite = AnimatedSprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ANIMATION_ATLAS[obj.config.atlas] or (self.config.blind.atlas and G.ANIMATION_ATLAS[self.config.blind.atlas]) or G.ANIMATION_ATLAS['bld_joker'],  obj.config.pos)
         self.children.animatedSprite.states = self.states
         G.GAME.last_blind = G.GAME.last_blind or {}
         G.GAME.last_blind.boss = self.boss

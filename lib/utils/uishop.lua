@@ -19,8 +19,12 @@ function Game:blindupdate_shop(dt)
                             if math.abs(G.shop.T.y - G.shop.VT.y) < 3 then
                                 G.ROOM.jiggle = G.ROOM.jiggle + 3
                                 play_sound('cardFan2')
-                                for i = 1, #G.GAME.tags do
-                                    G.GAME.tags[i]:apply_to_run({type = 'shop_start'})
+								--on loading a save, prevent tags from being consumed as if entering the shop.
+                                if not G.GAME.shop_entered_already_blindside then
+									G.GAME.shop_entered_already_blindside = true
+									for i = 1, #G.GAME.tags do
+										G.GAME.tags[i]:apply_to_run({type = 'shop_start'})
+									end
                                 end
                                 local nosave_shop = nil
                                 if not shop_exists then

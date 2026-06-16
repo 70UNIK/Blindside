@@ -1764,7 +1764,7 @@ function G.UIDEF.run_info()
             tab_h = 8,
             snap_to_nav = true})}})
     else
-        return run_info_ref
+        return run_info_ref()
     end
 end
 

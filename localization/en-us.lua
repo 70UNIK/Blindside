@@ -1378,13 +1378,14 @@ return {
 					{"{C:blue}-#1#{} #2#"}
 				},
 			},
+			--crossmod compat: enable random multihues
 			["c_bld_assimilate"] = {
 				["name"] = "Assimilate",
 				["text"] = {
 					{"Select {C:attention}#1#{} Blinds of",
 					"only {C:attention}2 different hues"},
 					{"They are {C:red}destroyed{}, and",
-					"a {E:1}multicolor{} Blind of",
+					"a random {E:1}multicolor{} Blind of",
 					"their {C:attention}hues{} is created"},
 				},
 			},
@@ -3570,6 +3571,7 @@ return {
 					"{X:dark_edition,C:white}Faded{}",
 					"When scoring, {C:red}destroys",
 					"another played Blind",
+					"after scoring",
 				},
 			},
 			["m_bld_death_upgraded"] = {
@@ -3578,6 +3580,7 @@ return {
 					"{X:dark_edition,C:white}Faded{}",
 					"When scoring, {C:red}destroys",
 					"played Blind {C:attention}to the left",
+					"after scoring",
 					"{C:inactive}(If one exists)"
 				},
 			},
