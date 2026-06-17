@@ -22,7 +22,7 @@
         },
         calculate = function(self, card, context)
             if context.cardarea == G.play and context.before and card.facing ~= 'back' then
-                if SMODS.pseudorandom_probability(card, pseudoseed("flip"), card.ability.extra.chance, card.ability.extra.trigger, 'flip') and card.facing ~= "back" then
+                if SMODS.pseudorandom_probability(card, pseudoseed("rupflip"), card.ability.extra.chance, card.ability.extra.trigger, 'rupflip') and card.facing ~= "back" then
                     card:flip()
                     card:flip()
                 else
@@ -47,7 +47,7 @@
         end,
         loc_vars = function(self, info_queue, card)
             info_queue[#info_queue+1] = {key = 'bld_self_scoring', set = 'Other'}
-            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'flip')
+            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'rupflip')
             return {
                 vars = {
                     card.ability.extra.mult,

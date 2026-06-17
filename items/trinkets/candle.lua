@@ -12,7 +12,7 @@
             }
         },
         cost = 15,
-        blueprint_compat = false,
+        blueprint_compat = true,
         eternal_compat = true,
         loc_vars = function (self, info_queue, card)
             info_queue[#info_queue+1] = {key = 'bld_burn', set = 'Other'}
@@ -44,16 +44,16 @@
                     }
                 end
             end
-            if context.after and card.ability.extra.burned > 0 then
+            if context.after and card.ability.extra.burned > 0 and not context.blueprint then
                 card.ability.extra.additional_mult = card.ability.extra.additional_mult + card.ability.extra.mult_gain-- * (card.ability.extra.burned)
                 return {
                     message = localize('k_upgrade_ex'),
                 }
             end
-            if context.cards_burned then
+            if context.cards_burned and not context.blueprint then
                 card.ability.extra.burned = #context.cards_burned
             end
-            if context.cards_burned and #context.cards_burned == 0 then
+            if context.cards_burned and #context.cards_burned == 0 and not context.blueprint then
                 card.ability.extra.additional_mult = 0
                 card.ability.extra.burned = 0
                 return {

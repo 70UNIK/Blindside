@@ -11,7 +11,7 @@ SMODS.Joker({
         }
     },
     cost = 10,
-    blueprint_compat = false,
+    blueprint_compat = true,
     eternal_compat = true,
     loc_vars = function (self, info_queue, card)
         return {
@@ -54,7 +54,7 @@ SMODS.Joker({
                 xmult = card.ability.extra.xmult
             }
         end
-        if context.after and context.scoring_hand and not context.blueprint and not context.other_card and not card.ability.extra.broken then
+        if context.after and context.scoring_hand and not context.blueprint and not context.other_card and not card.ability.extra.broken and not context.repetition then
             if #context.scoring_hand >= 5 then
                 G.E_MANAGER:add_event(Event({
                 func = function()

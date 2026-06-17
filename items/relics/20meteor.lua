@@ -11,7 +11,7 @@ SMODS.Tag {
     end,
     apply = function(self, tag, context)
         if context.type == 'use_consumeable' and context.consumeable.ability.set == 'bld_obj_mineral'  then
-            if SMODS.pseudorandom_probability(card, pseudoseed("flip"),1,2, 'flip') then
+            if SMODS.pseudorandom_probability(card, pseudoseed("meteorchance"),1,2, 'meteorchance') then
                 tag:juice_up()
                 tag_area_status_text(tag, localize('k_again_ex'), G.C.FILTER, false, 0)
                 context.consumeable:use_consumeable(context.area)

@@ -391,7 +391,7 @@ BLINDSIDE.Joker({
                     elseif scored_card:is_color("Blue") or scored_card:is_color("Purple") then
                         new_type = 'm_bld_small'
                     else
-                        if pseudorandom('flip') < 1/2 then
+                        if pseudorandom('chicoooo') < 1/2 then
                             new_type = 'm_bld_big'
                         else
                             new_type = 'm_bld_small'

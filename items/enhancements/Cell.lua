@@ -33,7 +33,7 @@
                     }
             end
             if context.after and context.cardarea == G.play and card.facing ~= 'back' then
-                if SMODS.pseudorandom_probability(card, pseudoseed("flip"), card.ability.extra.chance, card.ability.extra.trigger, 'flip') then
+                if SMODS.pseudorandom_probability(card, pseudoseed("cellflip"), card.ability.extra.chance, card.ability.extra.trigger, 'cellflip') then
                     G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                     local copy_card = copy_card(card, nil, nil, G.playing_card)
                     copy_card:add_to_deck()
@@ -68,7 +68,7 @@
         end,
         loc_vars = function(self, info_queue, card)
             info_queue[#info_queue+1] = {key = 'bld_burn', set = 'Other'}
-            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'flip')
+            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'cellflip')
             return {
                 vars = {
                     card.ability.extra.chips,

@@ -153,6 +153,7 @@ meta.__call = function (...)
     return this:set_params()
 end
 
+--BLINDSIDE.JOker has currently 3 variations: Small, Big and Boss (which includes Legendary). Unfortunately I'll leave it up to other mod makers if they want to add a new type that's not any of those (Cursed Jokers for instance).
 ---@ class BLINDSIDE.Joker : SMODS.Blind
 ---@ field base_dollars number Dollars awarded when beaten. Do not set dollars.
 ---@ field get_assist? fun(self: BLINDSIDE.Joker) Returns an assistant Joker object.

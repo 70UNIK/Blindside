@@ -51,7 +51,7 @@
             end
 
             if context.cardarea == G.hand and context.main_scoring then
-                if SMODS.pseudorandom_probability(card, pseudoseed("butterfly"), 1, card.ability.extra.odds, 'butterfly') then
+                if SMODS.pseudorandom_probability(card, pseudoseed("butterflyhold"), 1, card.ability.extra.odds, 'butterflyhold') then
                     return {
                         xchips = card.ability.extra.xchips
                     }
@@ -65,7 +65,7 @@
         end,
         loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = 'bld_self_scoring', set = 'Other'}
-            local chance, trigger = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'flip')
+            local chance, trigger = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'butterfly')
             return {
                 vars = {
                     card.ability.extra.xchips,

@@ -18,7 +18,7 @@
         },
         calculate = function(self, card, context)
             if context.cardarea == G.play and context.before and card.facing ~= 'back' then
-                if SMODS.pseudorandom_probability(card, pseudoseed("flip"), card.ability.extra.chance, card.ability.extra.trigger, 'flip') or card.ability.extra.upgraded then
+                if SMODS.pseudorandom_probability(card, pseudoseed("loopflip"), card.ability.extra.chance, card.ability.extra.trigger, 'loopflip') or card.ability.extra.upgraded then
                     card:flip()
                     card:flip()
                     add_tag(Tag('tag_bld_symmetry'))
@@ -42,7 +42,7 @@
         loc_vars = function(self, info_queue, card)
             info_queue[#info_queue+1] = G.P_TAGS['tag_bld_symmetry']
             info_queue[#info_queue+1] = {key = 'bld_self_scoring', set = 'Other'}
-            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'flip')
+            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'loopflip')
             return {
                 key = card.ability.extra.upgraded and 'm_bld_loop_upgraded' or 'm_bld_loop',
                 vars = {

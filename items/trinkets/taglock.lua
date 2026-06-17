@@ -1,22 +1,29 @@
-    SMODS.Joker({
-        key = 'taglock',
-        atlas = 'bld_trinkets',
-        pos = {x = 1, y = 0},
-        rarity = 'bld_keepsake',
-        cost = 12,
-        blueprint_compat = true,
-        eternal_compat = true,
-        credit = {
-            art = "AstraLuna",
-            code = "AstraLuna",
-            concept = "AstraLuna"
-        },
-        in_pool = function(self, args)
-            if G.GAME.selected_back.effect.center.config.extra then
-                if not G.GAME.selected_back.effect.center.config.extra.blindside then return false end
-                return true
-            else
-            return false
-            end
-        end,
-    })
+SMODS.Joker({
+    key = 'taglock',
+    atlas = 'bld_trinkets',
+    pos = {x = 1, y = 0},
+    rarity = 'bld_keepsake',
+    cost = 12,
+    blueprint_compat = true,
+    eternal_compat = true,
+    credit = {
+        art = "AstraLuna",
+        code = "AstraLuna",
+        concept = "AstraLuna"
+    },
+    in_pool = function(self, args)
+        if G.GAME.selected_back.effect.center.config.extra then
+            if not G.GAME.selected_back.effect.center.config.extra.blindside then return false end
+            return true
+        else
+        return false
+        end
+    end,
+})
+--check if you have a taglock in place.
+function BLINDSIDE.taglock_active()
+    if (next(SMODS.find_card("j_bld_taglock")) and not (G.GAME.blind.boss or G.GAME.last_joker)) then
+        return true
+    end
+    return false
+end

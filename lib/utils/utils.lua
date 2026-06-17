@@ -1772,7 +1772,7 @@ function CardArea:shuffle(_seed, reshuffle)
         local priorities = {}
         local others = {}
         for k, v in pairs(self.cards) do
-            if (v.seal == 'bld_ruin' and not reshuffle) or (v.ability.extra and v.ability.extra.upgraded and G.GAME.used_vouchers["v_bld_thingamajig"] and reshuffle) then
+            if (v.seal == 'bld_ruin' and not reshuffle) or (v.ability.extra and (v.ability.extra.upgraded or v.ability.upgrade) and G.GAME.used_vouchers["v_bld_thingamajig"] and reshuffle) then
                 table.insert(priorities, v)
             else
                 table.insert(others, v)
