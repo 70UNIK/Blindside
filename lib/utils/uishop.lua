@@ -394,7 +394,7 @@ function BLINDSIDE.create_blindcard_for_shop(area, is_boss_shop, forced_enhancem
                 end
                 local card = SMODS.create_card({ set = 'Base', seal = enhancement, enhancement = cardtype, area = area })
                 create_shop_card_ui(card, 'Enhanced', area)
-                local edition = poll_edition(pseudoseed('shop_blind_roll' .. G.GAME.round_resets.ante), G.GAME.used_vouchers.v_bld_polish and 3 or nil, true, false, {'e_bld_enameled', 'e_bld_finish', 'e_bld_mint', 'e_bld_shiny'})
+                local edition = poll_edition(pseudoseed('shop_blind_roll' .. G.GAME.round_resets.ante), G.GAME.used_vouchers.v_bld_polish and 3 or nil, true, false, BLINDSIDE.get_blindside_editions('none'))
                 card:set_edition(edition, true)
                 local upgrade = G.GAME.used_vouchers.v_bld_irradiate and pseudorandom(pseudoseed('shop_upgrade_roll'..G.GAME.round_resets.ante)) > 0.9 or false
                 if upgrade then

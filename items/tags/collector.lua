@@ -29,7 +29,7 @@ SMODS.Tag {
                 G.E_MANAGER:add_event(Event({trigger = 'after', func = function()
                         if G.pack_cards and G.pack_cards.cards ~= nil and G.pack_cards.cards[1] and G.pack_cards.VT.y < G.ROOM.T.h then
                             for _, v in ipairs(G.pack_cards.cards) do
-                                local edition = poll_edition('collector', nil, true, true, BLINDSIDE.get_blindside_editions())
+                                local edition = poll_edition('collector', nil, true, true, BLINDSIDE.get_blindside_editions('none'))
                                 v:set_edition(edition, true)
                             end
                             G.GAME.suppress_collector_tag = nil

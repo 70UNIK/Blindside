@@ -16,7 +16,7 @@ SMODS.Consumable {
     use = function(self, card, area)
         for key, value in pairs(G.hand.cards) do
             if not value.edition and SMODS.pseudorandom_probability(card, pseudoseed('bld_rain'), 1, 2, 'bld_rain') then
-                local edition = poll_edition(pseudoseed('bld_rain'), nil, true, true, {'e_bld_enameled', 'e_bld_finish', 'e_bld_mint', 'e_bld_shiny'})
+                local edition = poll_edition(pseudoseed('bld_rain'), nil, true, true, BLINDSIDE.get_blindside_editions('none'))
                 G.E_MANAGER:add_event(Event({
                     trigger = "before",
                     delay = 0.4,

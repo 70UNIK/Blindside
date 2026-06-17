@@ -570,9 +570,10 @@
     --bld_obj_excludejokers for hidden "doubled_up jokers"
     --bld_obj_relics for hidden "price tag tags" for price tags
     --bld_obj_blindside for anything in blindside
+    --bld_obj_enhancements for "trims"
     --not the best but best used for consumables and tags, which lack the ability to add to said pool.
     function BLINDSIDE.addToPool(pool,key)
-        if pool ~= 'bld_obj_excludejokers' and pool ~= 'bld_obj_relics' and pool ~= 'bld_obj_blindside' then
+        if pool ~= 'bld_obj_excludejokers' and pool ~= 'bld_obj_relics' and pool ~= 'bld_obj_blindside' and pool ~= 'bld_obj_enhancements' then
             warn("INVALID POOL!")
         end
         SMODS.ObjectTypes[pool].cards[#SMODS.ObjectTypes[pool].cards+1] = key

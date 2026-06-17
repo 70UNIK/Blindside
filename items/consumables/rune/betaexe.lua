@@ -8,11 +8,7 @@ SMODS.Consumable {
         return true
     end,
     can_use = function(self, card)
-        if G.STATE == G.STATES.SELECTING_HAND then
-            return card.ability.extra.charge >= card.ability.extra.round
-        else
-            return false
-        end
+        return card.ability.extra.charge >= card.ability.extra.round
     end,
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = 'bld_active', set = 'Other'}

@@ -1948,11 +1948,54 @@ G.FUNCS.blind_reroll_boss_button = function(e)
           return true
       end)
     }))
-  end
+end
 
---HOOK FOR CROSSMOD
-function BLINDSIDE.get_blindside_editions()
-    return {'e_bld_enameled', 'e_bld_finish', 'e_bld_mint'}
+--HOOKS FOR CROSSMOD
+BLINDSIDE.editions = {
+    'e_bld_enameled', 
+    'e_bld_finish', 
+    'e_bld_mint',
+    'e_bld_shiny',
+}
+--do this to add to the list of editions
+--BLINDSIDE.editions[#BLINDSIDE.editions + 1] = (edition key)
+
+--exclusion syntax = {blacklist = true or whitelist = true}
+--exclusions will default to e_bld_shiny if not specified. You must put 'none' in place instead.
+function BLINDSIDE.get_blindside_editions(args)
+    local exclude
+    if not args then
+        exclude = {blacklist = true, editions_list = {'e_bld_shiny'}}
+    elseif args == 'none' then
+        exclude = {}
+    elseif (args.blacklist or args.whitelist) and not (args.blacklist and args.whitelist) and args.editions_list and type(args.editions_list) == 'table' then
+        exclude = args
+    else
+        warn("invalid table,returning default list")
+        return {"e_bld_enameled","e_bld_finish","e_bld_mint"}
+    end
+    local tabler = BLINDSIDE.editions
+    if args.blacklist then
+        for i = 1, #args.editions_list do
+            for j = #tabler, 1,-1 do
+                if args.editions_list[i] == tabler[j] then
+                    table.remove(tabler,j)
+                end
+            end
+        end
+    elseif args.whitelist then
+        tabler = {}
+        for i = 1, #args.editions_list do
+            for j = 1, #BLINDSIDE.editions do
+                if args.editions_list[i] == BLINDSIDE.editions[j] then
+                    tabler[#tabler+1] = BLINDSIDE.editions[j]
+                end
+            end
+        end
+    end
+    
+    print(tabler)
+    return tabler
 end
 
 function tableContains(value, tbl)
