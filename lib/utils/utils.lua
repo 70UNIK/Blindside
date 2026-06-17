@@ -36,6 +36,7 @@ BLINDSIDE.crossmod_rarities = {
     --{key = 'unik_exotic', background_color = G.C.UNIK_EXOTIC, text_color = G.C.WHITE, text = localize('k_unik_exotic')}}
 }
 
+--spawn_rate can be a function if you want
 function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,default_blind_key,spawn_rate)
     BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, loc_text = text,spawn_rate = spawn_rate or 0}
 
@@ -1240,6 +1241,58 @@ G.FUNCS.shop_trinket_empty = function(e)
 end
 
 
+BLINDSIDE.vanilla_rarity_rates = {
+    starter = {rate = 0, weight = 2},
+    simple = {rate = 0.85, weight = 0},
+    premium = {rate = 0.15, weight = 1},
+    crude = {rate = 0, weight = 3}, --will be a special pool that replaces any blind 10% of the time.
+    legendary = {rate = 0, weight = 4},
+}
+
+function BLINDSIDE.poll_rarities(args,key)
+    local rarity_poll = pseudorandom(pseudoseed(key or ('bld_blind_rarity'..G.GAME.round_resets.ante))) -- Generate the poll value
+    local total_weight = 0
+    local rarity_weights = {}
+    for i,v in pairs(BLINDSIDE.vanilla_rarity_rates) do
+        total_weight = total_weight + v.rate
+        rarity_weights[i] = {rate = 0, name = "", weight = 0}
+        rarity_weights[i].rate = v.rate or 0
+        rarity_weights[i].name = i
+        rarity_weights[i].weight = v.weight
+    end
+    for i = 1, #BLINDSIDE.crossmod_rarities do
+        local rate = 0
+        if BLINDSIDE.crossmod_rarities[i].spawn_rate and type(BLINDSIDE.crossmod_rarities[i].spawn_rate) == 'function' then
+            rate = BLINDSIDE.crossmod_rarities[i].spawn_rate()
+        else
+            rate = BLINDSIDE.crossmod_rarities[i].spawn_rate
+        end
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key] = {rate = 0, name = "", weight = 0}
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key].rate = rate
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key].name = BLINDSIDE.crossmod_rarities[i].key
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key].weight = BLINDSIDE.crossmod_rarities[i].weight
+        total_weight = total_weight + rate
+    end
+   -- print(total_weight)
+    --print(rarity_weights)
+    --divide all by total weight
+    for i,v in pairs(rarity_weights) do
+        v.rate = v.rate/total_weight
+    end
+    --print(rarity_weights)
+    --create "intervals" to determine breakpoints for rarity
+    local weight_i = 0
+    for i,v in pairs(rarity_weights) do
+        weight_i = weight_i + v.rate
+        print(rarity_poll .. " " .. weight_i)
+        if rarity_poll < weight_i then
+            print(v.rate .. " " .. v.name)
+            return v.weight 
+        end
+    end
+
+end
+
 function BLINDSIDE.poll_enhancement(args)
     args = args or {}
     local key = args.key or 'std_enhance'
@@ -1282,35 +1335,23 @@ function BLINDSIDE.poll_enhancement(args)
         if G.GAME.modifiers.enable_shop_curses and pseudorandom(pseudoseed('bld_blind_curse_in_shop')) > 0.9 then
             rarity = 3
         else
-            if (rand < 0.85) then
-                rarity = 0
-            elseif rand <= 1 then --(rand < 0.999) then
-                rarity = 1
-            else
-                rarity = 2
-            end
+            rarity = BLINDSIDE.poll_rarities({},key)
         end
     elseif args.cursed then
         rarity = 3
     elseif args.legendary then
         rarity = 4
     else
-        local crossmodrarity = false
+        local forcecrossmodrarity = false
         for i = 1, #BLINDSIDE.crossmod_rarities do
             if args[BLINDSIDE.crossmod_rarities[i].key] then
                 rarity = BLINDSIDE.crossmod_rarities[i].weight
                 print(rarity)
-                crossmodrarity = true
+                forcecrossmodrarity = true
             end
         end
-        if not crossmodrarity then
-            if (rand < 0.85) then
-            rarity = 0
-            elseif rand <= 1 then --(rand < 0.999) then
-                rarity = 1
-            else
-                rarity = 2
-            end
+        if not forcecrossmodrarity then
+            rarity = BLINDSIDE.poll_rarities(args,key)
         end
         
     end

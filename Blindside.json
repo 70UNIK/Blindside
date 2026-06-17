@@ -1,7 +1,7 @@
 {
 	"id": "Blindside",
 	"name": "Balatro: Blindside",
-	"author": ["LunaAstraCassiopeia", "AnneBean", "base4"],
+	"author": ["LunaAstraCassiopeia", "AnneBean", "base4","70UNIK"],
 	"description": "What if Blinds were your playing cards? What if Jokers were the enemy?",
 	"prefix": "bld",
 	"main_file": "Blindside.lua",
@@ -9,6 +9,9 @@
 	"badge_colour": "3F6AA4",
 	"badge_text_colour": "FFFFFF",
 	"display_name": "Blindside",
-	"version": "0.1.2-BETA",
-	"dependencies": ["Steamodded (>=1.0.0~BETA-1224a)", "Lovely (>=0.8.0)"]
+	"version": "0.4-BETA-UNIK-branch",
+	"dependencies": [
+		"Steamodded (>=1.0.0~BETA-1224a)", 
+		"Lovely (>=0.8.0)"
+	]
 }
