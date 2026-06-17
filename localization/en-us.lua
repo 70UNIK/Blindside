@@ -1,5 +1,58 @@
 return {
 	["misc"] = {
+		quips = {
+			--default flippy quips, win and lose (5 win, 8 loss)
+            blindside_flippy_win1 = {
+                "You're flipping it!"
+            },
+            blindside_flippy_win2 = {
+                "No wonder all those 'decks'",
+                "are virtual, it'll be too much!"
+            },
+            blindside_flippy_win3 = {
+                "Well done!"
+            },
+            blindside_flippy_win4 = {
+                "Wow! You're quite skilled",
+                "in this!"
+            },
+            blindside_flippy_win5 = {
+                "Looks like the Jokers",
+                "will have to lick",
+                "their wounds!"
+            },
+            blindside_flippy_lose1 = {
+                "It seems like you're",
+                "too used to Vanilla,",
+                "would you like assistance?",
+            },
+            blindside_flippy_lose2 = {
+                "What a flop!"
+            },
+            blindside_flippy_lose3 = {
+                "Damn, those looked",
+                "stronger than they look...",
+            },
+            blindside_flippy_lose4 = {
+                "Did you forget to",
+                "trim those Crudes today?"
+            },
+            blindside_flippy_lose5 = {
+                "Maybe Vanilla's our speed..."
+            },
+            blindside_flippy_lose6 = {
+                "Uh oh!"
+            },
+            blindside_flippy_lose7 = {
+                "Time for us to flop",
+                "down and try again!"
+            },
+            blindside_flippy_lose8 = {
+                "Hey, next time in your",
+                "next revive, please",
+                "be careful!"
+            },
+		},
 		["blind_tabs"] = {
 			["authors"] = "By Luna, Anne & Base",
 			["Description"] = "Blindside",
