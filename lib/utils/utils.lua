@@ -30,7 +30,6 @@ function BLINDSIDE.hasBlindside()
     end
     return false
 end
-
 --add your crossmod rarities here:
 BLINDSIDE.crossmod_rarities = {
     --{key = 'unik_exotic', background_color = G.C.UNIK_EXOTIC, text_color = G.C.WHITE, text = localize('k_unik_exotic')}}
@@ -67,6 +66,22 @@ function add_tag(_tag)
     
     return ret
 end
+
+
+--Self tag removal functionality, in case other tags delete tags, ie: reroll tags, toss tags, handcuff tags (UNIK's mod)
+local remove_ref = Tag.remove
+function Tag.remove(self)
+    if self.ability.blindside_has_been_added then
+        self.triggered = nil
+        self.ability.blindside_has_been_added = nil
+        self:apply_to_run({type = 'self_tag_removed', tag = self})
+        self.triggered = true
+    end
+    local ret = remove_ref(self)
+    
+    return ret
+end
+
 
 --end_round utilities
 local end_roundref = end_round
@@ -1284,9 +1299,9 @@ function BLINDSIDE.poll_rarities(args,key)
     local weight_i = 0
     for i,v in pairs(rarity_weights) do
         weight_i = weight_i + v.rate
-        print(rarity_poll .. " " .. weight_i)
+        --print(rarity_poll .. " " .. weight_i)
         if rarity_poll < weight_i then
-            print(v.rate .. " " .. v.name)
+            --print(v.rate .. " " .. v.name)
             return v.weight 
         end
     end

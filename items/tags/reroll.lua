@@ -18,12 +18,16 @@ apply = function(self, tag, context)
         if context.type == 'after_reroll'  and not G.GAME.rerolled then
             --SMODS.change_free_rerolls(-1)
             --print("-1 Free rerolls")
-            G.GAME.blindside_reroll_tags_consumed = G.GAME.blindside_reroll_tags_consumed or 0
-            G.GAME.blindside_reroll_tags_consumed = G.GAME.blindside_reroll_tags_consumed + 1
+            -- G.GAME.blindside_reroll_tags_consumed = G.GAME.blindside_reroll_tags_consumed or 0
+            -- G.GAME.blindside_reroll_tags_consumed = G.GAME.blindside_reroll_tags_consumed + 1
             G.GAME.rerolled = true
             tag:yep('+', G.C.GREEN, function() 
                 return true end)
             tag.triggered = true
+        end
+        if context.type == 'self_tag_removed' then
+            G.GAME.blindside_reroll_tags_consumed = G.GAME.blindside_reroll_tags_consumed or 0
+            G.GAME.blindside_reroll_tags_consumed = G.GAME.blindside_reroll_tags_consumed + 1
         end
         if context.type == 'self_tag_added' then
             SMODS.change_free_rerolls(1)

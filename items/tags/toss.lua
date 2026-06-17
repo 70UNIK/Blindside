@@ -21,6 +21,9 @@ SMODS.Tag {
             G.hand:change_size(1)
             --print("+1 Handsize")
         end
+        if context.type == 'self_tag_removed' then
+             G.hand:change_size(-1)
+        end
         if context.type == 'shop_start' and not BLINDSIDE.taglock_active() then
             --print("-1 Handsize")
             G.hand:change_size(-1)
