@@ -28,7 +28,7 @@ SMODS.Edition {
         }
     end,
     calculate = function(self, card, context)
-        if (context.pre_joker or (context.main_scoring and context.cardarea == G.play)) and card.facing ~= 'back' then
+        if (context.pre_joker or (context.main_scoring and (context.cardarea == G.play or context.cardarea == G.hand))) and card.facing ~= 'back' then
             return {
                 dollars = card.edition.p_dollars
             }

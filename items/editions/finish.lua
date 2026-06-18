@@ -28,10 +28,10 @@ SMODS.Edition {
                 --why this? because finish on held blinds cause blinds to retrigger a WHOPPING 3 intead of 2 times!!!!!!!! and its not intended
                 card.ability.extra.blindside_suppress_double_up = true
                 return {
-                    repetitions = card.ability.extra.retriggers,
+                    repetitions = 1,
                     func = function ()
                         
-                       card.ability.extra.blindside_suppress_double_up = nil
+                        card.ability.extra.suppress_double_up = nil
                     end
                 }
             end

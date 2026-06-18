@@ -3715,16 +3715,16 @@ return {
 				["name"] = "The Famous",
 				["text"] = {
 					"{X:chips,C:white}Blue{}",
-					"{C:attention}Forced to",
-					"{C:attention}be selected",
+					"{C:red}Forced to",
+					"{C:ared}be selected",
 				},
 			},
 			["m_bld_famous_upgraded"] = {
 				["name"] = "The Famous",
 				["text"] = {
 					{"{X:chips,C:white}Blue{}",
-					"{C:attention}Forced to",
-					"{C:attention}be selected"},
+					"{C:red}Forced to",
+					"{C:red}be selected"},
 					{"When discarded, {C:attention}burn{}",
 					"all discarded Blinds"}
 				},
@@ -3736,8 +3736,8 @@ return {
 					"{C:white,X:mult}X#1#{} Mult"},
 					{"{C:attention,E:1}Self-Scoring{} with a",
 					"{C:green}#2# in #3#{} chance"},
-					{"{C:attention}Forced to",
-					"{C:attention}be selected",}
+					{"{C:red}Forced to",
+					"{C:red}be selected",}
 				},
 			},
 			["m_bld_pill_upgraded"] = {
@@ -3746,8 +3746,8 @@ return {
 					{"{X:green,C:white}Green{}",
 					"{C:white,X:mult}X#1#{} Mult"},
 					{"Always scores"},
-					{"{C:attention}Forced to",
-					"{C:attention}be selected",}
+					{"{C:red}Forced to",
+					"{C:red}be selected",}
 				},
 			},
 			["m_bld_hurt"] = {
@@ -3871,8 +3871,8 @@ return {
 					{"{X:chips,C:white}Blue{}",
 					"{C:chips}+#1#{} Chips"},
 					{"{C:attention}+1{} Selection Limit",},
-					{"{C:attention}Forced to",
-					"{C:attention}be selected",}
+					{"{C:red}Forced to",
+					"{C:red}be selected",}
 				},
 			},
 			["m_bld_violet_vessel"] = {

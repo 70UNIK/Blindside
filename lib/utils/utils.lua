@@ -72,10 +72,15 @@ end
 local remove_ref = Tag.remove
 function Tag.remove(self)
     if self.ability.blindside_has_been_added then
+        local triggered = self.triggered
         self.triggered = nil
         self.ability.blindside_has_been_added = nil
+        --temporarily remove triggered so it can do self_tag_removed
         self:apply_to_run({type = 'self_tag_removed', tag = self})
-        self.triggered = true
+        if triggered then
+            self.triggered = true
+        end
+        
     end
     local ret = remove_ref(self)
     
@@ -1361,12 +1366,12 @@ function BLINDSIDE.poll_enhancement(args)
         for i = 1, #BLINDSIDE.crossmod_rarities do
             if args[BLINDSIDE.crossmod_rarities[i].key] then
                 rarity = BLINDSIDE.crossmod_rarities[i].weight
-                print(rarity)
+            --    print(rarity)
                 forcecrossmodrarity = true
             end
         end
         if not forcecrossmodrarity then
-            rarity = BLINDSIDE.poll_rarities(args,key)
+            rarity = BLINDSIDE.poll_rarities({},key)
         end
         
     end
@@ -2020,37 +2025,45 @@ BLINDSIDE.editions = {
 --exclusions will default to e_bld_shiny if not specified. You must put 'none' in place instead.
 function BLINDSIDE.get_blindside_editions(args)
     local exclude
+    local blacklist = args.blacklist or nil
+    local whitelist = args.whitelist or nil
     if not args then
-        exclude = {blacklist = true, editions_list = {'e_bld_shiny'}}
+        exclude = {'e_bld_shiny'}
+        blacklist = true
     elseif args == 'none' then
         exclude = {}
-    elseif (args.blacklist or args.whitelist) and not (args.blacklist and args.whitelist) and args.editions_list and type(args.editions_list) == 'table' then
-        exclude = args
+        blacklist = true
+        whitelist = nil
+    elseif (blacklist or whitelist) and not (blacklist and whitelist) and args.editions_list and type(args.editions_list) == 'table' then
+        exclude = args.editions_list
     else
-        warn("invalid table,returning default list")
+        print("invalid table,returning default list")
         return {"e_bld_enameled","e_bld_finish","e_bld_mint"}
     end
     local tabler = BLINDSIDE.editions
-    if args.blacklist then
-        for i = 1, #args.editions_list do
+    if blacklist then
+        for i = 1, #exclude do
             for j = #tabler, 1,-1 do
-                if args.editions_list[i] == tabler[j] then
+                if exclude[i] == tabler[j] then
                     table.remove(tabler,j)
                 end
             end
         end
-    elseif args.whitelist then
+    elseif whitelist then
         tabler = {}
-        for i = 1, #args.editions_list do
+        for i = 1, #exclude do
             for j = 1, #BLINDSIDE.editions do
-                if args.editions_list[i] == BLINDSIDE.editions[j] then
+                if exclude[i] == BLINDSIDE.editions[j] then
                     tabler[#tabler+1] = BLINDSIDE.editions[j]
                 end
             end
         end
     end
     
-    print(tabler)
+   -- print(tabler)
+    if #tabler < 1 then
+        error("problem with the edition get function, as it returned NOTHING!@!!!!!!")
+    end
     return tabler
 end
 
