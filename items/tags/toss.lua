@@ -26,7 +26,7 @@ SMODS.Tag {
         end
         if context.type == 'shop_start' and not BLINDSIDE.taglock_active() then
             --print("-1 Handsize")
-            G.hand:change_size(-1)
+           -- G.hand:change_size(-1)
             tag:yep('+', G.C.GREEN, function() 
                 return true end)
             tag.triggered = true
