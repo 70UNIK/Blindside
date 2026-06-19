@@ -5,6 +5,15 @@ SMODS.Consumable {
     pos = {x=2, y=6},
     config = {extra = {round = 9, charge = 0}},
     keep_on_use = function(self, card)
+        local cards = 0
+        for i,v in pairs(G.consumeables.cards) do
+            if v ~= card then
+                cards = cards + 1
+            end
+        end
+        if cards >= G.consumeables.config.card_limit then
+            return false
+        end
         return true
     end,
     cost = 4,

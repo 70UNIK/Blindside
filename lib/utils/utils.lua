@@ -401,8 +401,13 @@ end
 
 --Adding functionality to modify the operator, at least temporarily
 function BLINDSIDE.arrowfunction(operator,first,second)
+    
     if operator == -1 then
         return first + second
+    elseif operator == -2 then
+        return first - second
+    elseif operator == -3 then
+        return first/second
     elseif operator == 0 then
         return first * second
     elseif operator == 1 then
@@ -425,6 +430,16 @@ function BLINDSIDE.joker_operator(arrow)
                 container:juice_up()
 
                 container.config.text = "+"
+            elseif arrow == -2 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "-"
+            elseif arrow == -3 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "/"
             elseif arrow > 0 and arrow <= 5 then
                 G.GAME.blindside_current_operator = arrow
                 container:juice_up()
@@ -513,7 +528,7 @@ function BLINDSIDE.chipsupdate()
             return true
         end}))
     else
-        print("There was a problem with setting the final chips!")
+       -- print("There was a problem with setting the final chips!")
     end
 end
 

@@ -590,9 +590,17 @@ SMODS.PokerHandPart{ -- Spectrum base (Referenced from SixSuits) (and then from 
                         table.insert(cardcolors, v)
                     end
                 end
-                -- if somehow no suits: spectrum is impossible
+                -- if somehow no suits: spectrum is impossible when the threshold falls below 5
                 if #cardcolors == 0 then
-                    return {}
+                    local thresholdtrigger = false
+                    if colorsuits[cardcolors[1]] == false then 
+                        threshold = threshold - 1
+                        thresholdtrigger = true
+                    end
+                    --If the threshold is lower than 5 (min for spectrum), it cannot be one (checkers requires no pairs)
+                    if (threshold < 5 and thresholdtrigger) then
+                        return {} 
+                    end
                 -- if only 1 suit: can be handled immediately
                 elseif #cardcolors == 1 then
                     -- if suit is already present, lower the threshold. Ideally, duplicate colors when a spectrum can otherwise be made should not disrupt it, otherwise remove suit from "not yet used suits"
