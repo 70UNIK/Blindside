@@ -54,6 +54,67 @@ function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,de
     }
 end
 
+--functionality checking to ignore discard or hand selection limit (Bell for instnace)
+function BLINDSIDE.ignore_play_limit(card)
+    if card and card.ability and card.ability.extra and type(card.ability.extra) == 'table' and card.ability.extra.ignore_hand_selection then
+        return true
+    end
+    return false
+end
+function BLINDSIDE.ignore_discard_limit(card)
+    if card and card.ability and card.ability.extra and type(card.ability.extra) == 'table' and card.ability.extra.ignore_discard_selection then
+        return true
+    end
+    return false
+end
+
+--allow play bellcheck
+local play_check = G.FUNCS.can_play
+G.FUNCS.can_play = function(e)
+    do
+        local bld_aij_exceeds_hand_limit = 0
+        for k, v in pairs(G.hand.highlighted) do
+            if BLINDSIDE.ignore_play_limit(v) and not v.debuff then
+                bld_aij_exceeds_hand_limit = bld_aij_exceeds_hand_limit + 1
+            end
+        end
+        if bld_aij_exceeds_hand_limit > 0 and not ((#G.hand.highlighted - bld_aij_exceeds_hand_limit) > math.max(G.GAME.starting_params.play_limit, 1) or G.GAME.blind.block_play or #G.hand.highlighted <= 0) then
+            e.config.colour = G.C.BLUE
+            e.config.button = 'play_cards_from_highlighted'
+            return
+        end
+    end
+    local ret = play_check(e)
+    return ret
+end
+
+--stubborn function + bellcheck
+local can_discardref = G.FUNCS.can_discard
+G.FUNCS.can_discard = function(e)
+    for key, value in pairs(G.hand.highlighted) do
+        --stubborn can be removed if desired
+        if value.ability and value.ability.extra and type(value.ability.extra) == 'table' and value.ability.extra.stubborn and value.config.center.config.extra.stubborn then
+            e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+            e.config.button = nil
+            return
+        end
+    end
+    if  G.GAME.current_round.discards_left > 0 then
+        local bld_aij_exceeds_hand_limit = 0
+        for k, v in pairs(G.hand.highlighted) do
+            if BLINDSIDE.ignore_discard_limit(v) and not v.debuff then
+                bld_aij_exceeds_hand_limit = bld_aij_exceeds_hand_limit + 1
+            end
+        end
+        if bld_aij_exceeds_hand_limit > 0 and not ((#G.hand.highlighted - bld_aij_exceeds_hand_limit) > math.max(G.GAME.starting_params.play_limit, 1) or G.GAME.blind.block_play or #G.hand.highlighted <= 0) then
+            e.config.colour = G.C.RED
+            e.config.button = 'discard_cards_from_highlighted'
+            return
+        end
+    end
+    can_discardref(e)
+end
+
 --exclusive tag hook only when the tag is added the first time it is generated (reroll tags, toss tags)
 local vessel2 = add_tag
 function add_tag(_tag)

@@ -42,19 +42,6 @@ SMODS.Blind({
     end
 })
 
-local can_discardref = G.FUNCS.can_discard
-G.FUNCS.can_discard = function(e)
-    for key, value in pairs(G.hand.highlighted) do
-        --stubborn can be removed if desired
-        if value.ability and value.ability.extra and type(value.ability.extra) == 'table' and value.ability.extra.stubborn and value.config.center.config.extra.stubborn then
-            e.config.colour = G.C.UI.BACKGROUND_INACTIVE
-            e.config.button = nil
-            return
-        end
-    end
-    can_discardref(e)
-end
-
 BLINDSIDE.Joker({
     key = 'triboulet',
     atlas = 'bld_joker',
@@ -416,10 +403,10 @@ BLINDSIDE.Joker({
     end,
     disable = function()
         for key, value in pairs(G.playing_cards) do
-            if value.original then
-                value:set_ability(value.originaltype)
-                value.ability = copy3(value.original)
-                value.original = nil
+            if value.ability.chicot_original then
+                value:set_ability(value.ability.originaltype)
+                value.ability = copy3(value.ability.chicot_original)
+                value.ability.chicot_original = nil
             end
         end
     end,

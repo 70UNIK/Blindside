@@ -26,7 +26,7 @@
             if context.after and context.cardarea == G.play then
                 card.ability.extra.status = "Inactive"
             end
-            if context.beat_boss then
+            if context.bld_actually_defeated_boss then
                 card.ability.extra.status = "Active!"
             end
             if context.burn_card and context.cardarea == G.play and context.burn_card == card and context.burn_card.facing ~= 'back' and card.ability.extra.status == "Inactive" then

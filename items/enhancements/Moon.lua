@@ -37,6 +37,7 @@
             end
             if context.end_of_round then
                 card.ability.extra.triggered_this_round = false
+                G.GAME.moon_batteries_this_round = 0
             end
         end,
         loc_vars = function(self, info_queue, card)

@@ -26,11 +26,13 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
     no_suit = true,
     overrides_base_rank = true,
     blind_debuff = function(card, external)
-        if not (external and card.seal and card.seal == 'bld_wild') then
+        if external and BLINDSIDE.can_debuff_card_externally(card) then
             if card.facing ~= 'back' then 
                 card:flip()
             end
             card:set_debuff(true)
+        elseif external then
+            card:set_debuff(false)
         end
     end,
     set_badges = function(self, card, badges)
@@ -66,6 +68,15 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
     end,
     blindside_blind = true,
 }
+--ONLY FOR EXTERNAL MEAN,S HOOK INTO THIS IF YOU DO WEIRD STUFF LIKE RAILROAD CROSSING BOSS. THIS CHECKS AND POTENTIALLY OVERRIDES IF THE CARD IS DEBUFFED DURING SCORING OR NOT 
+function BLINDSIDE.can_debuff_card_externally(card)
+    --print("CHECK")
+    if not ( card.seal and card.seal == 'bld_wild') then
+        return true
+    end
+    return false
+end
+
 
 function BLINDSIDE.Blind:set_params()
     self.pools = {}
