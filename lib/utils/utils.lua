@@ -1338,7 +1338,7 @@ end
 
 
 BLINDSIDE.vanilla_rarity_rates = {
-    starter = {rate = 0, weight = 2},
+    basic = {rate = 0, weight = 2},
     simple = {rate = 0.85, weight = 0},
     premium = {rate = 0.15, weight = 1},
     crude = {rate = 0, weight = 3}, --will be a special pool that replaces any blind 10% of the time.
@@ -1375,7 +1375,7 @@ function BLINDSIDE.poll_rarities(args,key)
     for i,v in pairs(rarity_weights) do
         v.rate = v.rate/total_weight
     end
-    --print(rarity_weights)
+    print(rarity_weights)
     --create "intervals" to determine breakpoints for rarity
     local weight_i = 0
     for i,v in pairs(rarity_weights) do
@@ -1433,6 +1433,12 @@ function BLINDSIDE.poll_enhancement(args)
         else
             rarity = BLINDSIDE.poll_rarities({},key)
         end
+    elseif args.basic then
+        rarity = 2
+    elseif args.simple then
+        rarity = 0
+    elseif args.premium then
+        rarity = 1
     elseif args.cursed then
         rarity = 3
     elseif args.legendary then
@@ -1469,9 +1475,9 @@ function BLINDSIDE.poll_enhancement(args)
                         break
                     end
                 end
-                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
-                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity 
-
+                
+                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 33 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
+                local good_colors = rarity == 2 or rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity 
                 if good_colors and good_rarity then
                     enhance_option = { key = v, weight = 5 }
                 else
@@ -1488,8 +1494,8 @@ function BLINDSIDE.poll_enhancement(args)
                         break
                     end
                 end
-                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
-                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity
+                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 33 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
+                local good_colors = rarity == 2 or rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity
 
                 if good_colors and good_rarity then
                     enhance_option = { key = v.key, weight = 5 }

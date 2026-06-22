@@ -18,7 +18,7 @@
         in_pool = function(self, args)
             if G.GAME.selected_back.effect.center.config.extra then
                 if not G.GAME.selected_back.effect.center.config.extra.blindside then return false end
-                return true
+                return pseudorandom("blankspawn") > 0.5
             else
             return false
             end

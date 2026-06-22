@@ -95,6 +95,10 @@ function BLINDSIDE.Blind:set_params()
         self.pools["bld_obj_blindcard_curse"] = true
     end
 
+    if self.basic then
+        self.pools["bld_obj_blindcard_basic"] = true
+    end
+
     if self.legendary then
         self.pools["bld_obj_blindcard_legendary"] = true
     end
@@ -105,14 +109,14 @@ function BLINDSIDE.Blind:set_params()
     end
     
 
-    if not self.basic and not self.hidden --[[and not self.curse]] then
+    if not self.hidden --[[and not self.curse]] then
         self.pools["bld_obj_blindcard_generate"] = true
 
-        if tableContains("Red", self.hues) or tableContains("Yellow", self.hues) or tableContains("Faded", self.hues) then
+        if not self.basic and tableContains("Red", self.hues) or tableContains("Yellow", self.hues) or tableContains("Faded", self.hues) then
             self.pools["bld_obj_blindcard_warm"] = true
         end
 
-        if tableContains("Green", self.hues) or tableContains("Blue", self.hues) or tableContains("Purple", self.hues) then
+        if not self.basic and tableContains("Green", self.hues) or tableContains("Blue", self.hues) or tableContains("Purple", self.hues) then
             self.pools["bld_obj_blindcard_cool"] = true
         end
     end

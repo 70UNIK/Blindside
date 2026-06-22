@@ -762,7 +762,11 @@ BLINDSIDE.Joker({
         end
         if not G.GAME.blind.disabled then
             for i = 1, G.GAME.round_resets.ante * 2 + 8, 1 do
-                local enhancement = pseudorandom_element({'m_bld_sharp', 'm_bld_adder', 'm_bld_flip', 'm_bld_bite', 'm_bld_pot', 'm_bld_sharp', 'm_bld_adder', 'm_bld_flip', 'm_bld_bite', 'm_bld_pot', 'm_bld_blank'}, pseudoseed('bld_certificate'))
+                local args = {}
+                args.guaranteed = true
+                args.options = G.P_CENTER_POOLS.bld_obj_blindcard_generate
+                args.basic = true
+                local enhancement = BLINDSIDE.poll_enhancement(args)
                 local card = SMODS.create_card { set = "Base", enhancement = enhancement, area = G.discard }
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 card.playing_card = G.playing_card
