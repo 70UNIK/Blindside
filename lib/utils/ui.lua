@@ -850,7 +850,7 @@ end
         local function wrap_without_blindcards(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Enhanced) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Enhanced[k] = nil
         end
@@ -869,7 +869,7 @@ end
     local function wrap_without_blindedition(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Edition) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Edition[k] = nil
         end
@@ -888,7 +888,7 @@ end
     local function wrap_without_blindenhancement(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Seal) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Seal[k] = nil
         end
@@ -909,7 +909,7 @@ end
         local initialnum = 0
         for k, v in pairs(G.P_CENTER_POOLS.Booster) do
         initialnum = k
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Booster[k] = nil
         end
@@ -928,7 +928,7 @@ end
     local function wrap_without_blindtrinkets(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Joker) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Joker[k] = nil
         end
@@ -947,7 +947,7 @@ end
     local function wrap_without_blindjokers(func)
         local removed = {}
         for k, v in pairs(G.P_BLINDS) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_BLINDS[k] = nil
         end
@@ -963,7 +963,7 @@ end
     local function wrap_without_blindjokerspage(func,args)
         local removed = {}
         for k, v in pairs(G.P_BLINDS) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_BLINDS[k] = nil
         end
@@ -979,7 +979,7 @@ end
     local function wrap_without_blindtags(func, page)
         local removed = {}
         for k, v in pairs(G.P_TAGS) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_TAGS[k] = nil
         end
@@ -995,7 +995,7 @@ end
     local function wrap_without_blinddeck(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Back) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Back[k] = nil
         end
@@ -1012,7 +1012,7 @@ end
     local function wrap_without_blindpricetags(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Voucher) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Voucher[k] = nil
         end

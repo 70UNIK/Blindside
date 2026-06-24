@@ -29,10 +29,11 @@ pattern = '''self:update_shop(dt)'''
 position = 'at'
 match_indent = true
 payload = '''
-if G.GAME.selected_back.effect.center.config.extra then
-    if not G.GAME.selected_back.effect.center.config.extra.blindside then return self:update_shop(dt) end
+if BLINDSIDE.hasBlindside() then
+    --print("BLINDSHOP")
     self:blindupdate_shop(dt)
 else
+    --print("NORMALSHOP")
 self:update_shop(dt)
 end
 

@@ -27,7 +27,7 @@
             }
         end,
         calculate = function(self, card, context)
-            if card.ability.extra.total > 0 and context.cardarea == G.play and context.main_scoring and card.facing ~= 'back' then
+            if context.cardarea == G.play and context.main_scoring and card.facing ~= 'back' and card.ability.extra.total > 0 then
                 local cash = card.ability.extra.total
                 return {
                     dollars = cash,

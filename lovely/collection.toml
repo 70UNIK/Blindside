@@ -93,7 +93,7 @@ pattern = "if not v.omit and not v.no_collection then "
 position = 'at'
 match_indent = true
 payload = '''
-    if not v.omit and not v.no_collection and not BLINDSIDE.is_blindside(v.key) then 
+    if not v.omit and not v.no_collection and (not BLINDSIDE.is_blindside(v.key) or (BLINDSIDE.is_blindside(v.key) and BLINDSIDE.is_also_vanilla(v.key))) then 
 '''
 
 # collection card remove tallies
@@ -104,7 +104,7 @@ pattern = "if not v.no_collection then "
 position = 'at'
 match_indent = true
 payload = '''
-    if not v.no_collection and not BLINDSIDE.is_blindside(v.key) then 
+    if not v.no_collection and (not BLINDSIDE.is_blindside(v.key) or (BLINDSIDE.is_blindside(v.key) and BLINDSIDE.is_also_vanilla(v.key))) then 
 '''
 
 # remove all non blindside jokers

@@ -539,6 +539,13 @@
         "tag_bld_birthcertificate_relic",
         },
     }
+    --for the rare types that work with vanilla AND blindside
+    SMODS.ObjectType {
+        key = "bld_obj_blindside_and_vanilla",
+        cards = {
+      
+        },
+    }
 
     
     SMODS.ObjectType {
@@ -573,8 +580,8 @@
     --bld_obj_enhancements for "trims"
     --not the best but best used for consumables and tags, which lack the ability to add to said pool.
     function BLINDSIDE.addToPool(pool,key)
-        if pool ~= 'bld_obj_excludejokers' and pool ~= 'bld_obj_relics' and pool ~= 'bld_obj_blindside' and pool ~= 'bld_obj_enhancements' then
-            warn("INVALID POOL!")
+        if pool ~= 'bld_obj_excludejokers' and pool ~= 'bld_obj_relics' and pool ~= 'bld_obj_blindside' and pool ~= 'bld_obj_enhancements' and pool ~= "bld_obj_blindside_and_vanilla" then
+            error("INVALID POOL!")
         end
         SMODS.ObjectTypes[pool].cards[#SMODS.ObjectTypes[pool].cards+1] = key
     end

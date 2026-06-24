@@ -13,7 +13,7 @@
         rare = true,
         calculate = function(self, card, context)
             if context.cardarea == G.play and context.main_scoring then
-                if #context.scoring_hand == 5 and not card.ability.extra.upgraded then
+                if #context.scoring_hand >= 5 and not card.ability.extra.upgraded then
                             if card.facing ~= 'back' then 
                             card:flip()
                             end
@@ -23,7 +23,7 @@
                     }
                 end
             end
-            if context.cardarea == G.play and context.main_scoring and context.scoring_hand and #context.scoring_hand < 5 then
+            if context.cardarea == G.play and context.main_scoring and context.scoring_hand and (#context.scoring_hand < 5 or card.ability.extra.upgraded) then
                 return {
                         func = function()
                                 local retrigger_cards = {}

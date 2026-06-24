@@ -6,6 +6,16 @@ function BLINDSIDE.is_blindside(string)
     end
 end
 
+--for the rare consumable types that work in vanilla AND blindside, such as summit cards
+function BLINDSIDE.is_also_vanilla(string)
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside_and_vanilla.cards) do
+        if  v == string or (G.P_CENTERS[string] and G.P_CENTERS[string].include_in_vanilla) then
+            return true
+        end
+    end
+    return false
+end
+
 function BLINDSIDE.is_relic(string)
     for _, v in ipairs(SMODS.ObjectTypes.bld_obj_relics.cards) do
         if v == string then
@@ -36,20 +46,25 @@ BLINDSIDE.crossmod_rarities = {
 }
 
 --spawn_rate can be a function if you want
-function BLINDSIDE.add_crossmod_rarity(key,background_colour,text_colour,text,default_blind_key,spawn_rate)
-    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = key,background_colour = background_colour, text_colour = text_colour, loc_text = text,spawn_rate = spawn_rate or 0}
+function BLINDSIDE.add_crossmod_rarity(
+    args
+)
+    if not args.key or not args.background_colour or not args.text_colour or not args.text or not args.spawn_rate or not args.default_blind_key then
+        error ("You must specify a key, backgroundcolor, text color, loc text, default blind and spawn rate for a rarity!")
+    end
+    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = args.key,background_colour = args.background_colour, text_colour = args.text_colour, loc_text = args.text,spawn_rate = args.spawn_rate or 0}
 
     --key for objtype is bld_obj_blindcard_crossmod_ + key in case you want to do like
     SMODS.ObjectType {
-        key = "bld_obj_blindcard_crossmod_" .. key,
-        default = default_blind_key,
+        key = "bld_obj_blindcard_crossmod_" .. args.key,
+        default = args.default_blind_key,
         inject_card = function(self, center)
             SMODS.ObjectType.inject_card(self, center)
-            SMODS.insert_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. key], center)
+            SMODS.insert_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. args.key], center)
         end,
         delete_card = function(self, center)
             SMODS.ObjectType.delete_card(self, center)
-            SMODS.remove_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. key], center.key)
+            SMODS.remove_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. args.key], center.key)
         end,
     }
 end
@@ -166,6 +181,7 @@ function end_round()
 end
 
     function BLINDSIDE.set_up_blindside()
+            G.GAME.blindside_current_operator = 0
             G.GAME.blind_rate = 4
             G.GAME.tarot_rate = 0
             G.GAME.planet_rate = 0
@@ -1375,7 +1391,9 @@ function BLINDSIDE.poll_rarities(args,key)
     for i,v in pairs(rarity_weights) do
         v.rate = v.rate/total_weight
     end
-    print(rarity_weights)
+    -- print(rarity_weights)
+    -- print(rarity_poll)
+    -- print(" ")
     --create "intervals" to determine breakpoints for rarity
     local weight_i = 0
     for i,v in pairs(rarity_weights) do
