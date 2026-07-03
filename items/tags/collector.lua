@@ -14,7 +14,7 @@ SMODS.Tag {
     apply = function(self, tag, context)
         if context.type == 'symbol_pack_opened' and not G.GAME.suppress_collector_tag then
             local valid = false
-            if G.pack_cards then
+            if G.pack_cards and G.pack_cards.cards then
                 for _, v in ipairs(G.pack_cards.cards) do
                     if not v.edition then
                         valid = true

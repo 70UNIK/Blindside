@@ -36,8 +36,9 @@ SMODS.Seal {
                 end
             end
             local p = (card.ability.seal.extra.chipsreduc*#sharing*(1))
-            local chipsReduc = -(G.GAME.blind.basechips + G.GAME.chips_buffer)*p -- #SMODS.find_card("j_bld_pumpkin")
-            G.GAME.chips_buffer = G.GAME.chips_buffer + chipsReduc
+            --one major problem is due to the chip buffer, it can set chips to 1. By doing this, it doesnt do that, albeit reducing its effectivnesss. I believe that it should still be like that
+            local chipsReduc = -(G.GAME.blind.basechips)*p -- #SMODS.find_card("j_bld_pumpkin")
+            --G.GAME.chips_buffer = G.GAME.chips_buffer + chipsReduc
             return {
                 extra = {focus = card, message = localize{type='variable',key='a_pchips',vars={p*100}},
                 colour = G.C.DARK_EDITION,},
