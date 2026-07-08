@@ -1442,7 +1442,9 @@ return {
 					"only {C:attention}2 different hues"},
 					{"They are {C:red}destroyed{}, and",
 					"a random {E:1}multicolor{} Blind of",
-					"their {C:attention}hues{} is created"},
+					"their {C:attention}hues{} is created",
+					"{C:inactive}(Up to {C:red}Premium{C:inactive})",
+				},
 				},
 			},
 			["c_bld_exorcise"] = {

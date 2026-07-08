@@ -559,106 +559,55 @@
     function Card:get_color()
             return self.config.center.config.extra.hues[1]
         end
-        
 
+function BLINDSIDE.get_unique_colors(scoring_hand, bypass_debuff, flush_calc)
+        local suit_count = 0
+        local colors = {'Red', 'Green', 'Blue', 'Yellow', 'Purple', 'Faded'}
+		for _ in pairs(colors) do
+			suit_count = suit_count + 1
+		end
+       -- print("SUit count: " .. suit_count)
+		-- Initilize a bipartite matching algorithm because math is tight
+		local b = BipGraph(#scoring_hand, suit_count)
+
+		for card_index, card in ipairs(scoring_hand) do
+			local color_index = 0
+			for _, color in pairs(colors) do
+			color_index = color_index + 1
+          --  print(color)
+			if card:is_color(color, bypass_debuff, flush_calc) then
+				-- Add edges for each card based on suits
+              --  print("color!")
+				b:addEdge(card_index, color_index)
+			end
+			end
+		end
+
+		-- Gets maximum number of matches.
+		return b:hopcroftKarp()
+    end
+
+    --despite its name, its NOT for allin, but for RAISE fucking RAISE
+--bicropte 
 SMODS.PokerHandPart{ -- Spectrum base (Referenced from SixSuits) (and then from Bunco)
     key = 'allin',
     func = function(hand)
-        if G.GAME.selected_back.effect.center.config.extra then
-            if not G.GAME.selected_back.effect.center.config.extra.blindside then return {} end
-            local colorsuits = {}
-            local threshold = #hand
-            local colors = {'Red', 'Green', 'Blue', 'Yellow', 'Purple', 'Faded'}
-            for _, v in ipairs(colors) do
-                colorsuits[v] = true
-            end
+        if not BLINDSIDE.hasBlindside() then
+			return false
+		end
+        local checker = false
+        if next(find_joker('j_bld_checker', true)) then
+            checker = true
+        end
 
-            local checker = false
-            if next(find_joker('j_bld_checker', true)) then
-                checker = true
-            end
-
-            -- < 5 hand cant be a spectrum
-            if (#hand < 5 and not checker) or #hand < 3 then return {} end
-
-            local nonwilds = {}
-            for i = 1, #hand do
-                local cardcolors = {}
-                for _, v in ipairs(colors) do
-                    -- determine table of suits for each card (for future faster calculations)
-                    if hand[i]:is_color(v, nil, true) then
-                        table.insert(cardcolors, v)
-                    end
-                end
-                -- if somehow no suits: spectrum is impossible when the threshold falls below 5
-                if #cardcolors == 0 then
-                    local thresholdtrigger = false
-                    if colorsuits[cardcolors[1]] == false then 
-                        threshold = threshold - 1
-                        thresholdtrigger = true
-                    end
-                    --If the threshold is lower than 5 (min for spectrum), it cannot be one (checkers requires no pairs)
-                    if (threshold < 5 and thresholdtrigger) then
-                        return {} 
-                    end
-                -- if only 1 suit: can be handled immediately
-                elseif #cardcolors == 1 then
-                    -- if suit is already present, lower the threshold. Ideally, duplicate colors when a spectrum can otherwise be made should not disrupt it, otherwise remove suit from "not yet used suits"
-                    local thresholdtrigger = false
-                    if colorsuits[cardcolors[1]] == false then 
-                        threshold = threshold - 1
-                        thresholdtrigger = true
-                    end
-                    --If the threshold is lower than 5 (min for spectrum), it cannot be one (checkers requires no pairs)
-                    if (threshold < 5 and thresholdtrigger) then
-                        return {} 
-                    end
-                    colorsuits[cardcolors[1]] = false
-                -- add all cards with 2-4 suits to a table to be looked at
-                elseif #cardcolors < 8 then
-                    table.insert(nonwilds, cardcolors)
-                end
-            end
-
-            -- recursive function for iterating over combinations
-            local isSpectrum 
-            isSpectrum = function(i, remaining)
-                -- traversed all the cards, found spectrum
-                if i == #nonwilds + 1 then
-                    return true
-                end
-
-                -- copy remaining suits
-                local newremaining = {}
-                for k, v in pairs(remaining) do
-                    newremaining[k] = v
-                end
-
-                -- for every suit of the current card: 
-                for _, suit in ipairs(nonwilds[i]) do
-                    -- do nothing if suit has already been used
-                    if remaining[suit] == true then
-                        -- use up suit on this card and check next card
-                        newremaining[suit] = false
-                        if isSpectrum(i + 1, newremaining) then
-                            return true
-                        end
-                        -- reset suit before continuing
-                        newremaining[suit] = true
-                    end
-                end
-                return false
-            end
-
-            -- begin iteration from first (not already considered) card
-            if isSpectrum(1, colorsuits) then
-                return {hand}
-            else
-                return {}
-            end
-        else
+		local requiredCards = checker and 3 or 5
+		if #hand < requiredCards then 
             return {}
         end
+		local unique_suits = BLINDSIDE.get_unique_colors(hand, nil, true)
+       -- print(unique_suits)
+		--print(unique_suits .. " " .. requiredCards)
+		return (unique_suits >= requiredCards) and { hand } or {}
     end
 }
 SMODS.PokerHand{ -- high
@@ -806,7 +755,17 @@ SMODS.PokerHand{ -- Spectrum (Referenced from SixSuits) (ty Bunco)
         { 'H_K',    true, enhancement = "m_bld_hook" },
     },
     evaluate = function(parts)
-        return parts.bld_allin
+        local hand = parts.bld_allin 
+        local checker = false
+        if next(find_joker('j_bld_checker', true)) then
+            checker = true
+        end
+        if hand and #hand < 5 and checker then
+            if #hand >= 1 then
+                return {}
+            end
+        end
+        return hand
     end
 }
 
