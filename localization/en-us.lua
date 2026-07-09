@@ -240,6 +240,8 @@ return {
 			['ui_bld_deck_view'] = 'Deck View',
 			["ph_mask_saved"] = "Saved by Ancient Mask",
 			["ph_defeat_this_joker_1"] = "Defeat this Joker",
+			bld_jchips = " JChips",
+			bld_jmult = " JMult",
 			['matryoshka_none'] = "None!",
 			['bld_fineart_dead'] = "Devalued!",
 			['k_base_blinds'] = "Base Blinds",
@@ -4303,7 +4305,7 @@ return {
 				["text"] = {
 					"If played hand contains",
 					"{C:attention}3{} or less Blinds,",
-					"{X:dark_edition,C:white}-#1#%{} Chips to Joker"
+					"{X:chips,C:white}X#1#{} Chips to Joker",
 				}
 			},
 			['j_bld_dicejail'] = {
@@ -4823,7 +4825,8 @@ return {
 				["name"] = "Spooky Blind",
 				["text"] = {
 					"When scored,",
-					"{X:dark_edition,C:white}-#1#%{} Chips to Joker",
+					"{X:chips,C:white}X#1#{} Chips to Joker",
+					"then {X:chips,C:white}-X#2#{}",
 					"for each {C:attention}scoring",
 					"Blind sharing a {C:attention}hue",
 				}

@@ -5,6 +5,7 @@ SMODS.Seal {
     config = { 
         extra = { 
             chipsreduc = 0.02,
+            xchips = 0.98,
         } 
     },
     badge_colour = HEX('757CDC'),
@@ -37,14 +38,16 @@ SMODS.Seal {
             end
             local p = (card.ability.seal.extra.chipsreduc*#sharing*(1))
             --one major problem is due to the chip buffer, it can set chips to 1. By doing this, it doesnt do that, albeit reducing its effectivnesss. I believe that it should still be like that
-            local chipsReduc = -(G.GAME.blind.basechips)*p -- #SMODS.find_card("j_bld_pumpkin")
+           -- local chipsReduc = -(G.GAME.blind.basechips)*p -- #SMODS.find_card("j_bld_pumpkin")
+            local chipsReduc = 1 - p
             --G.GAME.chips_buffer = G.GAME.chips_buffer + chipsReduc
             return {
-                extra = {focus = card, message = localize{type='variable',key='a_pchips',vars={p*100}},
-                colour = G.C.DARK_EDITION,},
-                colour = G.C.DARK_EDITION,
+                extra = {focus = card, message = "X" .. chipsReduc .. localize("bld_jchips"),
+                colour = G.C.BLACK,},
+                colour = G.C.BLACK,
                 func = function()
-                    BLINDSIDE.chipsmodify(0, chipsReduc, 0, 0, true)
+                    BLINDSIDE.chipsmodifyV2({x_chips = chipsReduc})
+                    --BLINDSIDE.chipsmodify(0, chipsReduc, 0, 0, true)
                 end,
                 card = card
             }
@@ -53,7 +56,7 @@ SMODS.Seal {
     loc_vars = function(self, info_queue, card)
         return {
             vars = {
-                card.ability.seal.extra.chipsreduc*100
+                card.ability.seal.extra.xchips,card.ability.seal.extra.chipsreduc
             }
         }
     end
