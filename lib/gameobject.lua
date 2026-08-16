@@ -36,6 +36,7 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
         end
     end,
     set_badges = function(self, card, badges)
+        
         if card.config.center.weight == 67 then
             badges[#badges+1] = create_badge(localize('k_bld_curse'), G.C.BLACK, G.C.WHITE, 1 )
         elseif card.config.center.weight == 99 then
@@ -43,7 +44,7 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
         elseif card.config.center.weight == 33 then
             badges[#badges+1] = create_badge(localize('k_bld_basic'), G.C.BLUE, G.C.WHITE, 1 )
         elseif card.config.center.weight == 5 then
-            badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.MONEY, G.C.WHITE, 1 )
+            badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
         elseif card.config.center.weight == 3 then
             badges[#badges+1] = create_badge(localize('k_bld_rare'), G.C.RED, G.C.WHITE, 1 )
         else
@@ -68,6 +69,7 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
     end,
     blindside_blind = true,
 }
+
 --ONLY FOR EXTERNAL MEAN,S HOOK INTO THIS IF YOU DO WEIRD STUFF LIKE RAILROAD CROSSING BOSS. THIS CHECKS AND POTENTIALLY OVERRIDES IF THE CARD IS DEBUFFED DURING SCORING OR NOT 
 function BLINDSIDE.can_debuff_card_externally(card)
     --print("CHECK")

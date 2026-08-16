@@ -6,6 +6,8 @@ function BLINDSIDE.is_blindside(string)
     end
 end
 
+
+
 --for the rare consumable types that work in vanilla AND blindside, such as summit cards
 function BLINDSIDE.is_also_vanilla(string)
     for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside_and_vanilla.cards) do
@@ -44,7 +46,6 @@ end
 BLINDSIDE.crossmod_rarities = {
     --{key = 'unik_exotic', background_color = G.C.UNIK_EXOTIC, text_color = G.C.WHITE, text = localize('k_unik_exotic')}}
 }
-
 --spawn_rate can be a function if you want
 function BLINDSIDE.add_crossmod_rarity(
     args

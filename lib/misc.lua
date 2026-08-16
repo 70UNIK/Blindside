@@ -13,7 +13,7 @@ function Game:main_menu(change_context)
                     n = G.UIT.T,
                     config = {
                         scale = 0.3,
-                        text = "Blindside BETA v0.2.2-PLAYTEST",
+                        text = "Blindside BETA v0.4-BETA-UNIK-branch",
                         colour = G.C.UI.TEXT_LIGHT
                     }
                 }
@@ -46,7 +46,7 @@ end
 -- flippy quips
 for i=1,5 do
     SMODS.JimboQuip{
-        key = "blindside_flippy_win"..tostring(i),
+        key = "bld_blindside_flippy_win"..tostring(i),
         type = 'bld_win',
         extra = {center = "m_bld_flip",googly = true},
         filter = function(quip, type) 
@@ -57,7 +57,7 @@ end
 --losing in general
 for i=1,8 do
     SMODS.JimboQuip{
-        key = "blindside_flippy_lose"..tostring(i),
+        key = "bld_blindside_flippy_lose"..tostring(i),
         type = 'bld_loss',
         extra = {center = "m_bld_flip",googly = true},
         filter = function(quip, type) 

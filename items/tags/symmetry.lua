@@ -33,9 +33,14 @@ SMODS.Tag {
         if context.type == 'scoring_card' then
             local numerator, denominator = SMODS.get_probability_vars(tag, 1, 2, 'symmetry', true)
             if pseudorandom('symmetry') < numerator / denominator and context.card.facing ~= 'back' and context.context.cardarea == G.play then
-                tag:juice_up()
-                tag_area_status_text(tag, localize('k_again_ex'), G.C.FILTER, false, 0)
-                BLINDSIDE.rescore_card(context.card, context.context)
+                if context.card and context.card.ability and context.card.ability.extra and type(context.card.ability.extra) == 'table' and context.card.ability.extra.rescore and context.card.ability.extra.rescore == 1 then
+                    
+                else
+                    tag:juice_up()
+                    tag_area_status_text(tag, localize('k_again_ex'), G.C.FILTER, false, 0)
+                    BLINDSIDE.rescore_card(context.card, context.context)
+                end
+                
             end
         end
     end,

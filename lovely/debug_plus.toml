@@ -1,0 +1,51 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 99999
+
+###EXPERIMENTAL!
+###theoretically adds the option to TAB + 3 to spawn blinds easily.
+### if not playing, adds to deck
+###if playing in round, adds to hand
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''if key == "3" then'''
+position = "after"
+payload = '''
+if _card.config.center.blindside_blind and BLINDSIDE.hasBlindside() then
+    local beta = SMODS.create_card { set = "Base", enhancement = _card.config.center.key, area = G.discard }
+    _card:set_sprites(_card.config.center)
+    beta:add_to_deck()
+    G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+    beta.playing_card = G.playing_card
+    table.insert(G.playing_cards, beta)
+    
+    if (G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.DRAW_TO_HAND) and not (G.GAME.STOP_USE and G.GAME.STOP_USE > 0) then
+        beta:start_materialize({ G.C.SECONDARY_SET.Enhanced })
+                    G.hand:emplace(beta)
+    else
+        beta:start_materialize({ G.C.SECONDARY_SET.Enhanced })
+                    G.deck:emplace(beta)
+    end
+    
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[lovely debugplus.core "debugplus/core.lua"]'''
+pattern = '''elseif _card.ability.consumeable then'''
+position = "before"
+payload = '''
+elseif _card.config.center.blindside_blind and BLINDSIDE.hasBlindside() then
+    if G.hand and G.hand.config.card_count ~= 0 then
+        _area = G.hand
+    else 
+        _area = G.deck
+    end
+    _card.playing_card = true
+'''
+match_indent = true

@@ -2,52 +2,52 @@ return {
 	["misc"] = {
 		quips = {
 			--default flippy quips, win and lose (5 win, 8 loss)
-            blindside_flippy_win1 = {
+            bld_blindside_flippy_win1 = {
                 "You're flipping it!"
             },
-            blindside_flippy_win2 = {
+            bld_blindside_flippy_win2 = {
                 "No wonder all those 'decks'",
                 "are virtual, it'll be too much!"
             },
-            blindside_flippy_win3 = {
+            bld_blindside_flippy_win3 = {
                 "Well done!"
             },
-            blindside_flippy_win4 = {
+            bld_blindside_flippy_win4 = {
                 "Wow! You're quite skilled",
                 "in this!"
             },
-            blindside_flippy_win5 = {
+            bld_blindside_flippy_win5 = {
                 "Looks like the Jokers",
                 "will have to lick",
                 "their wounds!"
             },
-            blindside_flippy_lose1 = {
+            bld_blindside_flippy_lose1 = {
                 "It seems like you're",
                 "too used to Vanilla,",
                 "would you like assistance?",
             },
-            blindside_flippy_lose2 = {
+            bld_blindside_flippy_lose2 = {
                 "What a flop!"
             },
-            blindside_flippy_lose3 = {
+            bld_blindside_flippy_lose3 = {
                 "Damn, those looked",
                 "stronger than they look...",
             },
-            blindside_flippy_lose4 = {
+            bld_blindside_flippy_lose4 = {
                 "Did you forget to",
                 "trim those Crudes today?"
             },
-            blindside_flippy_lose5 = {
+            bld_blindside_flippy_lose5 = {
                 "Maybe Vanilla's our speed..."
             },
-            blindside_flippy_lose6 = {
+            bld_blindside_flippy_lose6 = {
                 "Uh oh!"
             },
-            blindside_flippy_lose7 = {
+            bld_blindside_flippy_lose7 = {
                 "Time for us to flop",
                 "down and try again!"
             },
-            blindside_flippy_lose8 = {
+            bld_blindside_flippy_lose8 = {
                 "Hey, next time in your",
                 "next revive, please",
                 "be careful!"
@@ -4659,14 +4659,16 @@ return {
 				name = "Green Stake?",
 				text = {
 					"After {C:attention}Ante 1{}, decrease",
-					"{C:attention}Joker{} rewards by {C:money}$2"
+					"{C:attention}Joker{} rewards by {C:money}$2",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_black_deck"] = {
 				name = "Black Stake?",
 				text = {
 					"{C:blue}-1{} Hand on",
-					"{C:attention}Small{} and {C:attention}Big{} Jokers"
+					"{C:attention}Small{} and {C:attention}Big{} Jokers",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_magic_deck"] = {
@@ -4676,7 +4678,8 @@ return {
 					"{C:attention}2{} {X:black,C:white}Crude{} Blinds",
 					"{s:0.2} {}",
 					"{X:black,C:white}Crude{} Blinds may",
-					"appear in {C:attention}shops"
+					"appear in {C:attention}shops",
+						'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_anaglyph_deck"] = {
@@ -4684,21 +4687,24 @@ return {
 				text = {
 					"After defeating each",
 					"{C:attention}Boss Joker{}, choose {C:attention}1",
-					"of {C:attention}3{} {X:black,C:white}Crude{} Blinds"
+					"of {C:attention}3{} {X:black,C:white}Crude{} Blinds",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_zodiac_deck"] = {
 				name = "Zodiac Stake??",
 				text = {
 					"Face off against {C:red}tougher",
-					"{C:attention}Small{} and {C:attention}Big Jokers"
+					"{C:attention}Small{} and {C:attention}Big Jokers",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_plasma_deck"] = {
 				name = "Plasma Stake??",
 				text = {
 					"Required score scales",
-					"faster for each {C:attention}Ante"
+					"faster for each {C:attention}Ante",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_ghost_deck"] = {
@@ -4706,7 +4712,8 @@ return {
 				text = {
 					"Ante {C:attention}3{} Small Joker",
 					"and Ante {C:attention}5{} Big Joker",
-					"always {C:attention}Double Up"
+					"always {C:attention}Double Up",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 		},

@@ -1,4 +1,4 @@
-    BLINDSIDE.Blind({
+BLINDSIDE.Blind({
     key = 'beta',
     atlas = 'bld_blindrank',
     pos = {x = 0, y = 7},

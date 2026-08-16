@@ -462,6 +462,7 @@ BLINDSIDE.Joker({
         if not G.GAME.blind.disabled then
             for i = 1, 2+2*G.GAME.round_resets.ante, 1 do
                 local beta = SMODS.create_card { set = "Base", enhancement = "m_bld_tablet", area = G.discard }
+                beta:add_to_deck()
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 beta.playing_card = G.playing_card
                 table.insert(G.playing_cards, beta)

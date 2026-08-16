@@ -53,7 +53,7 @@
                 end
             end
 
-            if context.hand_retain and card.ability.extra.activated and not card.ability.extra.upgraded then
+            if (context.hand_discard or context.hand_retain) and card.ability.extra.activated and not card.ability.extra.upgraded and context.other_card == card then
                 card.ability.extra.activated = false
                 return {burn = true}
             end
