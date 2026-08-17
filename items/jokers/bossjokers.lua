@@ -435,12 +435,6 @@ BLINDSIDE.Joker({
         end
 
         if context.after and not G.GAME.blind.disabled then            
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
             local changed = false
             for i = 1, #context.scoring_hand do
                 if context.scoring_hand[i]:is_color("Faded") and context.scoring_hand[i].facing ~= "back" then
@@ -451,7 +445,7 @@ BLINDSIDE.Joker({
                 G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
             G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
                 G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
-                BLINDSIDE.chipsmodify(6 - (hasWildCanvas and 3 or 0), 0, 0)
+                BLINDSIDE.chipsmodify(6, 0, 0) --not a big joker
             end
         end
     end,
