@@ -16,6 +16,8 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and G.GAME.blind.active and SMODS.calculate_round_score() - G.GAME.blind.chips <= 0 then
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
             G.GAME.blind.mult = G.GAME.blind.mult*8
             G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.5, func = function()
             G.GAME.blind:juice_up()
@@ -79,6 +81,8 @@ BLINDSIDE.Joker({
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             ease_dollars(-math.floor(G.GAME.dollars/2), true)
             blind:wiggle()
+            BLINDSIDE.change_fire_amount({amount = 1})
+            BLINDSIDE.add_fire()
             return true end }))
         end
     end,
@@ -100,6 +104,8 @@ BLINDSIDE.Joker({
             BLINDSIDE.chipsupdate()
         return true end }))
 		G.hand:change_size(2)
+        BLINDSIDE.change_fire_amount({amount = 2})
+        BLINDSIDE.add_fire()
     end,
     joker_defeat = function(self)
 		G.hand:change_size(-2)
@@ -137,9 +143,8 @@ BLINDSIDE.Joker({
     end,
     calculate = function(self, blind, context)
         if not blind.disabled and context.after and context.scoring_name == G.GAME.current_round.most_played_poker_hand then
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
             BLINDSIDE.chipsmodify(0, 0, 2)
             BLINDSIDE.chipsupdate()
         end
@@ -158,9 +163,8 @@ BLINDSIDE.Joker({
     active = true,
     calculate = function(self, blind, context)
         if not blind.disabled and context.discard and context.hook ~= true then
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
             BLINDSIDE.chipsmodify(2, 0, 0)
             blind:wiggle()
             if context.other_card == context.full_hand[#context.full_hand] then
@@ -201,9 +205,8 @@ BLINDSIDE.Joker({
                 end
             end
             if vampired then    
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
             end
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             BLINDSIDE.chipsupdate()
@@ -236,6 +239,8 @@ BLINDSIDE.Joker({
         if not blind.disabled and context.selling_card and blind.active then
             BLINDSIDE.chipsmodify(-20, 0, 0)
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
             BLINDSIDE.chipsupdate()
             blind.active = false
             blind:wiggle()
@@ -290,9 +295,8 @@ BLINDSIDE.Joker({
             end
         end
         if not blind.disabled and context.after and blind.hands[context.scoring_name] then
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
             BLINDSIDE.chipsmodify(4, 0, 0)
             blind:wiggle()
             BLINDSIDE.chipsupdate()
@@ -322,7 +326,10 @@ BLINDSIDE.Joker({
     end,
     stay_flipped = function(self, to, card, from)
         if to == G.hand and
+            
             SMODS.pseudorandom_probability(blind, 'pareidolia', 1, 3) then
+                BLINDSIDE.change_fire_amount({amount = 0.5})
+            BLINDSIDE.add_fire()
             return true
         end
     end,
@@ -343,9 +350,8 @@ BLINDSIDE.Joker({
     end,
     calculate = function(self, blind, context)
         if not blind.disabled and context.after then
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
             BLINDSIDE.chipsmodify(1*#G.hand.cards, 0, 0)
             blind:wiggle()
             BLINDSIDE.chipsupdate()
@@ -380,6 +386,8 @@ BLINDSIDE.Joker({
     joker_set = function(self)
         ease_hands_played(- G.GAME.round_resets.hands + 2)
         ease_discard(3)
+        BLINDSIDE.change_fire_amount({amount = 2})
+        BLINDSIDE.add_fire()
     end,
     disable = function()
         ease_hands_played(G.GAME.round_resets.hands - 2)
@@ -442,9 +450,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(6, 0, 0) --not a big joker
             end
         end
@@ -499,9 +506,8 @@ BLINDSIDE.Joker({
 
         if context.after and not G.GAME.blind.disabled then
             if #context.full_hand > 3 then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4, 0, 0)
             end
         end
@@ -520,6 +526,8 @@ BLINDSIDE.Joker({
     active = true,
     calculate = function(self, blind, context)
         if context.burn_card and context.cardarea == G.play then
+            BLINDSIDE.change_fire_amount({amount = 0.5})
+            BLINDSIDE.add_fire()
             return {
                 remove = true
             }
@@ -546,6 +554,8 @@ BLINDSIDE.Joker({
                     focus = context.other_card,
                     func = function ()
                         BLINDSIDE.chipsmodify(0, 0, 1.5)
+                        BLINDSIDE.change_fire_amount({amount = 2})
+                        BLINDSIDE.add_fire()
                         G.E_MANAGER:add_event(Event({
                             trigger = 'before',
                             delay = 0.8,
@@ -595,9 +605,8 @@ BLINDSIDE.Joker({
         end
         if not G.GAME.blind.disabled then
             if G.GAME.round_resets.blind_states.Small ~= 'Skipped' and G.GAME.round_resets.blind_states.Big ~= 'Skipped' then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-                G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 4 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
+                BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration})
+                BLINDSIDE.add_fire(4)
                 BLINDSIDE.chipsmodify(0, 0, 4, 0, true)
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                     BLINDSIDE.chipsupdate()
@@ -634,9 +643,8 @@ BLINDSIDE.Joker({
                 return true end }))
             else
                 BLINDSIDE.chipsmodify(0, 0, 2, 0, true)
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-                G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
             end
         end
     end,
@@ -667,9 +675,8 @@ BLINDSIDE.Joker({
     joker_set = function ()
         local times = math.floor(G.GAME.dollars/8)
         if times > 0 then
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + times
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1) * times
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire(times)
             BLINDSIDE.chipsmodify(times * 4, 0, 0)
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                 BLINDSIDE.chipsupdate()
@@ -734,9 +741,8 @@ BLINDSIDE.Joker({
         end
         if context.after and blind.triggered and not G.GAME.blind.disabled then
             blind.triggered = false
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
         end
     end,
 })
@@ -766,6 +772,8 @@ BLINDSIDE.Joker({
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 card.playing_card = G.playing_card
                 table.insert(G.playing_cards, card)
+                BLINDSIDE.change_fire_amount({amount = 0.2})
+                BLINDSIDE.add_fire()
                 G.E_MANAGER:add_event(Event({
                     trigger = 'after',
                     delay = 0.3,

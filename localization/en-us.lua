@@ -1891,7 +1891,7 @@ return {
 				["name"] = "Deceitful Jokers",
 				["text"] = {
 					"Once per Round,",
-					"gains X2 Chips if",
+					"gains X2.5 Chips if",
 					"played hand contains",
 					"a Pair",
 				},
@@ -1900,7 +1900,7 @@ return {
 				["name"] = "Deceitful Jokers",
 				["text"] = {
 					"Once per Round,",
-					"gains X2 Chips if",
+					"gains X2.5 Chips if",
 					"played hand contains",
 					"a Pair",
 				},

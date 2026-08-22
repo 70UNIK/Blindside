@@ -15,9 +15,8 @@ BLINDSIDE.Joker({
             ease_hands_played(-1)
         end
         if context.after and not G.GAME.blind.disabled then
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_2" or "bld_playing_with_fire_each_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 1 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            BLINDSIDE.change_fire_amount()
+            BLINDSIDE.add_fire()
             BLINDSIDE.chipsmodify(1 - (BLINDSIDE.has_canvas(context) and 0.5 or 0), 0, 0)
         end
     end,
@@ -78,9 +77,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-                G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -144,9 +142,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-                G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -210,9 +207,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -274,9 +270,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -338,9 +333,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -360,7 +354,7 @@ BLINDSIDE.Joker({
     small = {min = 1},
     order = 6,
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or G.GAME.round_resets.ante > 7
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local color1 = "Red"
@@ -413,9 +407,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -449,7 +442,7 @@ BLINDSIDE.Joker({
     small = {min = 1},
     order = 6,
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or G.GAME.round_resets.ante > 7
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local color1 = "Blue"
@@ -502,9 +495,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -538,7 +530,7 @@ BLINDSIDE.Joker({
     small = {min = 1},
     order = 6,
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or G.GAME.round_resets.ante > 7
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local color1 = "Green"
@@ -591,9 +583,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -627,7 +618,7 @@ BLINDSIDE.Joker({
     small = {min = 1},
     order = 6,
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or G.GAME.round_resets.ante > 7
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local color1 = "Yellow"
@@ -680,9 +671,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
             end
         end
@@ -716,7 +706,7 @@ BLINDSIDE.Joker({
     small = {min = 1},
     order = 6,
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or G.GAME.round_resets.ante > 7
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local color1 = "Purple"
@@ -769,6 +759,8 @@ BLINDSIDE.Joker({
                 end
             end
             if changed then
+                BLINDSIDE.change_fire_amount({amount = 3})
+                BLINDSIDE.add_fire()
                 BLINDSIDE.chipsmodify(8 - (BLINDSIDE.has_canvas(context) and 4 or 0), 0, 0)
             end
         end

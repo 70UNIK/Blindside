@@ -184,16 +184,20 @@ end
 --simplifying playing with fire into some functions
 --change the base amount per joker and the message. Will default to 1. The message MUST be in v_dictionary to take in a variable.
 function BLINDSIDE.change_fire_amount(args)
-    local amount = args.amount or 1
+    local amount = args and args.amount or 1
     amount = BLINDSIDE.mod_fire_amount(amount)
-    G.GAME.playing_with_fire_each = args.message_key or 'bld_playing_with_fire_each_num'
+    G.GAME.playing_with_fire_each = args and args.message_key or 'bld_playing_with_fire_each_num'
     G.GAME.bld_fire_iteration = amount
     
 end
+--add playing with fire. defaults to 1 time.
 function BLINDSIDE.add_fire(times)
     local amount = times or 1
+    --initializes it if not already
     G.GAME.bld_fire_iteration = G.GAME.bld_fire_iteration or 1
+    --adds amount of times
     G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + amount
+    --adds value stored in iteration, multiplied by times
     G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.bld_fire_iteration) * amount
 end
 
@@ -205,15 +209,19 @@ function BLINDSIDE.mod_fire_amount(amount)
     return newamount
 end
 
+
     function BLINDSIDE.set_up_blindside()
             G.GAME.blindside_current_operator = 0
             G.GAME.blind_rate = 4
             G.GAME.tarot_rate = 0
             G.GAME.planet_rate = 0
             G.GAME.bld_inversions = 0
+
             G.GAME.playing_with_fire = 0
             G.GAME.playing_with_fire_num = 0
+            G.GAME.playing_with_fire_each = 'bld_playing_with_fire_each_num'
             G.GAME.bld_fire_iteration = 1
+            G.GAME.bld_xchips_fire_mode = false
             SMODS.change_booster_limit(1)
             G.GAME.starting_params.reroll_cost = 3
             G.GAME.banned_keys['p_buffoon_normal_1'] = true

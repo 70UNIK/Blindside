@@ -203,6 +203,7 @@ if (G.GAME.playing_with_fire or 0) > 0 then
     dollars = dollars + G.GAME.playing_with_fire
     G.GAME.playing_with_fire_num = 0
     G.GAME.playing_with_fire = 0
+    BLINDSIDE.change_fire_amount()
 end
 '''
 match_indent = true

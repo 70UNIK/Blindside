@@ -34,6 +34,8 @@ SMODS.Blind({
     calculate = function(self, blind, context)
         if not blind.disabled and context.reshuffle then
             BLINDSIDE.chipsmodify(0, 0, 2)
+            BLINDSIDE.change_fire_amount({amount = 3})
+            BLINDSIDE.add_fire()
         end
     end,
     load = function()
@@ -77,6 +79,8 @@ BLINDSIDE.Joker({
                             card:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                             G.deck:emplace(card)
                             card.ability.tribuolet_generated = true
+                            BLINDSIDE.change_fire_amount({amount = 0.2})
+                            BLINDSIDE.add_fire()
                         return true
                     end
                 }))
@@ -95,6 +99,8 @@ BLINDSIDE.Joker({
                             card:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                             G.deck:emplace(card)
                             card.ability.tribuolet_generated = true
+                            BLINDSIDE.change_fire_amount({amount = 0.2})
+                            BLINDSIDE.add_fire()
                         return true
                     end
                 }))
@@ -395,9 +401,11 @@ BLINDSIDE.Joker({
                 end
             end
             if transformed then    
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_2" or "bld_playing_with_fire_each_1"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 1 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 3})
+                BLINDSIDE.add_fire()
+            --     G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
+            -- G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_2" or "bld_playing_with_fire_each_1"
+            --     G.GAME.playing_with_fire = G.GAME.playing_with_fire + 1 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
             end
         end
     end,
@@ -476,6 +484,8 @@ BLINDSIDE.Joker({
                         SMODS.recalc_debuff(_card)
                         _card:juice_up()
                         blind:wiggle()
+                        BLINDSIDE.change_fire_amount({amount = 3})
+                        BLINDSIDE.add_fire()
                     end
                 end
             end
