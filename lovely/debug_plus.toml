@@ -22,7 +22,7 @@ if _card.config.center.blindside_blind and BLINDSIDE.hasBlindside() then
     beta.playing_card = G.playing_card
     table.insert(G.playing_cards, beta)
     
-    if (G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.DRAW_TO_HAND) and not (G.GAME.STOP_USE and G.GAME.STOP_USE > 0) then
+    if  G.hand and G.hand.config.card_count ~= 0 then
         beta:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                     G.hand:emplace(beta)
     else

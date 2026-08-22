@@ -272,6 +272,8 @@ return {
 		["v_dictionary"] = {
 			["a_rmult"] = "-#1#",
 			["a_pchips"] = "-#1#%",
+			["bld_playing_with_fire_each_num"] = "$#1# each trigger",
+			["bld_playing_with_fire_each_xchips"] = "$#1# each XChips",
 			["ante_x_price_tag"] = "ANTE #1# PRICE TAG",
 		},
         ["suits_singular"] = {

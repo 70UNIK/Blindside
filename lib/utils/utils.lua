@@ -181,6 +181,30 @@ function end_round()
     return ret
 end
 
+--simplifying playing with fire into some functions
+--change the base amount per joker and the message. Will default to 1. The message MUST be in v_dictionary to take in a variable.
+function BLINDSIDE.change_fire_amount(args)
+    local amount = args.amount or 1
+    amount = BLINDSIDE.mod_fire_amount(amount)
+    G.GAME.playing_with_fire_each = args.message_key or 'bld_playing_with_fire_each_num'
+    G.GAME.bld_fire_iteration = amount
+    
+end
+function BLINDSIDE.add_fire(times)
+    local amount = times or 1
+    G.GAME.bld_fire_iteration = G.GAME.bld_fire_iteration or 1
+    G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + amount
+    G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.bld_fire_iteration) * amount
+end
+
+--hook to modify it via stuff like swearjar
+function BLINDSIDE.mod_fire_amount(amount)
+    local newamount = amount
+    local swearjar = G.GAME.used_vouchers.v_bld_swearjar 
+    newamount = newamount + (swearjar and 1 or 0)
+    return newamount
+end
+
     function BLINDSIDE.set_up_blindside()
             G.GAME.blindside_current_operator = 0
             G.GAME.blind_rate = 4
@@ -189,6 +213,7 @@ end
             G.GAME.bld_inversions = 0
             G.GAME.playing_with_fire = 0
             G.GAME.playing_with_fire_num = 0
+            G.GAME.bld_fire_iteration = 1
             SMODS.change_booster_limit(1)
             G.GAME.starting_params.reroll_cost = 3
             G.GAME.banned_keys['p_buffoon_normal_1'] = true
