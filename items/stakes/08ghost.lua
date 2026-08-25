@@ -6,6 +6,7 @@ SMODS.Stake{
     
     modifiers = function()
         G.GAME.modifiers.enable_bld_elites = true
+        G.GAME.modifiers.blindside_stake = true --this flag is required, or else you will insta-gameover outside of a blindside compatible deck
     end,
 
     --colour = ,
@@ -14,4 +15,6 @@ SMODS.Stake{
     --sticker_pos = {x = 0, y = 0},
     atlas = 'bld_stakes',
     --sticker_atlas = 
+    blindside_stake = true,
+
 }

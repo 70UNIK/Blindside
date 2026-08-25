@@ -5,7 +5,7 @@
         pos = {x = 7, y = 7},
         rarity = 'bld_trinket',
         cost = 12,
-        blueprint_compat = false,
+        blueprint_compat = true,
         eternal_compat = true,
         loc_vars = function (self, info_queue, card)
             info_queue[#info_queue+1] = G.P_CENTERS['e_bld_mint']

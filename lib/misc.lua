@@ -61,11 +61,28 @@ for i=1,8 do
         type = 'bld_loss',
         extra = {center = "m_bld_flip",googly = true},
         filter = function(quip, type) 
-            if type == "bld_loss" and not G.GAME.blind.config.blind.cursed then return true, {override_base_checks = true} end
+            if type == "bld_loss" then return true, {override_base_checks = true} end
         end
     }
 end
 
+--incompatible_Stakes
+SMODS.JimboQuip{
+    key = "bld_blindside_flippy_incompatible_stake",
+    type = 'bld_incompat',
+    extra = {center = "m_bld_flip",googly = true},
+    filter = function(quip, type) 
+        if type == "bld_incompat"  and BLINDSIDE.hasBlindside() then return true, {override_base_checks = true} end
+    end
+}
+SMODS.JimboQuip{
+    key = "bld_incompatible_stake_vanilla",
+    type = 'bld_incompat',
+    extra = {center = "j_joker"},
+    filter = function(quip, type) 
+        if type == "bld_incompat" and not BLINDSIDE.hasBlindside() then return true, {override_base_checks = true} end
+    end
+}
 local googlychar = Card_Character.init
 function Card_Character:init(args)
 

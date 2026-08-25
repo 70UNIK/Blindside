@@ -387,11 +387,11 @@
         return ret
     end
 
-    
-    local get_cool_highest = get_highest
+    --FIX CRITICAL BUG
+    local get_cool_highest = get_highest    
     function get_highest(hand)
-            if G.GAME.selected_back.effect.center.config.extra then
-                if G.GAME.selected_back.effect.center.config.extra.blindside then return {} end
+            if BLINDSIDE.hasBlindside() then
+                return {}
             else
                 return get_cool_highest(hand)
             end

@@ -1,0 +1,18 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+###code to enforce stake separation in blindside; forces a game over if in incompatible stakes.
+###can be turned off
+
+
+[[patches]]
+[patches.pattern]
+target = 'back.lua'
+pattern = '''if self.effect.config.randomize_rank_suit then'''
+position = 'before'
+match_indent = true
+payload = '''
+    BLINDSIDE.check_stake_compat()
+'''

@@ -1569,6 +1569,7 @@ BLINDSIDE.tabs_list = {
 			return mod_tab_collection()
 		end,
 	},
+    --fix your fucking UI to enable config tabs, this suppresses config tabs for some reason and I cannot get it to work
 }
 
 BLINDSIDE.tabs_order = {
@@ -2047,6 +2048,27 @@ end
 
 to_big = to_big or function(x)
 	return x
+end
+
+SMODS.current_mod.config_tab = function() --Config tab
+	return {
+	n = G.UIT.ROOT,
+	config = {
+		align = "cm",
+		padding = 0.05,
+		colour = G.C.CLEAR,
+	},
+	nodes = {
+		create_toggle({
+			label = localize("bld_enable_non_blindside_stakes_label"),
+			ref_table = BLINDSIDE.config,
+			ref_value = "bld_enable_non_blindside_stakes",
+			info = {
+				localize("bld_enable_non_blindside_stakes_desc"),
+			},
+		}),
+	},
+	}
 end
 
 ----------------------------------------------

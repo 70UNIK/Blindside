@@ -52,6 +52,15 @@ return {
                 "next revive, please",
                 "be careful!"
             },
+			bld_blindside_flippy_incompatible_stake = {
+				"I dont think you're",
+				"supposed to play Vanilla",
+				"stakes here!"
+			},
+			bld_incompatible_stake_vanilla = {
+				"YOU CAN'T PLAY",
+				"WITH THOSE ''''STAKES''''!",
+			}
 		},
 		["blind_tabs"] = {
 			["authors"] = "By Luna, Anne & Base",
@@ -268,6 +277,8 @@ return {
 			ph_up_ante_2_blindside="Raise all Jokers",
             ph_up_ante_3_blindside="Refresh Jokers",
             ph_choose_blind_2_blindside="next Joker",
+			bld_enable_non_blindside_stakes_label = "Disable incompatible stakes and decks",
+			bld_enable_non_blindside_stakes_desc = "If playing incompatible stakes with incompatible decks, cause instant Game Over",
 			},
 		["v_dictionary"] = {
 			["a_rmult"] = "-#1#",
@@ -1891,7 +1902,7 @@ return {
 				["name"] = "Deceitful Jokers",
 				["text"] = {
 					"Once per Round,",
-					"gains X2.5 Chips if",
+					"gains X2 Chips if",
 					"played hand contains",
 					"a Pair",
 				},
@@ -1900,7 +1911,7 @@ return {
 				["name"] = "Deceitful Jokers",
 				["text"] = {
 					"Once per Round,",
-					"gains X2.5 Chips if",
+					"gains X2 Chips if",
 					"played hand contains",
 					"a Pair",
 				},

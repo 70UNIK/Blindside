@@ -8,7 +8,7 @@ priority = 99999
 target = "game.lua"
 pattern = '''SMODS\.quip\(\"loss\"\)'''
 position = "at"
-payload = '''SMODS.quip(BLINDSIDE.hasBlindside() and "bld_loss" or "loss")'''
+payload = '''SMODS.quip(G.GAME.incompatible_stake_error and "bld_incompat" or (BLINDSIDE.hasBlindside() and "bld_loss" or "loss"))'''
 match_indent = true
 
 [[patches]]

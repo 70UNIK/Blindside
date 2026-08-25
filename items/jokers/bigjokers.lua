@@ -842,8 +842,8 @@ BLINDSIDE.Joker({
         if context.after and not G.GAME.blind.disabled and blind.active and cond1 then
               
             BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
-            BLINDSIDE.add_fire(2.5)
-            BLINDSIDE.chipsmodify(0, 0, 0, 2.5 - (BLINDSIDE.has_canvas(context) and 0.75 or 0))
+            BLINDSIDE.add_fire(2)
+            BLINDSIDE.chipsmodify(0, 0, 0, 2 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,

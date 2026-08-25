@@ -15,4 +15,5 @@ SMODS.Stake{
     --sticker_pos = {x = 0, y = 0},
     atlas = 'bld_stakes',
     --sticker_atlas = 
+    blindside_stake = true,
 }

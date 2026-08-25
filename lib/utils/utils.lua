@@ -188,7 +188,7 @@ function BLINDSIDE.change_fire_amount(args)
     amount = BLINDSIDE.mod_fire_amount(amount)
     G.GAME.playing_with_fire_each = args and args.message_key or 'bld_playing_with_fire_each_num'
     G.GAME.bld_fire_iteration = amount
-    
+    --print("fire each message key: " .. G.GAME.playing_with_fire_each .. " , iteration: " .. G.GAME.bld_fire_iteration)
 end
 --add playing with fire. defaults to 1 time.
 function BLINDSIDE.add_fire(times)
@@ -196,9 +196,49 @@ function BLINDSIDE.add_fire(times)
     --initializes it if not already
     G.GAME.bld_fire_iteration = G.GAME.bld_fire_iteration or 1
     --adds amount of times
+    G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num or 0
     G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + amount
     --adds value stored in iteration, multiplied by times
     G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.bld_fire_iteration) * amount
+    --print(" , iteration: " .. G.GAME.bld_fire_iteration .. " , times triggered: " .. G.GAME.playing_with_fire_num .. " , fire cash: $" .. G.GAME.playing_with_fire)
+end
+
+function BLINDSIDE.reset_fire()
+    G.GAME.playing_with_fire_num = 0
+    G.GAME.playing_with_fire = 0
+end
+
+--true: OK, false: gameover if toggled
+function BLINDSIDE.check_stake_compat()
+    local stake = SMODS.Stakes[SMODS.stake_from_index(G.GAME.stake)]
+    if BLINDSIDE.hasBlindside() and stake.blindside_stake then
+        return true
+    end
+    if not BLINDSIDE.hasBlindside() and not stake.blindside_stake then
+        return true
+    end
+    if BLINDSIDE.hasBlindside() and not stake.blindside_stake then
+        print("ERROR! STAKE IS NOT BLINDSIDE COMPATIBLE!")
+    end
+    if not BLINDSIDE.hasBlindside() and stake.blindside_stake then
+        print("ERROR! STAKE IS NOT VANILLA COMPATIBLE!")
+    end
+    if BLINDSIDE.config.bld_enable_non_blindside_stakes then
+        G.E_MANAGER:add_event(Event({
+            delay = 0,
+            trigger = 'immediate',
+            func = function()
+                G.GAME.incompatible_stake_error = true
+                G.STATE = G.STATES.GAME_OVER
+                G.STATE_COMPLETE = false 
+                return true
+            end
+        }))
+    else
+        print("YOU'RE PLAYING WITH INCOMPATIBLE STAKES AND DECKS AT YOUR OWN RISK.")
+    end
+    
+    
 end
 
 --hook to modify it via stuff like swearjar
