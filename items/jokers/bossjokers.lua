@@ -96,7 +96,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 6,
     order = 15,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     joker_set = function(self)
         BLINDSIDE.chipsmodify(0, ((G.GAME.blind.basechips*(2))), 0, 0, true)
@@ -159,7 +159,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 6,
     order = 17,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     calculate = function(self, blind, context)
         if not blind.disabled and context.discard and context.hook ~= true then
@@ -269,7 +269,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 6,
     order = 20,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     joker_set = function(self)
         self.hands = {}
@@ -315,7 +315,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 6,
     order = 21,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     loc_vars = function(self)
         local numerator, denominator = SMODS.get_probability_vars(self, 1, 3, 'pareidolia')
@@ -405,7 +405,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 8,
     order = 14,
-    boss = {min = 1},
+    boss = {min = -66},
     --[[pool_override = function (self)
         local num_fadeds = 0
         for key, card in pairs(G.playing_cards) do
@@ -489,7 +489,7 @@ BLINDSIDE.Joker({
     mult = 10,
     base_dollars = 8,
     order = 14,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     calculate = function(self, blind, context)
         if context.scoring_hand and context.poker_hands and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled then
@@ -597,7 +597,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 6,
     order = 17,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     joker_set = function(self)
         for i, v in pairs(G.GAME.tags) do
@@ -624,7 +624,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 6,
     order = 18,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
     loc_vars = function(self, blind)
         return { vars = { G.P_BLINDS[G.GAME.round_resets.blind_choices.Boss].mult*get_blind_amount(G.GAME.round_resets.ante)*G.GAME.starting_params.ante_scaling } }
@@ -658,7 +658,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 6,
     order = 19,
-    boss = {min = 1},
+    boss = {min = -66},
     active = true,
 })
 

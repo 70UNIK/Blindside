@@ -1759,7 +1759,7 @@ function G.UIDEF.run_info()
                 },
                 G.GAME.stake > 1 and {
                 label = localize('b_stake'),
-                tab_definition_function = G.UIDEF.current_stake,
+                tab_definition_function = SMODS.config.vanilla_stake and G.UIDEF.current_stake or G.UIDEF.SMODS_current_stake,
                 } or nil,
             },
             tab_h = 8,

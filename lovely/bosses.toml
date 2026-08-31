@@ -36,7 +36,24 @@ pattern = '''local min_use = 100'''
 position = 'before'
 match_indent = true
 payload = '''
-if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+if BLINDSIDE.hasBlindside()  then
+    for k, v in pairs(eligible_bosses) do
+        if eligible_bosses[k] and not BLINDSIDE.is_blindside(k) then
+            eligible_bosses[k] = nil
+        end
+    end
+end
+'''
+
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils/weights.lua"]'
+pattern = '''local min_use = 100'''
+position = 'before'
+match_indent = true
+payload = '''
+if BLINDSIDE.hasBlindside() then
     for k, v in pairs(eligible_bosses) do
         if eligible_bosses[k] and not BLINDSIDE.is_blindside(k) then
             eligible_bosses[k] = nil

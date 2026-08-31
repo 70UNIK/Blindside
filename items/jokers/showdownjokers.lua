@@ -18,7 +18,7 @@ SMODS.Blind({
     boss_colour = HEX('e8b867'),
     mult = 16,
     base_dollars = 10,
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -51,7 +51,7 @@ BLINDSIDE.Joker({
     boss_colour = HEX('009CFD'),
     mult = 16,
     base_dollars = 10,
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -187,7 +187,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 10,
     hands = {},
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     joker_set = function(self)
         self.hands = {}
         for _, poker_hand in ipairs(G.handlist) do
@@ -261,7 +261,11 @@ function Blind:set_assist_blind(blind, reset, silent)
         self:set_text()
 
         local obj = self.config.blind
-        self.children.animatedSprite = AnimatedSprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ANIMATION_ATLAS[obj.config.atlas] or (self.config.blind.atlas and G.ANIMATION_ATLAS[self.config.blind.atlas]) or G.ANIMATION_ATLAS['bld_joker'],  obj.config.pos)
+        -- print(obj.config.atlas)
+        -- print(blind.atlas)
+        -- print(blind.key)
+        -- print(self.config.blind.atlas)
+        self.children.animatedSprite = AnimatedSprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ANIMATION_ATLAS[obj.config.atlas] or ( blind and G.ANIMATION_ATLAS[blind.atlas]) or (self.config.blind.atlas and G.ANIMATION_ATLAS[self.config.blind.atlas]) or G.ANIMATION_ATLAS['bld_joker'],  obj.config.pos or (self.config.blind.pos) or (blind.pos))
         self.children.animatedSprite.states = self.states
         G.GAME.last_blind = G.GAME.last_blind or {}
         G.GAME.last_blind.boss = self.boss
@@ -361,7 +365,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 10,
     hands = {},
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -437,7 +441,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 10,
     hands = {},
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end

@@ -398,6 +398,14 @@ function Blind:get_type()
     else return blind_get_type(self) end
 end
 
+--Blind refresh
+--cull all small/big/boss blinds not blindside
+local blindPool = SMODS.create_blind_pool
+function SMODS.create_blind_pool(blind_type, skip_cull)
+    local ret = blindPool(blind_type,skip_cull)
+    return ret
+end
+
 function get_new_small(current)
     G.GAME.perscribed_small = G.GAME.perscribed_small or {
     }
@@ -408,12 +416,25 @@ function get_new_small(current)
     end
     if G.FORCE_SMALL then return G.FORCE_SMALL end
 
-    local eligible_bosses = {bl_small = true}
+    -- Use SMODS object weight system when enabled
+    --print("Attempt small")
+    if SMODS.optional_features.object_weights then
+     --   print("weight1")
+        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
+     --   print(ret_boss)
+        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+        return ret_boss
+    end
+
+    local eligible_bosses = {bl_bld_joker = true}
     for k, v in pairs(G.P_BLINDS) do
+        local res, options = SMODS.add_to_pool(v)
+        options = options or {}
         if not v.small then
+            eligible_bosses[k] = nil
         elseif k == current then
         elseif v.in_pool and type(v.in_pool) == 'function' then
-            local res, options = v:in_pool()
+            --local res, options = v:in_pool()
             eligible_bosses[k] = res and true or nil
         elseif v.small.min <= math.max(1, G.GAME.round_resets.ante) then
             eligible_bosses[k] = true
@@ -423,7 +444,7 @@ function get_new_small(current)
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
 
-    if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+    if BLINDSIDE.hasBlindside() then
         for k, v in pairs(eligible_bosses) do
             if v and not BLINDSIDE.is_blindside(k) then
                 eligible_bosses[k] = nil
@@ -447,12 +468,27 @@ function get_new_big(current)
     end
     if G.FORCE_BIG then return G.FORCE_BIG end
 
-    local eligible_bosses = {bl_big = true}
+    --utilises the brand new SMODS thingy
+
+    -- Use SMODS object weight system when enabled
+   -- print("Attempt big")
+    if SMODS.optional_features.object_weights then
+       -- print("weight2")
+        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
+       -- print(ret_boss)
+        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+        return ret_boss
+    end
+
+    local eligible_bosses = {bl_bld_gros_michel = true}
     for k, v in pairs(G.P_BLINDS) do
+        local res, options = SMODS.add_to_pool(v)
+        options = options or {}
         if not v.big then
+            eligible_bosses[k] = nil
         elseif k == current then
         elseif v.in_pool and type(v.in_pool) == 'function' then
-            local res, options = v:in_pool()
+            --local res, options = v:in_pool()
             eligible_bosses[k] = res and true or nil
         elseif v.big.min <= math.max(1, G.GAME.round_resets.ante) then
             eligible_bosses[k] = true
@@ -462,7 +498,7 @@ function get_new_big(current)
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
 
-    if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+    if  BLINDSIDE.hasBlindside() then
         for k, v in pairs(eligible_bosses) do
             if v and not BLINDSIDE.is_blindside(k) then
                 eligible_bosses[k] = nil
@@ -471,11 +507,37 @@ function get_new_big(current)
     end
 
     local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
-    if boss == 'bl_bld_gros_michel' or boss == 'bl_bld_cavendish' then
-        G.GAME.blindside_banana_generated = true
-    end
+    -- if boss == 'bl_bld_gros_michel' or boss == 'bl_bld_cavendish' then
+    --     G.GAME.blindside_banana_generated = true
+    -- end
     return boss
 end
+
+
+
+local poller = SMODS.poll_object
+function SMODS.poll_object(args)
+    local ret = poller(args)
+    if BLINDSIDE.hasBlindside() and args and args.type == 'Blind' and type(ret) == 'string' then
+        if ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
+            G.GAME.blindside_banana_generated = true
+            print("BANANA GENERATED")
+        end
+        if not BLINDSIDE.is_blindside(ret) then
+            warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
+            return 'bl_bld_joker'
+        end
+    end
+    return ret
+end
+
+-- local getter = SMODS.get_new_blind
+-- function SMODS.get_new_blind(blind_type)
+--     local ret = getter(blind_type)
+    
+    
+--     return ret
+-- end
 
 function BLINDSIDE.chipsmodifyV2(operation,silent)
     --talisman bignum compat

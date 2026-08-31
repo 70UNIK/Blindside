@@ -5,7 +5,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.RED,
     mult = 6,
     base_dollars = 4,
-    small = {min = 1},
+    small = {min = -66},
     order = 1,
     pool_override =function ()
         return not G.GAME.blindside_banana_generated or not G.GAME.modifiers.enable_bld_tough_jokers
@@ -33,7 +33,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 4,
     order = 2,
-    small = {min = 1},
+    small = {min = -66},
     pool_override = function()
         return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
@@ -98,7 +98,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 4,
     order = 3,
-    small = {min = 1},
+    small = {min = -66},
     pool_override = function()
         return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
@@ -163,7 +163,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 4,
     order = 4,
-    small = {min = 1},
+    small = {min = -66},
     pool_override = function()
         return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
@@ -226,7 +226,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 4,
     order = 5,
-    small = {min = 1},
+    small = {min = -66},
     pool_override = function()
         return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
@@ -288,7 +288,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.CHIPS,
     mult = 6,
     base_dollars = 4,
-    small = {min = 1},
+    small = {min = -66},
     order = 6,
     pool_override = function()
         return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3) and G.GAME.modifiers.enable_bld_tough_jokers
@@ -351,7 +351,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.RED,
     mult = 6,
     base_dollars = 8,
-    small = {min = 1},
+    small = {min = -66},
     order = 6,
     pool_override = function()
         return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
@@ -427,7 +427,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 8,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -439,7 +439,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.CHIPS,
     mult = 6,
     base_dollars = 8,
-    small = {min = 1},
+    small = {min = -66},
     order = 6,
     pool_override = function()
         return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
@@ -515,7 +515,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 8,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -527,7 +527,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.GREEN,
     mult = 6,
     base_dollars = 8,
-    small = {min = 1},
+    small = {min = -66},
     order = 6,
     pool_override = function()
         return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
@@ -603,7 +603,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 8,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -615,7 +615,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.MONEY,
     mult = 6,
     base_dollars = 8,
-    small = {min = 1},
+    small = {min = -66},
     order = 6,
     pool_override = function()
         return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
@@ -691,7 +691,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 8,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -703,7 +703,7 @@ BLINDSIDE.Joker({
     boss_colour = G.C.PURPLE,
     mult = 6,
     base_dollars = 8,
-    small = {min = 1},
+    small = {min = -66},
     order = 6,
     pool_override = function()
         return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 3 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
@@ -779,7 +779,7 @@ BLINDSIDE.Joker({
     mult = 6,
     base_dollars = 8,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
