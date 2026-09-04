@@ -251,6 +251,7 @@ return {
 			["ph_defeat_this_joker_1"] = "Defeat this Joker",
 			bld_jchips = " JChips",
 			bld_jmult = " JMult",
+			bld_placeholder_perkeo = "(Random Joker)",
 			['matryoshka_none'] = "None!",
 			['bld_fineart_dead'] = "Devalued!",
 			['k_base_blinds'] = "Base Blinds",
@@ -2211,10 +2212,11 @@ return {
 			["bl_bld_perkeo"] = {
 				["name"] = "Perkeo",
 				["text"] = {
-					"Creates a",
-					"Negative",
+					"Randomises",
 					"Joker after",
-					"each hand"
+					"each hand",
+					"(Currently",
+					"#1#)",
 				},
 			},
 			["bl_bld_chicot"] = {

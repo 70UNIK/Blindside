@@ -605,7 +605,7 @@ BLINDSIDE.Joker({
         end
         if not G.GAME.blind.disabled then
             if G.GAME.round_resets.blind_states.Small ~= 'Skipped' and G.GAME.round_resets.blind_states.Big ~= 'Skipped' then
-                BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration})
+                BLINDSIDE.change_fire_amount({amount = 1})
                 BLINDSIDE.add_fire(4)
                 BLINDSIDE.chipsmodify(0, 0, 4, 0, true)
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()

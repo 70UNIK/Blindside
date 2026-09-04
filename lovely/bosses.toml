@@ -62,6 +62,16 @@ if BLINDSIDE.hasBlindside() then
 end
 '''
 
+##crash fix
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils/weights.lua"]'''
+pattern = '''if eligible_bosses[k] > min_use and not G.P_BLINDS[k][blind_type].allow_duplicates then'''
+position = "at"
+match_indent = true
+payload = '''if type(eligible_bosses[k]) ~= 'boolean' and eligible_bosses[k] > min_use and not G.P_BLINDS[k][blind_type].allow_duplicates then '''
+
+
 [[patches]]
 [patches.pattern]
 target = "functions/common_events.lua"

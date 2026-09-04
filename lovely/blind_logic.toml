@@ -166,17 +166,17 @@ BLINDSIDE.chipsupdate()
 
 # the spear money for mult
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = '=[SMODS _ "src/utils.lua"]'
-pattern = '''
-ease_dollars(amount)
-'''
+pattern = '''ease\_dollars\((.*)effect\.instant\)'''
 match_indent = true
 position = 'after'
 payload = '''
+
 for i = 1, #G.GAME.tags do
     G.GAME.tags[i]:apply_to_run({type = 'after_money'})
 end
+
 '''
 
 # the spear money for mult

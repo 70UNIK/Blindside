@@ -14,6 +14,7 @@ SMODS.Back({
     },
     unlocked = false,
     pos = { x = 2, y = 1 },
+    shiny = true,
     loc_vars = function (self, info_queue, card)
         return {
             vars = {

@@ -133,7 +133,14 @@ local function get_new_perkeo_boss()
         return ret_boss
     end
     if G.FORCE_BOSS then return G.FORCE_BOSS end
-    
+     if SMODS.optional_features.object_weights then
+       -- print("weight2")
+        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'boss',seed = 'boss'})
+       -- print(ret_boss)
+       G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] or 0
+        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+        return ret_boss
+    end
     local eligible_bosses = {}
     for k, v in pairs(G.P_BLINDS) do
         local res, options = SMODS.add_to_pool(v)
@@ -168,12 +175,13 @@ local function get_new_perkeo_boss()
     end
     for k, v in pairs(eligible_bosses) do
         if eligible_bosses[k] then
-            if eligible_bosses[k] > min_use then 
+            if type(eligible_bosses[k]) ~= "boolean" and eligible_bosses[k] > min_use then 
                 eligible_bosses[k] = nil
             end
         end
     end
     local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
+    G.GAME.bosses_used[boss] = G.GAME.bosses_used[boss] or 0
     G.GAME.bosses_used[boss] = G.GAME.bosses_used[boss] + 1
     
     return boss
@@ -187,12 +195,30 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 10,
     hands = {},
-    boss = {min = -66, showdown = true},
+    boss = {min = 1, showdown = true},
     joker_set = function(self)
-        self.hands = {}
-        for _, poker_hand in ipairs(G.handlist) do
-            self.hands[poker_hand] = false
+        for i, v in pairs(G.GAME.tags) do
+            if v:apply_to_run({type = 'real_round_before_start', card = card}) then break end
         end
+        if not G.GAME.blind.disabled then
+            local blind = G.GAME.blind
+            self.hands = {}
+            for _, poker_hand in ipairs(G.handlist) do
+                self.hands[poker_hand] = false
+            end
+            blind.blindassist = get_new_perkeo_boss()
+            G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+                G.GAME.blindassist:set_assist_blind(G.P_BLINDS[blind.blindassist])
+                G.GAME.blindassist.states.visible = true
+                G.GAME.blindassist:change_dim(1.5,1.5)
+                G.GAME.blindassist.negative = true
+                play_sound('negative', 1.5, 0.4)
+                SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind, perkeo = true})
+                G.GAME.blind:set_text()
+            return true end }))
+            --blind.hands[context.scoring_name] = true
+        end
+        
     end,
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
@@ -201,6 +227,12 @@ BLINDSIDE.Joker({
         else
         return false
         end
+    end,
+    loc_vars = function(self, blind_on_deck)
+        return {vars = {G.GAME.blind and G.GAME.blind.blindassist and localize{type ='name_text', key = G.P_BLINDS[G.GAME.blind.blindassist].key, set = 'Blind'} or localize('bld_placeholder_perkeo') }}
+    end,
+    collection_loc_vars = function(self, blind_on_deck)
+        return {vars = {localize('bld_placeholder_perkeo')}}
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and not blind.disabled then
@@ -218,6 +250,7 @@ BLINDSIDE.Joker({
                 G.GAME.blindassist.negative = true
                 play_sound('negative', 1.5, 0.4)
                 SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind, perkeo = true})
+                G.GAME.blind:set_text()
             return true end }))
             blind.hands[context.scoring_name] = true
         end

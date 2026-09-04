@@ -283,7 +283,7 @@ BLINDSIDE.Joker({
             --for these jokers:
             --amount is multiplied by 2 or 1 
             --addfire done multiple times
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(2)
             -- G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
             -- G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
@@ -336,7 +336,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and has_group_of(3, context.poker_hands) then
             
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(3)
             -- G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
             -- G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
@@ -389,7 +389,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (next(context.poker_hands['bld_blind_2pair']) or next(context.poker_hands['bld_blind_fullhouse']) or next(context.poker_hands['bld_blind_quadruple_down'])) then
 
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(3)
             BLINDSIDE.chipsmodify(0, 0, 0, 3- (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
@@ -440,7 +440,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and next(context.poker_hands['bld_raise']) then
 
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(4)
             BLINDSIDE.chipsmodify(0, 0, 0, 4- (BLINDSIDE.has_canvas(context) and 1 or 0))
             blind.active = false
@@ -491,7 +491,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and has_group_of(5, context.poker_hands) then
             
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(4)
             BLINDSIDE.chipsmodify(0, 0, 0, 4- (BLINDSIDE.has_canvas(context) and 1 or 0))
             blind.active = false
@@ -549,7 +549,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
               
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(3)
             BLINDSIDE.chipsmodify(0, 0, 0, 3 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
@@ -623,7 +623,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
               
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(4)
             BLINDSIDE.chipsmodify(0, 0, 0, 4 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
@@ -697,7 +697,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
               
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(4)
             BLINDSIDE.chipsmodify(0, 0, 0, 4 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
@@ -772,7 +772,7 @@ BLINDSIDE.Joker({
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
 
               
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(4)
             BLINDSIDE.chipsmodify(0, 0, 0, 4 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
@@ -841,7 +841,7 @@ BLINDSIDE.Joker({
         end
         if context.after and not G.GAME.blind.disabled and blind.active and cond1 then
               
-            BLINDSIDE.change_fire_amount({amount = G.GAME.bld_fire_iteration,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
             BLINDSIDE.add_fire(2)
             BLINDSIDE.chipsmodify(0, 0, 0, 2 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false

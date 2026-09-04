@@ -2215,6 +2215,7 @@ G.FUNCS.blind_reroll_boss_button = function(e)
 end
 
 --HOOKS FOR CROSSMOD
+--weights are currently not supported unfortunately
 BLINDSIDE.editions = {
     'e_bld_enameled', 
     'e_bld_finish', 
