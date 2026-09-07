@@ -133,14 +133,14 @@ local function get_new_perkeo_boss()
         return ret_boss
     end
     if G.FORCE_BOSS then return G.FORCE_BOSS end
-     if SMODS.optional_features.object_weights then
-       -- print("weight2")
-        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'boss',seed = 'boss'})
-       -- print(ret_boss)
-       G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] or 0
-        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-        return ret_boss
-    end
+    --  if SMODS.optional_features.object_weights then
+    --    -- print("weight2")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'boss',seed = 'boss'})
+    --    -- print(ret_boss)
+    --    G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] or 0
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
     local eligible_bosses = {}
     for k, v in pairs(G.P_BLINDS) do
         local res, options = SMODS.add_to_pool(v)
@@ -244,6 +244,8 @@ BLINDSIDE.Joker({
         if context.after and not blind.disabled then
             blind.blindassist = get_new_perkeo_boss()
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+                blind.disabled = nil
+                G.GAME.blind.disabled = nil
                 G.GAME.blindassist:set_assist_blind(G.P_BLINDS[blind.blindassist])
                 G.GAME.blindassist.states.visible = true
                 G.GAME.blindassist:change_dim(1.5,1.5)

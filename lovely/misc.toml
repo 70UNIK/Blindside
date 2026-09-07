@@ -172,14 +172,14 @@ end
 '''
 match_indent = true
 
-# reset buffer on new blind
+# make the patch LESS DISRUPTIVE!
 [[patches]]
 [patches.pattern]
 target = 'functions/state_events.lua'
 pattern = '''
 -- TARGET: setting_blind effects
 '''
-position = 'at'
+position = 'after'
 match_indent = true
 payload = '''
 G.GAME.tech_draw_primary_buffer = 0
