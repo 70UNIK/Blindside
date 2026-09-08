@@ -418,13 +418,13 @@ function get_new_small(current)
 
     -- Use SMODS object weight system when enabled
     --print("Attempt small")
-    if SMODS.optional_features.object_weights then
-     --   print("weight1")
-        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
-     --   print(ret_boss)
-        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-        return ret_boss
-    end
+    -- if SMODS.optional_features.object_weights then
+    --  --   print("weight1")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
+    --  --   print(ret_boss)
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
 
     local eligible_bosses = {bl_bld_joker = true}
     for k, v in pairs(G.P_BLINDS) do
@@ -472,13 +472,13 @@ function get_new_big(current)
 
     -- Use SMODS object weight system when enabled
    -- print("Attempt big")
-    if SMODS.optional_features.object_weights then
-       -- print("weight2")
-        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
-       -- print(ret_boss)
-        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-        return ret_boss
-    end
+    -- if SMODS.optional_features.object_weights then
+    --    -- print("weight2")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
+    --    -- print(ret_boss)
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
 
     local eligible_bosses = {bl_bld_gros_michel = true}
     for k, v in pairs(G.P_BLINDS) do
@@ -507,37 +507,46 @@ function get_new_big(current)
     end
 
     local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
-    -- if boss == 'bl_bld_gros_michel' or boss == 'bl_bld_cavendish' then
-    --     G.GAME.blindside_banana_generated = true
-    -- end
+    if boss == 'bl_bld_gros_michel' or boss == 'bl_bld_cavendish' then
+        G.GAME.blindside_banana_generated = true
+        print("BANANA GENERATED")
+    end
     return boss
 end
 
 
 
-local poller = SMODS.poll_object
-function SMODS.poll_object(args)
-    local ret = poller(args)
-    if BLINDSIDE.hasBlindside() and args and args.type == 'Blind' and type(ret) == 'string' then
-        if ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
-            G.GAME.blindside_banana_generated = true
-            print("BANANA GENERATED")
-        end
-        if not BLINDSIDE.is_blindside(ret) then
-            warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
-            return 'bl_bld_joker'
-        end
-    end
-    return ret
-end
-
--- local getter = SMODS.get_new_blind
--- function SMODS.get_new_blind(blind_type)
---     local ret = getter(blind_type)
-    
-    
+-- local poller = SMODS.poll_object
+-- function SMODS.poll_object(args)
+--     local ret = poller(args)
+--     if BLINDSIDE.hasBlindside() and args and args.type == 'Blind' and type(ret) == 'string' then
+--         if ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
+--             G.GAME.blindside_banana_generated = true
+--             print("BANANA GENERATED")
+--         end
+--         if not BLINDSIDE.is_blindside(ret) then
+--             warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
+--             return 'bl_bld_joker'
+--         end
+--     end
 --     return ret
 -- end
+
+local getter = SMODS.get_new_blind
+function SMODS.get_new_blind(blind_type)
+    local ret = getter(blind_type)
+    if BLINDSIDE.hasBlindside() and  not BLINDSIDE.is_blindside(ret) then
+        warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
+        return 'bl_bld_joker'
+    end
+    print(ret)
+    if BLINDSIDE.is_blindside(ret) and ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
+        G.GAME.blindside_banana_generated = true
+        print("BANANA GENERATED")
+    end
+    
+    return ret
+end
 
 function BLINDSIDE.chipsmodifyV2(operation,silent)
     --talisman bignum compat

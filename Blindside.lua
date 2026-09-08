@@ -4,7 +4,7 @@ BLINDSIDE.config = SMODS.current_mod.config
 print(SMODS.current_mod.config)
 SMODS.current_mod.optional_features = {
     retrigger_joker = true,
-    object_weights = true,
+    --object_weights = true,
     cardareas = {
         discard = true,
         deck = true
