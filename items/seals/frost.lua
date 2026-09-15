@@ -26,6 +26,9 @@ SMODS.Seal {
             }
         end
     end,
+    weight = function(self, info_queue, card)
+        return 1
+    end,
     loc_vars = function(self, info_queue, card)
         return {
             vars = {

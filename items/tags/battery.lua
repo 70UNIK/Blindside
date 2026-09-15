@@ -24,32 +24,35 @@ SMODS.Tag {
     -- end,
     apply = function(self, tag, context)
         if context.type == 'self_tag_added' then
-            --G.hand:change_size(1)
-            --print("+1 Handsize")
-            G.GAME.round_resets.hands = G.GAME.round_resets.hands + 1
-            ease_hands_played(1)
+            tag.config.extra.give = true
+            if tag.config.extra.give and #G.hand.cards > 0 and G.GAME.blind.in_blind then
+                tag.config.extra.give = false
+                ease_hands_played(1)
+            end
         end
         if context.type == 'self_tag_removed' then
              --G.hand:change_size(-1)
-             G.GAME.round_resets.hands = G.GAME.round_resets.hands - 1
-             ease_hands_played(-1)
+           --  G.GAME.round_resets.hands = G.GAME.round_resets.hands - 1
+            -- ease_hands_played(-1)
         end
         -- if tag.config.extra.give and #G.hand.cards > 0 then
         --     tag.config.extra.give = false
         --     ease_hands_played(1)
         -- end
-        if context.type == 'shop_start' and not BLINDSIDE.taglock_active() then
-            tag:yep('+', G.C.GREEN, function() 
+        if context.type == 'shop_start' then
+            if BLINDSIDE.taglock_active() then
+                tag.config.extra.give = true
+            else
+                tag:yep('+', G.C.GREEN, function() 
                 return true end)
-            tag.triggered = true
+                tag.triggered = true
+            end
+            
         end
-        -- if context.type == 'shop_start' and BLINDSIDE.taglock_active() then
-        --     tag.config.extra.give = true
-        -- end
-        -- if tag.config.extra.give and context.type == 'real_round_start' then
-        --     tag.config.extra.give = false
-        --     ease_hands_played(1)
-        --     return true
-        -- end
+        if tag.config.extra.give and context.type == 'real_round_start' then
+            tag.config.extra.give = false
+            ease_hands_played(1)
+            return true
+        end
     end,
 }

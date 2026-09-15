@@ -22,7 +22,7 @@
                     return
                 end
 
-                local enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                local enhancement = BLINDSIDE.poll_trim()
                 local _cards = {}
                 for k, v in ipairs(context.scoring_hand) do
                     if not v.seal and v ~= card then

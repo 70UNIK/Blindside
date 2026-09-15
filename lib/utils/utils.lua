@@ -1,6 +1,24 @@
+--added a lot more durability to this
 function BLINDSIDE.is_blindside(string)
+    if (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_blind) 
+        or (G.P_BLINDS[string] and G.P_BLINDS[string].blindside_joker) 
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_edition) 
+        or (G.P_TAGS[string] and G.P_TAGS[string].blindside_tag)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_booster) 
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_price_tag)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_trinket)
+        or (G.P_SEALS[string] and G.P_SEALS[string].blindside_trim)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_object)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_ritual')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_mineral')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_filmcard')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_rune')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].rarity and G.P_CENTERS[string].rarity == 'bld_keepsake' )
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].rarity and G.P_CENTERS[string].rarity == 'bld_trinket' ) then
+            return true
+        end
     for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside.cards) do
-        if v == string or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_blind) or (G.P_BLINDS[string] and G.P_BLINDS[string].blindside_joker) then
+        if v == string then
             return true
         end
     end
@@ -8,10 +26,14 @@ end
 
 
 
+
 --for the rare consumable types that work in vanilla AND blindside, such as summit cards
 function BLINDSIDE.is_also_vanilla(string)
+    if (G.P_CENTERS[string] and G.P_CENTERS[string].include_in_vanilla) then
+        return true
+    end
     for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside_and_vanilla.cards) do
-        if  v == string or (G.P_CENTERS[string] and G.P_CENTERS[string].include_in_vanilla) then
+        if  v == string then
             return true
         end
     end
@@ -19,6 +41,9 @@ function BLINDSIDE.is_also_vanilla(string)
 end
 
 function BLINDSIDE.is_relic(string)
+    if G.P_TAGS[string] and G.P_TAGS[string].blindside_tag and G.P_TAGS[string].config and G.P_TAGS[string].config.relic then
+        return true
+    end
     for _, v in ipairs(SMODS.ObjectTypes.bld_obj_relics.cards) do
         if v == string then
         return true
@@ -418,13 +443,13 @@ function get_new_small(current)
 
     -- Use SMODS object weight system when enabled
     --print("Attempt small")
-    -- if SMODS.optional_features.object_weights then
-    --  --   print("weight1")
-    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
-    --  --   print(ret_boss)
-    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-    --     return ret_boss
-    -- end
+    if SMODS.optional_features.object_weights then
+     --   print("weight1")
+        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
+     --   print(ret_boss)
+        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+        return ret_boss
+    end
 
     local eligible_bosses = {bl_bld_joker = true}
     for k, v in pairs(G.P_BLINDS) do
@@ -472,13 +497,13 @@ function get_new_big(current)
 
     -- Use SMODS object weight system when enabled
    -- print("Attempt big")
-    -- if SMODS.optional_features.object_weights then
-    --    -- print("weight2")
-    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
-    --    -- print(ret_boss)
-    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-    --     return ret_boss
-    -- end
+    if SMODS.optional_features.object_weights then
+       -- print("weight2")
+        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
+       -- print(ret_boss)
+        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+        return ret_boss
+    end
 
     local eligible_bosses = {bl_bld_gros_michel = true}
     for k, v in pairs(G.P_BLINDS) do
@@ -516,21 +541,21 @@ end
 
 
 
--- local poller = SMODS.poll_object
--- function SMODS.poll_object(args)
---     local ret = poller(args)
---     if BLINDSIDE.hasBlindside() and args and args.type == 'Blind' and type(ret) == 'string' then
---         if ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
---             G.GAME.blindside_banana_generated = true
---             print("BANANA GENERATED")
---         end
---         if not BLINDSIDE.is_blindside(ret) then
---             warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
---             return 'bl_bld_joker'
---         end
---     end
---     return ret
--- end
+local poller = SMODS.poll_object
+function SMODS.poll_object(args)
+    local ret = poller(args)
+    if BLINDSIDE.hasBlindside() and args and args.type == 'Blind' and type(ret) == 'string' then
+        if ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
+            G.GAME.blindside_banana_generated = true
+            print("BANANA GENERATED")
+        end
+        if not BLINDSIDE.is_blindside(ret) then
+            warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
+            return 'bl_bld_joker'
+        end
+    end
+    return ret
+end
 
 local getter = SMODS.get_new_blind
 function SMODS.get_new_blind(blind_type)
@@ -2225,14 +2250,60 @@ end
 
 --HOOKS FOR CROSSMOD
 --weights are currently not supported unfortunately
-BLINDSIDE.editions = {
-    'e_bld_enameled', 
-    'e_bld_finish', 
-    'e_bld_mint',
-    'e_bld_shiny',
-}
---do this to add to the list of editions
---BLINDSIDE.editions[#BLINDSIDE.editions + 1] = (edition key)
+
+
+
+--designed to take into account weights and stuff instead of a simple pseudorandom element.
+function BLINDSIDE.poll_trim(args)
+    local seed = args and args.seed or 'weight'
+    local total_rate = 0
+    local table = {}
+    for i,v in pairs(SMODS.ObjectTypes.bld_obj_enhancements.enhancements) do
+        -- print(v)
+        -- print((G.P_SEALS[v].weight or 1) )
+        local weight = G.P_SEALS[v]:weight() or 1
+        table[#table+1] = {enhancement = v,weight = weight}
+        total_rate = total_rate + weight
+    end
+    local polled_rate = pseudorandom(pseudoseed(seed))*total_rate
+    local check_rate = 0
+    for _, v in ipairs(table) do
+        if polled_rate > check_rate and polled_rate <= check_rate + v.weight then
+            print(v)
+            return v.enhancement
+        end
+        check_rate = check_rate + v.weight
+    end
+    error("NO ENHANCEMENT FOUND!!!!!!!")
+end
+function BLINDSIDE.poll_edition(args)
+    local seed = args and args.seed or 'poll_edition'
+    local blacklisted_editions = args and args.blacklist or {}
+    local legit_editions = {}
+    for i,v in pairs(G.P_CENTERS) do
+        if v.blindside_edition then
+            legit_editions[#legit_editions+1] = i
+        end
+    end
+    for i,v in pairs(legit_editions) do
+        -- print(v)
+        -- print((G.P_SEALS[v].weight or 1) )
+        local weight = G.P_CENTERS[v].weight or 1
+        table[#table+1] = {edition = v,weight = weight}
+        total_rate = total_rate + weight
+    end
+    local polled_rate = pseudorandom(pseudoseed(seed))*total_rate
+    local check_rate = 0
+    for _, v in ipairs(table) do
+        if polled_rate > check_rate and polled_rate <= check_rate + v.weight then
+            print(v)
+            return v.edition
+        end
+        check_rate = check_rate + v.weight
+    end
+    error("NO EDITION FOUND!!!!!!!")
+end
+
 
 --exclusion syntax = {blacklist = true or whitelist = true}
 --exclusions will default to e_bld_shiny if not specified. You must put 'none' in place instead.
@@ -2253,7 +2324,13 @@ function BLINDSIDE.get_blindside_editions(args)
         print("invalid table,returning default list")
         return {"e_bld_enameled","e_bld_finish","e_bld_mint"}
     end
-    local tabler = BLINDSIDE.editions
+    local tabler = {}
+    for i,v in pairs(G.P_CENTERS) do
+        if v.blindside_edition then
+            tabler[#tabler+1] = i
+        end
+    end
+    
     if blacklist then
         for i = 1, #exclude do
             for j = #tabler, 1,-1 do

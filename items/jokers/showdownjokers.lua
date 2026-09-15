@@ -246,6 +246,11 @@ BLINDSIDE.Joker({
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                 blind.disabled = nil
                 G.GAME.blind.disabled = nil
+                if G.GAME.blindassist.joker_defeat then
+                    print("revert effects via defeat")
+                    G.GAME.blindassist:joker_defeat()
+                end
+                
                 G.GAME.blindassist:set_assist_blind(G.P_BLINDS[blind.blindassist])
                 G.GAME.blindassist.states.visible = true
                 G.GAME.blindassist:change_dim(1.5,1.5)

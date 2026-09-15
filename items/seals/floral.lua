@@ -24,6 +24,9 @@ SMODS.Seal {
     pools = {
         ["bld_obj_enhancements"] = true,
     },
+    weight = function(self, info_queue, card)
+        return 1
+    end,
     calculate = function(self, card, context)
         if context.main_scoring and context.cardarea == G.play and card.facing ~= 'back' then
             if SMODS.pseudorandom_probability(card, 'floral', 1 + (#SMODS.find_card("j_bld_bracelet")), card.ability.seal.extra.triggerchips) then

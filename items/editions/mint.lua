@@ -22,6 +22,7 @@ SMODS.Edition {
     },
     in_shop = false,
     weight = 2,
+    blindside_edition = true,
     loc_vars = function(self, info_queue, card)
         return {
             vars = {

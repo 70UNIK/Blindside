@@ -34,7 +34,7 @@ SMODS.Tag {
                 for k, v in ipairs(context.scoring_hand) do
                     if SMODS.pseudorandom_probability(tag, pseudoseed("additive_tag"), tag.ability.chance, tag.ability.trigger, 'additive_tag') and not v.seal then 
                         converts[#converts+1] = v
-                        local enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                        local enhancement = BLINDSIDE.poll_trim()
                         v:set_seal(enhancement, nil, true)
                         G.E_MANAGER:add_event(Event({
                             func = function()

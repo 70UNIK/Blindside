@@ -9,7 +9,7 @@ SMODS.Consumable {
     use = function(self, card, area)
         enhancements = {}
         for i = 1, 3, 1 do
-            enhancements[i] = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+            enhancements[i] = BLINDSIDE.poll_trim()
         end
         for i=1, #G.hand.highlighted do
             local percent = 1.15 - (i-0.999)/(#G.hand.highlighted-0.998)*0.3

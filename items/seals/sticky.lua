@@ -14,4 +14,7 @@ SMODS.Seal {
         return false
         end
     end,
+    weight = function(self, info_queue, card)
+        return 1
+    end,
 }

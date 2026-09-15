@@ -252,6 +252,10 @@ return {
 			bld_jchips = " JChips",
 			bld_jmult = " JMult",
 			bld_placeholder_perkeo = "(Random Joker)",
+			bld_ml_edition_seal_enhancement_explanation={
+                "Blinds may each have",
+                "one Edition or Trim",
+            },
 			['matryoshka_none'] = "None!",
 			['bld_fineart_dead'] = "Devalued!",
 			['k_base_blinds'] = "Base Blinds",

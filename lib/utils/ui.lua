@@ -116,7 +116,7 @@
         return SMODS.card_collection_UIBox(blindui, { 5 }, {
         snap_back = true,
         h_mod = 1.03,
-        infotip = localize('ml_edition_seal_enhancement_explanation'),
+        infotip = localize('bld_ml_edition_seal_enhancement_explanation'),
         hide_single_page = true,
         collapse_single_page = true,
         back_func = 'blindside_collection',
@@ -150,7 +150,7 @@
         return SMODS.card_collection_UIBox(blindenhance, { 5, 4 }, {
         snap_back = true,
         h_mod = 1.03,
-        infotip = localize('ml_edition_seal_enhancement_explanation'),
+        infotip = localize('bld_ml_edition_seal_enhancement_explanation'),
         center = 'm_bld_flip',
         hide_single_page = true,
         collapse_single_page = true,

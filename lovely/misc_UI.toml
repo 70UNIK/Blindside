@@ -48,7 +48,7 @@ pattern = '''self.HUD_blind = UIBox{'''
 position = 'before'
 match_indent = true
 payload = '''
-if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+if BLINDSIDE.hasBlindside() then
     self.HUD_blind = UIBox{
         definition = create_UIBox_HUD_jokerblind(),
         config = {major = G.HUD:get_UIE_by_ID('row_blind_bottom'), align = 'bmi', offset = {x=0,y=-10}, bond = 'Weak'}
@@ -66,6 +66,49 @@ match_indent = true
 payload = '''
 end
 '''
+
+[[patches]]
+[patches.regex]
+target = '''=[SMODS _ "src/ui.lua"]'''
+pattern = '''(.*)G\.HUD\_blind \= UIBox\{(.*)
+(.*)
+(.*)
+(.*)\}(.*)'''
+position = 'after'
+match_indent = true
+payload = '''
+end
+'''
+
+[[patches]]
+[patches.regex]
+target = '''=[SMODS _ "src/ui.lua"]'''
+pattern = '''(.*)G\.HUD\_blind \= UIBox\{(.*)
+(.*)
+(.*)
+(.*)\}(.*)'''
+position = 'before'
+match_indent = true
+payload = '''
+if BLINDSIDE.hasBlindside() then
+    G.HUD_blind = UIBox{
+        definition = create_UIBox_HUD_jokerblind(),
+        config = {major = G.HUD:get_UIE_by_ID('row_blind_bottom'), align = 'bmi', offset = {x=0,y=-10}, bond = 'Weak'}
+    }
+else
+
+'''
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/ui.lua"]'''
+pattern = '''e.UIBox:add_child(badge, e)'''
+position = 'before'
+match_indent = true
+payload = '''
+'''
+
+
 
 # blindside blind chips area
 
