@@ -583,7 +583,12 @@
         if pool ~= 'bld_obj_excludejokers' and pool ~= 'bld_obj_relics' and pool ~= 'bld_obj_blindside' and pool ~= 'bld_obj_enhancements' and pool ~= "bld_obj_blindside_and_vanilla" then
             error("INVALID POOL!")
         end
-        SMODS.ObjectTypes[pool].cards[#SMODS.ObjectTypes[pool].cards+1] = key
+        if pool == 'bld_obj_enhancements' then
+            SMODS.ObjectTypes[pool].enhancements[#SMODS.ObjectTypes[pool].enhancements+1] = key
+        else
+            SMODS.ObjectTypes[pool].cards[#SMODS.ObjectTypes[pool].cards+1] = key
+        end
+        
     end
 
     SMODS.ObjectType {

@@ -2259,7 +2259,7 @@ function BLINDSIDE.poll_trim(args)
     local total_rate = 0
     local table = {}
     for i,v in pairs(SMODS.ObjectTypes.bld_obj_enhancements.enhancements) do
-        -- print(v)
+        --print(v)
         -- print((G.P_SEALS[v].weight or 1) )
         local weight = G.P_SEALS[v]:weight() or 1
         table[#table+1] = {enhancement = v,weight = weight}
@@ -2269,7 +2269,7 @@ function BLINDSIDE.poll_trim(args)
     local check_rate = 0
     for _, v in ipairs(table) do
         if polled_rate > check_rate and polled_rate <= check_rate + v.weight then
-            print(v)
+            --print(v)
             return v.enhancement
         end
         check_rate = check_rate + v.weight
@@ -2296,7 +2296,7 @@ function BLINDSIDE.poll_edition(args)
     local check_rate = 0
     for _, v in ipairs(table) do
         if polled_rate > check_rate and polled_rate <= check_rate + v.weight then
-            print(v)
+            --print(v)
             return v.edition
         end
         check_rate = check_rate + v.weight
