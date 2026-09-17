@@ -30,6 +30,17 @@ SMODS.Consumable {
     end,
     cost = 4,
     use = function(self, card, area, copier)
+        local keep_on_use = true
+        local cards = 0
+        for i,v in pairs(G.consumeables.cards) do
+            if v ~= card then
+                cards = cards + 1
+            end
+        end
+        if cards >= G.consumeables.config.card_limit then
+            keep_on_use = false
+        end
+        
         card.ability.extra.charge = 0
         play_sound('bld_rune1', 1.1 + math.random()*0.1, 0.8)
         for i = 1, 5 do
@@ -46,6 +57,9 @@ SMODS.Consumable {
                 return true
             end
         }))
+        end
+        if not keep_on_use then
+            card:start_dissolve()
         end
         G.E_MANAGER:add_event(Event({
             trigger = 'after',

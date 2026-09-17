@@ -443,13 +443,13 @@ function get_new_small(current)
 
     -- Use SMODS object weight system when enabled
     --print("Attempt small")
-    if SMODS.optional_features.object_weights then
-     --   print("weight1")
-        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
-     --   print(ret_boss)
-        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-        return ret_boss
-    end
+    -- if SMODS.optional_features.object_weights then
+    --  --   print("weight1")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
+    --  --   print(ret_boss)
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
 
     local eligible_bosses = {bl_bld_joker = true}
     for k, v in pairs(G.P_BLINDS) do
@@ -497,13 +497,13 @@ function get_new_big(current)
 
     -- Use SMODS object weight system when enabled
    -- print("Attempt big")
-    if SMODS.optional_features.object_weights then
-       -- print("weight2")
-        local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
-       -- print(ret_boss)
-        G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
-        return ret_boss
-    end
+    -- if SMODS.optional_features.object_weights then
+    --    -- print("weight2")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
+    --    -- print(ret_boss)
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
 
     local eligible_bosses = {bl_bld_gros_michel = true}
     for k, v in pairs(G.P_BLINDS) do
@@ -564,7 +564,7 @@ function SMODS.get_new_blind(blind_type)
         warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
         return 'bl_bld_joker'
     end
-    print(ret)
+    --print(ret)
     if BLINDSIDE.is_blindside(ret) and ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
         G.GAME.blindside_banana_generated = true
         print("BANANA GENERATED")
@@ -1188,9 +1188,17 @@ function update_joker_hand_text(config, vals)
     end}))
 end
 
+--crane_active function to modify burn chances MUCH more easily.
+function BLINDSIDE.crane_active(card)
+    if next(find_joker('j_bld_crane')) and SMODS.pseudorandom_probability(card, pseudoseed('bld_crane'), 1, 2, 'bld_crane') then
+        return true
+    end
+    return false
+end
+
 function Card:start_burn(cardarea, cell_fix, dissolve_colours, silent, dissolve_time_fac, no_juice)
     if not self.destroyed then
-    if next(find_joker('j_bld_crane')) and SMODS.pseudorandom_probability(self, pseudoseed('bld_crane'), 1, 2, 'bld_crane') then
+    if BLINDSIDE.crane_active(self) then
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
         blockable = false,
@@ -1858,7 +1866,7 @@ function upgrade_blinds(cards, flipped, silent)
             if card.config and card.config.center and card.config.center.upgrade then
                 SMODS.Stickers['bld_upgrade']:apply(card, true)
             else
-                print("no upgrade function")
+                warn("no upgrade function")
             end
         end
         return
