@@ -157,9 +157,9 @@ local function get_new_perkeo_boss()
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
 
-    if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+    if BLINDSIDE.hasBlindside() then
         for k, v in pairs(eligible_bosses) do
-            if eligible_bosses[k] and not G.P_BLINDS[k].mod or G.P_BLINDS[k].mod.id ~= 'Blindside' then
+            if eligible_bosses[k] and not BLINDSIDE.is_blindside(k) then
                 eligible_bosses[k] = nil
             end
         end
@@ -215,6 +215,8 @@ BLINDSIDE.Joker({
                 play_sound('negative', 1.5, 0.4)
                 SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind, perkeo = true})
                 G.GAME.blind:set_text()
+                G.GAME.blind.active = true
+                G.GAME.blindassist.active = true
             return true end }))
             --blind.hands[context.scoring_name] = true
         end
@@ -242,14 +244,18 @@ BLINDSIDE.Joker({
             end
         end
         if context.after and not blind.disabled then
+            local oldBlindassist = blind.blindassist
+             G.E_MANAGER:add_event(Event({trigger = 'immediate', delay = 0.0, func = function()
+                if G.P_BLINDS[oldBlindassist].joker_defeat then
+                print("revert effects via defeat func")
+                G.P_BLINDS[oldBlindassist]:joker_defeat()
+            end
+            return true end }))
             blind.blindassist = get_new_perkeo_boss()
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                 blind.disabled = nil
                 G.GAME.blind.disabled = nil
-                if G.GAME.blindassist.joker_defeat then
-                    print("revert effects via defeat")
-                    G.GAME.blindassist:joker_defeat()
-                end
+                
                 
                 G.GAME.blindassist:set_assist_blind(G.P_BLINDS[blind.blindassist])
                 G.GAME.blindassist.states.visible = true
@@ -258,6 +264,8 @@ BLINDSIDE.Joker({
                 play_sound('negative', 1.5, 0.4)
                 SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind, perkeo = true})
                 G.GAME.blind:set_text()
+                G.GAME.blind.active = true
+                G.GAME.blindassist.active = true
             return true end }))
             blind.hands[context.scoring_name] = true
         end
