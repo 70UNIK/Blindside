@@ -875,6 +875,12 @@ function CardArea:emplace(card, ...)
 end
 
 G.FUNCS.blind_draw_from_deck_to_hand = function(e)
+    --if you deplete handsize to 0, then GAME OVER!
+    if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and
+        G.hand.config.card_limit <= 0 and #G.hand.cards == 0 then 
+        end_round()
+        return true
+    end
     G.GAME.can_draw_tech = true
     if debug_print then print("blind-drawing: " .. tostring(e)) end
     BLINDSIDE.draw_queued = true
@@ -1054,6 +1060,7 @@ function BLINDSIDE.tech_draw()
                     return true
                 end
             }))
+
         end
     end
 end
