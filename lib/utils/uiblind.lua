@@ -55,5 +55,6 @@ function create_UIBox_HUD_jokerblind()
             }},
         }},
       }},
+  
     }}
 end

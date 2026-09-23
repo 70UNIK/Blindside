@@ -23,22 +23,23 @@
             end
         end,
         calculate = function(self, card, context)
-                if (context.cardarea == G.play or (card.ability.extra.upgraded and context.cardarea == G.hand)) and context.before and not card.ability.extra.ikeeptrackoftriggers then
-		            G.GAME.probabilities.normal = G.GAME.probabilities.normal + card.ability.extra.chance
-                    card.ability.extra.ikeeptrackoftriggers = true
-                end
-                if context.burn_card and context.cardarea == G.play and context.burn_card == card then
-                    return { remove = true }
-                end
-                if card.ability.extra.upgraded and (context.hand_discard or context.hand_retain) and context.other_card == card then
-                    return {
-                        burn = true
-                    }
-                end
-                if context.end_of_round and not context.repetition and context.playing_card_end_of_round and card.ability.extra.ikeeptrackoftriggers then
-		            G.GAME.probabilities.normal = G.GAME.probabilities.normal - card.ability.extra.chance
-                    card.ability.extra.ikeeptrackoftriggers = false
-                end
+            if (context.cardarea == G.play or (card.ability.extra.upgraded and context.cardarea == G.hand)) and context.before and not card.ability.extra.ikeeptrackoftriggers then
+                G.GAME.blindside_add_bones_probability =  G.GAME.blindside_add_bones_probability or 0
+                G.GAME.blindside_add_bones_probability =  G.GAME.blindside_add_bones_probability + card.ability.extra.chance
+                --G.GAME.probabilities.normal = G.GAME.probabilities.normal + card.ability.extra.chance
+                card.ability.extra.ikeeptrackoftriggers = true
+            end
+            if context.burn_card and context.cardarea == G.play and context.burn_card == card then
+                return { remove = true }
+            end
+            if card.ability.extra.upgraded and (context.hand_discard or context.hand_retain) and context.other_card == card then
+                return {
+                    burn = true
+                }
+            end
+            -- if context.end_of_round and not context.repetition and context.playing_card_end_of_round and card.ability.extra.ikeeptrackoftriggers then
+            --     card.ability.extra.ikeeptrackoftriggers = false
+            -- end
         end,
         loc_vars = function(self, info_queue, card)
             info_queue[#info_queue+1] = {key = 'bld_burn', set = 'Other'}
@@ -57,3 +58,12 @@
     })
 ----------------------------------------------
 ------------MOD CODE END----------------------
+
+--and apply it via this function
+local probab_mod = SMODS.get_probability_vars
+function SMODS.get_probability_vars(trigger_obj, base_numerator, base_denominator, identifier, from_roll, no_mod)
+    local numerator, denominator = probab_mod(trigger_obj, base_numerator, base_denominator, identifier, from_roll, no_mod)
+    G.GAME.blindside_add_bones_probability = G.GAME.blindside_add_bones_probability or 0
+    numerator = numerator + G.GAME.blindside_add_bones_probability
+    return numerator, denominator
+end

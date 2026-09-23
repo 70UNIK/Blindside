@@ -8,6 +8,8 @@
                 chips = 1000,
                 chipsup = 1000,
                 give = false,
+                ignore_hand_selection = true,
+                ignore_discard_selection = true,
             }
         },
         hues = {"Blue"},
@@ -36,21 +38,6 @@
                 }
             }
         end,
-        highlight = function(self, card, is_highlighted)
-            if is_highlighted and not card.ability.extra.give then
-                print(is_highlighted)
-                card.ability.extra.give = true
-                SMODS.change_play_limit(1)
-                SMODS.change_discard_limit(1)
-            else
-                if card.ability.extra.give then
-                    print(is_highlighted)
-                    card.ability.extra.give = false
-                    SMODS.change_play_limit(-1)
-                    SMODS.change_discard_limit(-1)
-                end
-            end
-        end,
         upgrade = function(card) 
             if not card.ability.extra.upgraded then
             card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chipsup
@@ -58,5 +45,3 @@
             end
         end
     })
-----------------------------------------------
-------------MOD CODE END----------------------

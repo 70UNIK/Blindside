@@ -26,7 +26,8 @@ if not G.SETTINGS.tutorial_complete then G.FUNCS.tutorial_controller() end
 match_indent = true
 position = 'at'
 payload = '''
-if not G.SETTINGS.blindside_tutorial_complete then G.FUNCS.blindside_tutorial_controller() end
+if not BLINDSIDE.hasBlindside() and not G.SETTINGS.tutorial_complete then G.FUNCS.tutorial_controller() end
+if BLINDSIDE.hasBlindside() and not G.SETTINGS.blindside_tutorial_complete then G.FUNCS.blindside_tutorial_controller() end
 '''
 
 # TUTORIAL - No skips

@@ -116,7 +116,7 @@
         return SMODS.card_collection_UIBox(blindui, { 5 }, {
         snap_back = true,
         h_mod = 1.03,
-        infotip = localize('ml_edition_seal_enhancement_explanation'),
+        infotip = localize('bld_ml_edition_seal_enhancement_explanation'),
         hide_single_page = true,
         collapse_single_page = true,
         back_func = 'blindside_collection',
@@ -150,7 +150,7 @@
         return SMODS.card_collection_UIBox(blindenhance, { 5, 4 }, {
         snap_back = true,
         h_mod = 1.03,
-        infotip = localize('ml_edition_seal_enhancement_explanation'),
+        infotip = localize('bld_ml_edition_seal_enhancement_explanation'),
         center = 'm_bld_flip',
         hide_single_page = true,
         collapse_single_page = true,
@@ -850,7 +850,7 @@ end
         local function wrap_without_blindcards(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Enhanced) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Enhanced[k] = nil
         end
@@ -869,7 +869,7 @@ end
     local function wrap_without_blindedition(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Edition) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Edition[k] = nil
         end
@@ -888,7 +888,7 @@ end
     local function wrap_without_blindenhancement(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Seal) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Seal[k] = nil
         end
@@ -909,7 +909,7 @@ end
         local initialnum = 0
         for k, v in pairs(G.P_CENTER_POOLS.Booster) do
         initialnum = k
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Booster[k] = nil
         end
@@ -928,7 +928,7 @@ end
     local function wrap_without_blindtrinkets(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Joker) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Joker[k] = nil
         end
@@ -947,7 +947,7 @@ end
     local function wrap_without_blindjokers(func)
         local removed = {}
         for k, v in pairs(G.P_BLINDS) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_BLINDS[k] = nil
         end
@@ -963,7 +963,7 @@ end
     local function wrap_without_blindjokerspage(func,args)
         local removed = {}
         for k, v in pairs(G.P_BLINDS) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_BLINDS[k] = nil
         end
@@ -979,7 +979,7 @@ end
     local function wrap_without_blindtags(func, page)
         local removed = {}
         for k, v in pairs(G.P_TAGS) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_TAGS[k] = nil
         end
@@ -995,7 +995,7 @@ end
     local function wrap_without_blinddeck(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Back) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Back[k] = nil
         end
@@ -1012,7 +1012,7 @@ end
     local function wrap_without_blindpricetags(func)
         local removed = {}
         for k, v in pairs(G.P_CENTER_POOLS.Voucher) do
-        if BLINDSIDE.is_blindside(v.key) then
+        if BLINDSIDE.is_blindside(v.key) and not BLINDSIDE.is_also_vanilla(v.key) then
             removed[k] = v
             G.P_CENTER_POOLS.Voucher[k] = nil
         end
@@ -1569,6 +1569,7 @@ BLINDSIDE.tabs_list = {
 			return mod_tab_collection()
 		end,
 	},
+    --fix your fucking UI to enable config tabs, this suppresses config tabs for some reason and I cannot get it to work
 }
 
 BLINDSIDE.tabs_order = {
@@ -1758,13 +1759,13 @@ function G.UIDEF.run_info()
                 },
                 G.GAME.stake > 1 and {
                 label = localize('b_stake'),
-                tab_definition_function = G.UIDEF.current_stake,
+                tab_definition_function = SMODS.config.vanilla_stake and G.UIDEF.current_stake or G.UIDEF.SMODS_current_stake,
                 } or nil,
             },
             tab_h = 8,
             snap_to_nav = true})}})
     else
-        return run_info_ref
+        return run_info_ref()
     end
 end
 
@@ -2047,6 +2048,27 @@ end
 
 to_big = to_big or function(x)
 	return x
+end
+
+SMODS.current_mod.config_tab = function() --Config tab
+	return {
+	n = G.UIT.ROOT,
+	config = {
+		align = "cm",
+		padding = 0.05,
+		colour = G.C.CLEAR,
+	},
+	nodes = {
+		create_toggle({
+			label = localize("bld_enable_non_blindside_stakes_label"),
+			ref_table = BLINDSIDE.config,
+			ref_value = "bld_enable_non_blindside_stakes",
+			info = {
+				localize("bld_enable_non_blindside_stakes_desc"),
+			},
+		}),
+	},
+	}
 end
 
 ----------------------------------------------

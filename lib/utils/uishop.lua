@@ -19,8 +19,12 @@ function Game:blindupdate_shop(dt)
                             if math.abs(G.shop.T.y - G.shop.VT.y) < 3 then
                                 G.ROOM.jiggle = G.ROOM.jiggle + 3
                                 play_sound('cardFan2')
-                                for i = 1, #G.GAME.tags do
-                                    G.GAME.tags[i]:apply_to_run({type = 'shop_start'})
+								--on loading a save, prevent tags from being consumed as if entering the shop.
+                                if not G.GAME.shop_entered_already_blindside then
+									G.GAME.shop_entered_already_blindside = true
+									for i = 1, #G.GAME.tags do
+										G.GAME.tags[i]:apply_to_run({type = 'shop_start'})
+									end
                                 end
                                 local nosave_shop = nil
                                 if not shop_exists then
@@ -332,6 +336,45 @@ end
         --e.children[2].children[2].config.shadow = true
     end
   end
+
+BLINDSIDE.shop_rates = {
+  blind_rate = {
+    type = 'Base',
+    boss = function()
+      return 0
+    end,
+    blind = function()
+      return G.GAME.blind_rate
+    end
+  },
+  film_rate = {
+    type = "bld_obj_filmcard",
+    boss = function()
+      return 1
+    end,
+    blind = function()
+      return G.GAME.bld_obj_filmcard_rate
+    end
+  },
+  mineral_rate = {
+    type = "bld_obj_mineral",
+    boss = function()
+      return 2
+    end,
+    blind = function()
+      return G.GAME.bld_obj_mineral_rate
+    end
+  },
+  rune_rate = {
+    type = "bld_obj_rune",
+    boss = function()
+      return 0.25
+    end,
+    blind = function()
+      return G.GAME.bld_obj_rune_rate
+    end
+  },
+}
   
 function BLINDSIDE.create_blindcard_for_shop(area, is_boss_shop, forced_enhancement)
   if area == G.shop_booster and G.SETTINGS.blindside_tutorial_progress and G.SETTINGS.blindside_tutorial_progress.forced_blinds and G.SETTINGS.blindside_tutorial_progress.forced_blinds[#G.SETTINGS.blindside_tutorial_progress.forced_blinds] then
@@ -362,20 +405,34 @@ function BLINDSIDE.create_blindcard_for_shop(area, is_boss_shop, forced_enhancem
             return forced_tag end
         end
       end
-      local blind_rate = is_boss_shop and 0 or G.GAME.blind_rate
-      local film_rate = is_boss_shop and 1 or G.GAME.bld_obj_filmcard_rate
-      local mineral_rate = is_boss_shop and 2 or G.GAME.bld_obj_mineral_rate
-      local rune_rate = is_boss_shop and 0.25 or G.GAME.bld_obj_rune_rate
-          local total_rate = blind_rate + film_rate + mineral_rate + rune_rate
+      -- local blind_rate = is_boss_shop and 0 or G.GAME.blind_rate
+      -- local film_rate = is_boss_shop and 1 or G.GAME.bld_obj_filmcard_rate
+      -- local mineral_rate = is_boss_shop and 2 or G.GAME.bld_obj_mineral_rate
+      -- local rune_rate = is_boss_shop and 0.25 or G.GAME.bld_obj_rune_rate
+      local rates = {}
+      local totaler = 0
+          for i,v in pairs(BLINDSIDE.shop_rates) do
+            local table = {}
+            table.type = v.type
+            if is_boss_shop then
+              table.val = v.boss()
+            else
+              table.val = v.blind()
+            end
+            rates[#rates+1] = table
+            totaler = totaler + table.val
+          end
+          local total_rate = totaler
           local polled_rate = pseudorandom(pseudoseed('cdt'..G.GAME.round_resets.ante))*total_rate
           local check_rate = 0
           -- need to preserve order to leave RNG unchanged
-          local rates = {
-            {type = 'Base', val = blind_rate},
-            {type = 'bld_obj_filmcard', val = film_rate},
-            {type = 'bld_obj_mineral', val = mineral_rate},
-            {type = 'bld_obj_rune', val = rune_rate}
-          }
+          
+          -- local rates = {
+          --   {type = 'Base', val = blind_rate},
+          --   {type = 'bld_obj_filmcard', val = film_rate},
+          --   {type = 'bld_obj_mineral', val = mineral_rate},
+          --   {type = 'bld_obj_rune', val = rune_rate}
+          -- }
           for _, v in ipairs(rates) do
             if polled_rate > check_rate and polled_rate <= check_rate + v.val then
               if v.type == 'Base' then
@@ -390,7 +447,7 @@ function BLINDSIDE.create_blindcard_for_shop(area, is_boss_shop, forced_enhancem
                 end
                 local card = SMODS.create_card({ set = 'Base', seal = enhancement, enhancement = cardtype, area = area })
                 create_shop_card_ui(card, 'Enhanced', area)
-                local edition = poll_edition(pseudoseed('shop_blind_roll' .. G.GAME.round_resets.ante), G.GAME.used_vouchers.v_bld_polish and 3 or nil, true, false, {'e_bld_enameled', 'e_bld_finish', 'e_bld_mint', 'e_bld_shiny'})
+                local edition = poll_edition(pseudoseed('shop_blind_roll' .. G.GAME.round_resets.ante), G.GAME.used_vouchers.v_bld_polish and 3 or nil, true, false, BLINDSIDE.get_blindside_editions('none'))
                 card:set_edition(edition, true)
                 local upgrade = G.GAME.used_vouchers.v_bld_irradiate and pseudorandom(pseudoseed('shop_upgrade_roll'..G.GAME.round_resets.ante)) > 0.9 or false
                 if upgrade then

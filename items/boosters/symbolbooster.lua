@@ -38,7 +38,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Base', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -77,7 +77,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -116,7 +116,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -155,7 +155,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -195,7 +195,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -235,7 +235,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -274,7 +274,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,
@@ -313,7 +313,7 @@ SMODS.Booster{
             local cardtype = BLINDSIDE.poll_enhancement(args)
             local enhancement_poll = pseudorandom(pseudoseed('booster'..G.GAME.round_resets.ante))
             if enhancement_poll > 0.8 then
-                enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                enhancement = BLINDSIDE.poll_trim()
             end
             return SMODS.create_card({ set = 'Playing Card', seal = enhancement, enhancement = cardtype, soulable = card.soulable })
         end,

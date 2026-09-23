@@ -539,6 +539,13 @@
         "tag_bld_birthcertificate_relic",
         },
     }
+    --for the rare types that work with vanilla AND blindside
+    SMODS.ObjectType {
+        key = "bld_obj_blindside_and_vanilla",
+        cards = {
+      
+        },
+    }
 
     
     SMODS.ObjectType {
@@ -566,6 +573,23 @@
         "bl_bld_maliciousjoker2",
         },
     }
+
+    --bld_obj_excludejokers for hidden "doubled_up jokers"
+    --bld_obj_relics for hidden "price tag tags" for price tags
+    --bld_obj_blindside for anything in blindside
+    --bld_obj_enhancements for "trims"
+    --not the best but best used for consumables and tags, which lack the ability to add to said pool.
+    function BLINDSIDE.addToPool(pool,key)
+        if pool ~= 'bld_obj_excludejokers' and pool ~= 'bld_obj_relics' and pool ~= 'bld_obj_blindside' and pool ~= 'bld_obj_enhancements' and pool ~= "bld_obj_blindside_and_vanilla" then
+            error("INVALID POOL!")
+        end
+        if pool == 'bld_obj_enhancements' then
+            SMODS.ObjectTypes[pool].enhancements[#SMODS.ObjectTypes[pool].enhancements+1] = key
+        else
+            SMODS.ObjectTypes[pool].cards[#SMODS.ObjectTypes[pool].cards+1] = key
+        end
+        
+    end
 
     SMODS.ObjectType {
         key = "bld_obj_blindcard_generate",

@@ -18,7 +18,7 @@
         in_pool = function(self, args)
             if G.GAME.selected_back.effect.center.config.extra then
                 if not G.GAME.selected_back.effect.center.config.extra.blindside then return false end
-                return true
+                return pseudorandom("blankspawn") > 0.5
             else
             return false
             end
@@ -28,17 +28,22 @@
                 return {
                         func = function()
                             local self_pos = nil
+                            local area = context.scoring_hand
+                            local currCard = context.blueprint_card or card
+                            if card.area ~= G.play then
+                                area = card.area
+                            end
                             local retrigger_cards = {}
-                            for i=1, #context.scoring_hand do
-                                if context.scoring_hand[i] == card then
+                            for i=1, #area do
+                                if area[i] == currCard  then
                                     self_pos = i
                                 end
                             end
-                            if context.scoring_hand[self_pos-1] then
-                                table.insert(retrigger_cards, context.scoring_hand[self_pos-1])
+                            if area[self_pos-1] then
+                                table.insert(retrigger_cards, area[self_pos-1])
                             end
-                            if context.scoring_hand[self_pos+1] then
-                                table.insert(retrigger_cards, context.scoring_hand[self_pos+1])
+                            if area[self_pos+1] then
+                                table.insert(retrigger_cards, area[self_pos+1])
                             end
                             for streak_index = 1, #retrigger_cards do
                                 local streak_card = retrigger_cards[streak_index]
@@ -62,7 +67,7 @@
         end,
         loc_vars = function(self, info_queue, card)
             return {
-                key = card.ability.extra.upgraded and 'm_bld_blank_upgraded' or 'm_bld_blank',
+                key = card.ability.extra.upgraded and 'm_bld_blank_upgraded' or 'm_bld_blank'
             }
         end,
         upgrade = function(card) 

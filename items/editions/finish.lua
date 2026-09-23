@@ -22,12 +22,29 @@ SMODS.Edition {
     credit = {
         art = "70UNIK",
     },
+    blindside_edition = true,
     calculate = function(self, card, context)
         if context.repetition and card.facing ~= 'back' and context.other_card and context.other_card == card and context.other_card.ability.extra.rescore ~= 1 then
-            return {
-                repetitions = card.edition.extra.retriggers
-            }
+            card.ability.extra.suppress_double_up = nil
+                return {
+                    repetitions = 1,
+                }
+            
+            
+            
         end
+        --trinket specific
+        if (context.retrigger_joker_check) and context.other_card and context.other_card == card and card.area == G.jokers then
+			if card.edition and card.edition.key == 'e_bld_finish' then
+				return {
+					message = localize("k_again_ex"),
+					repetitions = 1,
+					card = card,
+				}
+			else
+				return nil, true
+			end
+		end
     end
     
 }

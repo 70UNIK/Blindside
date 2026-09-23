@@ -25,7 +25,7 @@ SMODS.Tag {
         }
     end,
     apply = function(self, tag, context)
-        if context.type == 'shop_start' and not (next(SMODS.find_card("j_bld_taglock")) and not (G.GAME.blind.boss or G.GAME.last_joker)) then
+        if context.type == 'shop_start' and not BLINDSIDE.taglock_active() then
                 tag:yep('+', G.C.GREEN, function() 
                     return true end)
                 tag.triggered = true
@@ -33,9 +33,14 @@ SMODS.Tag {
         if context.type == 'scoring_card' then
             local numerator, denominator = SMODS.get_probability_vars(tag, 1, 2, 'symmetry', true)
             if pseudorandom('symmetry') < numerator / denominator and context.card.facing ~= 'back' and context.context.cardarea == G.play then
-                tag:juice_up()
-                tag_area_status_text(tag, localize('k_again_ex'), G.C.FILTER, false, 0)
-                BLINDSIDE.rescore_card(context.card, context.context)
+                if context.card and context.card.ability and context.card.ability.extra and type(context.card.ability.extra) == 'table' and context.card.ability.extra.rescore and context.card.ability.extra.rescore == 1 then
+                    
+                else
+                    tag:juice_up()
+                    tag_area_status_text(tag, localize('k_again_ex'), G.C.FILTER, false, 0)
+                    BLINDSIDE.rescore_card(context.card, context.context)
+                end
+                
             end
         end
     end,

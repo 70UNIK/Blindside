@@ -22,6 +22,10 @@
                     if v.config.hand_type == context.scoring_name then
                         mineral = v.key
                     end
+                    --down_detector
+                    if string.find(string.lower(context.scoring_name),'down') then
+                        mineral = 'c_bld_scheelite'
+                    end
                 end
                 if mineral and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
                     if SMODS.pseudorandom_probability(card, pseudoseed('fossil'), 1, card.ability.extra.odds, 'fossil') then
@@ -49,7 +53,7 @@
                 end
             end
 
-            if context.hand_retain and card.ability.extra.activated and not card.ability.extra.upgraded then
+            if (context.hand_discard or context.hand_retain) and card.ability.extra.activated and not card.ability.extra.upgraded and context.other_card == card then
                 card.ability.extra.activated = false
                 return {burn = true}
             end

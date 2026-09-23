@@ -9,7 +9,7 @@ SMODS.Joker({
         }
     },
     cost = 5,
-    blueprint_compat = false,
+    blueprint_compat = true,
     eternal_compat = true,
     loc_vars = function (self, info_queue, card)
         return {
@@ -37,7 +37,7 @@ SMODS.Joker({
                 dollars = card.ability.extra.dollars,
             }
         end
-        if context.buying_card and context.card ~= card and context.card.ability.set == "Joker" then
+        if context.buying_card and context.card ~= card and context.card.ability.set == "Joker" and not context.blueprint then
             G.E_MANAGER:add_event(Event({
                 func = function()
                     play_sound('tarot1')

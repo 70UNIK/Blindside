@@ -39,7 +39,7 @@
                 end
             end
 
-            if #card.ability.extra.victims > 0 and tableContains(context.burn_card, card.ability.extra.victims) then
+            if context.burn_card and card.ability.extra.victims and #card.ability.extra.victims > 0 and tableContains(context.burn_card, card.ability.extra.victims) then
                 return {remove = true}
             end
 

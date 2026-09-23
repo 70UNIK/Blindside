@@ -19,35 +19,52 @@
             concept = "base4"
         },
         calculate = function(self, card, context)
-            if context.before then
-                local _best_hand, _hand, _tally = nil, nil, -1
-                for k, v in ipairs(G.handlist) do
-                    if G.GAME.hands[v].visible and G.GAME.hands[v].played > _tally then
-                        _hand = v
-                        _best_hand = k
-                        _tally = G.GAME.hands[v].played
+            if context.before and not context.blueprint then
+                    local _best_hand, _hand, _tally = nil, nil, -1
+                    for k, v in ipairs(G.handlist) do
+                        if G.GAME.hands[v].visible and G.GAME.hands[v].played > _tally then
+                            _hand = v
+                            _best_hand = k
+                            _tally = G.GAME.hands[v].played
+                        end
+                    end
+                    if _hand then
+                        if _hand == context.scoring_name then
+                            SMODS.scale_card(card, {
+                                ref_table = card.ability.extra,
+                                ref_value = "xmult",
+                                scalar_value = "xmult_lose",
+                                operation = '-',
+                                    no_message = true,
+
+                            })
+                            card.ability.extra.xmult = math.max(card.ability.extra.xmult,0)
+                            --card.ability.extra.xmult = math.max(0, card.ability.extra.xmult - card.ability.extra.xmult_lose)
+                            return {
+                                message = localize("k_downgrade_ex")
+                            }
+                        else
+                            SMODS.scale_card(card, {
+                                ref_table = card.ability.extra,
+                                ref_value = "xmult",
+                                scalar_value = "xmult_gain",
+                                operation = '+',
+                                    no_message = true,
+
+                            })
+                        --card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
+                            return {
+                                message = localize("k_upgrade_ex")
+                            }
+                        end
                     end
                 end
-                if _hand then
-                    if _hand == context.scoring_name then
-                        card.ability.extra.xmult = math.max(0, card.ability.extra.xmult - card.ability.extra.xmult_lose)
-                        return {
-                            message = localize("k_downgrade_ex")
-                        }
-                    else
-                       card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
-                        return {
-                            message = localize("k_upgrade_ex")
-                        }
-                    end
+                
+                if context.cardarea == G.play and context.main_scoring then
+                    return {
+                        xmult = card.ability.extra.xmult
+                    }
                 end
-            end
-            
-            if context.cardarea == G.play and context.main_scoring then
-                return {
-                    xmult = card.ability.extra.xmult
-                }
-            end
         end,
         loc_vars = function(self, info_queue, card)
             info_queue[#info_queue+1] = {key = 'bld_retain', set = 'Other'}

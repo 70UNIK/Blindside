@@ -24,6 +24,7 @@ SMODS.Edition {
     credit = {
         art = "lily.felli",
     },
+    blindside_edition = true,
     weight = 0.5,
     loc_vars = function(self, info_queue, card)
         return {

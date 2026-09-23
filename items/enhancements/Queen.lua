@@ -6,19 +6,20 @@
             extra = {
                 value = 30,
                 jokerxmult = 1.5,
+                jokerxmult_down = 0.75,
             }},
         hues = {"Faded"},
         curse = true,
         hidden = true,
-        calculate = function(self, card, context)
-            if context.discard and context.other_card == card then
-                BLINDSIDE.chipsmodify(0, 0, card.ability.extra.jokerxmult)
-                return {
-                    message = "X" .. card.ability.extra.jokerxmult .. " JMult",
-                    colour = G.C.BLACK
-                }
-            end
-        end,
+        calculate = function(self, card, context) 
+                if context.discard and context.main_eval and context.other_card == card then
+                    BLINDSIDE.chipsmodify(0, 0, card.ability.extra.jokerxmult)
+                    return {
+                        message = "X" .. card.ability.extra.jokerxmult .. " JMult",
+                        colour = G.C.BLACK
+                    }
+                end
+            end,
         loc_vars = function(self, info_queue, card)
             return {
                 vars = {
@@ -28,6 +29,7 @@
         end,
         upgrade = function(card)
             if not card.ability.extra.upgraded then
+                card.ability.extra.jokerxmult = card.ability.extra.jokerxmult - card.ability.extra.jokerxmult_down
                 card.ability.extra.upgraded = true
             end
         end

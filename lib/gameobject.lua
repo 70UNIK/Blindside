@@ -1,7 +1,7 @@
 ---@alias hue "Red" | "Green" | "Blue" | "Yellow" | "Purple" | "Faded"
 
 ---@ class BLINDSIDE.Blind : SMODS.Enhancement
----@ field upgrade fun(self: BLINDSIDE.Blind, card: Card): nil Function to define how a blind's config table changes when it becomes upgraded. Not technically required, but upgrades fail otherwise. Must set card.ability.extra.upgraded = true.
+---@ field upgrade fun(self: BLINDSIDE.Blind, card: Card): nil Function to define how a blind's config table changes when it becomes upgraded. Not technically required, but upgrades fail otherwise. Must set card.ability.extra.upgraded = true, unless you want to setup multi-upgrading
 ---@ field hues hue[] Table of hues. 99% of blinds have 1 or 2 hues. Required.
 ---@ field basic? boolean Whether this blind is basic and should be excluded from generation.
 ---@ field rare? boolean Whether this blind is rare and should generate less often.
@@ -26,14 +26,17 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
     no_suit = true,
     overrides_base_rank = true,
     blind_debuff = function(card, external)
-        if not (external and card.seal == 'bld_wild') then
+        if external and BLINDSIDE.can_debuff_card_externally(card) then
             if card.facing ~= 'back' then 
                 card:flip()
             end
             card:set_debuff(true)
+        elseif external then
+            card:set_debuff(false)
         end
     end,
     set_badges = function(self, card, badges)
+        
         if card.config.center.weight == 67 then
             badges[#badges+1] = create_badge(localize('k_bld_curse'), G.C.BLACK, G.C.WHITE, 1 )
         elseif card.config.center.weight == 99 then
@@ -41,15 +44,41 @@ BLINDSIDE.Blind = SMODS.Enhancement:extend {
         elseif card.config.center.weight == 33 then
             badges[#badges+1] = create_badge(localize('k_bld_basic'), G.C.BLUE, G.C.WHITE, 1 )
         elseif card.config.center.weight == 5 then
-            badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.MONEY, G.C.WHITE, 1 )
+            badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
         elseif card.config.center.weight == 3 then
             badges[#badges+1] = create_badge(localize('k_bld_rare'), G.C.RED, G.C.WHITE, 1 )
         else
-            badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
+            --crossmod functionality
+            local crossmodbadge = false
+            for i = 1, #BLINDSIDE.crossmod_rarities do
+                if BLINDSIDE.crossmod_rarities[i].weight then
+                    if card.config.center.weight == BLINDSIDE.crossmod_rarities[i].weight then
+                       
+                         badges[#badges+1] = create_badge(localize(BLINDSIDE.crossmod_rarities[i].loc_text), BLINDSIDE.crossmod_rarities[i].background_colour, BLINDSIDE.crossmod_rarities[i].text_colour, 1 )
+                         crossmodbadge = true
+                    end
+                else
+                    error("uh oh, looks like the weights of each of the crossmodrarities have not been made! Expect MAJOR ISSUES from thereforth")
+                end
+            end
+            if not crossmodbadge then
+                badges[#badges+1] = create_badge(localize('k_bld_common'), G.C.GREEN, G.C.WHITE, 1 )
+            end
+            
         end
     end,
     blindside_blind = true,
 }
+
+--ONLY FOR EXTERNAL MEAN,S HOOK INTO THIS IF YOU DO WEIRD STUFF LIKE RAILROAD CROSSING BOSS. THIS CHECKS AND POTENTIALLY OVERRIDES IF THE CARD IS DEBUFFED DURING SCORING OR NOT 
+function BLINDSIDE.can_debuff_card_externally(card)
+    --print("CHECK")
+    if not ( card.seal and card.seal == 'bld_wild') then
+        return true
+    end
+    return false
+end
+
 
 function BLINDSIDE.Blind:set_params()
     self.pools = {}
@@ -68,18 +97,28 @@ function BLINDSIDE.Blind:set_params()
         self.pools["bld_obj_blindcard_curse"] = true
     end
 
+    if self.basic then
+        self.pools["bld_obj_blindcard_basic"] = true
+    end
+
     if self.legendary then
         self.pools["bld_obj_blindcard_legendary"] = true
     end
+    for i = 1, #BLINDSIDE.crossmod_rarities do
+        if self[BLINDSIDE.crossmod_rarities[i].key] then
+            self.pools["bld_obj_blindcard_crossmod_" .. BLINDSIDE.crossmod_rarities[i].key] = true
+        end
+    end
+    
 
-    if not self.basic and not self.hidden --[[and not self.curse]] then
+    if not self.hidden --[[and not self.curse]] then
         self.pools["bld_obj_blindcard_generate"] = true
 
-        if tableContains("Red", self.hues) or tableContains("Yellow", self.hues) or tableContains("Green", self.hues) then
+        if not self.basic and tableContains("Red", self.hues) or tableContains("Yellow", self.hues) or tableContains("Faded", self.hues) then
             self.pools["bld_obj_blindcard_warm"] = true
         end
 
-        if tableContains("Green", self.hues) or tableContains("Blue", self.hues) or tableContains("Purple", self.hues) then
+        if not self.basic and tableContains("Green", self.hues) or tableContains("Blue", self.hues) or tableContains("Purple", self.hues) then
             self.pools["bld_obj_blindcard_cool"] = true
         end
     end
@@ -111,6 +150,15 @@ function BLINDSIDE.Blind:set_params()
         self.weight = 99 -- secret code for "i am legendary"
     end
 
+    --crossmod keys are 10000 + [key number in stack]
+    for i = 1, #BLINDSIDE.crossmod_rarities do
+        BLINDSIDE.crossmod_rarities[i].weight = 10000 + i
+        if self[BLINDSIDE.crossmod_rarities[i].key] then
+            
+            self.weight = BLINDSIDE.crossmod_rarities[i].weight
+        end
+    end
+
     return self
 end
 
@@ -122,6 +170,7 @@ meta.__call = function (...)
     return this:set_params()
 end
 
+--BLINDSIDE.JOker has currently 3 variations: Small, Big and Boss (which includes Legendary). Unfortunately I'll leave it up to other mod makers if they want to add a new type that's not any of those (Cursed Jokers for instance).
 ---@ class BLINDSIDE.Joker : SMODS.Blind
 ---@ field base_dollars number Dollars awarded when beaten. Do not set dollars.
 ---@ field get_assist? fun(self: BLINDSIDE.Joker) Returns an assistant Joker object.

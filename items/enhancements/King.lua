@@ -6,6 +6,7 @@
             extra = {
                 value = 30,
                 jokerxmult = 1.5,
+                jokerxmult_down = 0.75,
             }},
         hues = {"Faded"},
         curse = true,
@@ -28,6 +29,7 @@
         end,
         upgrade = function(card)
             if not card.ability.extra.upgraded then
+                card.ability.extra.jokerxmult = card.ability.extra.jokerxmult - card.ability.extra.jokerxmult_down
                 card.ability.extra.upgraded = true
             end
         end

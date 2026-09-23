@@ -2,6 +2,9 @@ SMODS.Tag {
     key = "hiss",
     hide_ability = false,
     atlas = 'bld_tag',
+    config = {
+        count = 3
+    },
     pos = {x = 3, y = 1},
         in_pool = function(self, args)
             if G.GAME.selected_back.effect.center.config.extra then
@@ -20,7 +23,13 @@ SMODS.Tag {
     end,
     apply = function(self, tag, context)
         if context.type == 'post_draw'  then
-            G.FUNCS.blind_draw_from_deck_to_hand(tag.ability.count)
+            --utilises the tech draw function instead
+            if not G.GAME.tech_draw_primary_buffer then
+                G.GAME.tech_draw_primary_buffer = 0
+            end
+
+            G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_primary_buffer + (tag.ability and tag.ability.count or 3)
+            -- G.FUNCS.blind_draw_from_deck_to_hand(tag.ability.count)
             tag:yep('+', G.C.GREEN, function()
                 return true
             end)

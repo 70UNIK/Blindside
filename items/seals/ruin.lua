@@ -19,6 +19,9 @@ SMODS.Seal {
     pools = {
         ["bld_obj_enhancements"] = true,
     },
+    weight = function(self, info_queue, card)
+        return 1
+    end,
     --[[calculate = function(self, card, context)
         if context.cardarea == G.play and context.before and context.scoring_hand and tableContains(card, context.scoring_hand) and card.facing ~= 'back' then
             if SMODS.pseudorandom_probability(card, pseudoseed("bld_ruin"), 1, card.ability.seal.extra.odds, 'bld_ruin') and card.facing ~= "back" then

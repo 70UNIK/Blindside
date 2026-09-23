@@ -47,7 +47,7 @@
                 }))
             end
             if context.tag_triggered and not (context.tag_triggered.config and context.tag_triggered.config.extra and context.tag_triggered.config.extra.hex) then
-                print(inspect(context.tag_triggered))
+                --print(inspect(context.tag_triggered))
                 card.ability.extra.last_tag = context.tag_triggered.key
             end
         end,

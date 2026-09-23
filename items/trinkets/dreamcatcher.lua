@@ -11,7 +11,7 @@
             }
         },
         cost = 6,
-        blueprint_compat = false,
+        blueprint_compat = true,
         eternal_compat = true,
         loc_vars = function (self, info_queue, card)
             return {
@@ -35,8 +35,10 @@
             end
         end,
         calculate = function(self, card, context)
-            if context.after and not context.blueprint and not context.other_card and not context.repetition then
-                card.ability.extra.hands_played = card.ability.extra.hands_played + 1
+            if context.after and not context.other_card then
+                if not context.blueprint and not context.repetition then
+                    card.ability.extra.hands_played = card.ability.extra.hands_played + 1
+                end
                 if card.ability.extra.hands_played >= card.ability.extra.hands_target then
                     ease_hands_played(1)
                     card.ability.extra.hands_played = 0

@@ -52,13 +52,16 @@ SMODS.Consumable {
                 return true
             end
         }))
+        --local legendary = G.play[1]
+        SMODS.calculate_context({ playing_card_added = true, cards = {legendary} })
+        delay(1)
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
             delay = 1.2,
             func = function()
-                local legendary = G.play[1]
+                -- local legendary = G.play[1]
+                -- SMODS.calculate_context({ playing_card_added = true, cards = {legendary} })
                 draw_card(G.play, G.deck, 90, 'up')
-                SMODS.calculate_context({ playing_card_added = true, cards = {legendary} })
                 G.E_MANAGER:add_event(Event({
                     trigger = 'after',
                     delay = 0.7,

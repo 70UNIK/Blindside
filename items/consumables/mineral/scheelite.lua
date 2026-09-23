@@ -5,7 +5,7 @@ SMODS.Consumable {
     pos = {x=9, y=2},
     config = {},
     in_pool = function(self, args)
-        if G.GAME.hands['bld_blind_down'].played > 0 then
+        if G.GAME.hands['bld_blind_down'].played > 0 or G.GAME.hands['bld_blind_double_down'].played > 0 or G.GAME.hands['bld_blind_triple_down'].played > 0 or G.GAME.hands['bld_blind_quadruple_down'].played > 0 then
             return true
         else
             return false

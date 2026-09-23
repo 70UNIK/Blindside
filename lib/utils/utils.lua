@@ -1,34 +1,292 @@
-    function BLINDSIDE.is_blindside(string)
-        for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside.cards) do
-            if v == string or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_blind) or (G.P_BLINDS[string] and G.P_BLINDS[string].blindside_joker) then
+--added a lot more durability to this
+function BLINDSIDE.is_blindside(string)
+    if (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_blind) 
+        or (G.P_BLINDS[string] and G.P_BLINDS[string].blindside_joker) 
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_edition) 
+        or (G.P_TAGS[string] and G.P_TAGS[string].blindside_tag)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_booster) 
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_price_tag)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_trinket)
+        or (G.P_SEALS[string] and G.P_SEALS[string].blindside_trim)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].blindside_object)
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_ritual')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_mineral')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_filmcard')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].set and G.P_CENTERS[string].set == 'bld_obj_rune')
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].rarity and G.P_CENTERS[string].rarity == 'bld_keepsake' )
+        or (G.P_CENTERS[string] and G.P_CENTERS[string].rarity and G.P_CENTERS[string].rarity == 'bld_trinket' ) then
+            return true
+        end
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside.cards) do
+        if v == string then
+            return true
+        end
+    end
+end
+
+
+
+
+--for the rare consumable types that work in vanilla AND blindside, such as summit cards
+function BLINDSIDE.is_also_vanilla(string)
+    if (G.P_CENTERS[string] and G.P_CENTERS[string].include_in_vanilla) then
+        return true
+    end
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_blindside_and_vanilla.cards) do
+        if  v == string then
+            return true
+        end
+    end
+    return false
+end
+
+function BLINDSIDE.is_relic(string)
+    if G.P_TAGS[string] and G.P_TAGS[string].blindside_tag and G.P_TAGS[string].config and G.P_TAGS[string].config.relic then
+        return true
+    end
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_relics.cards) do
+        if v == string then
+        return true
+        end
+    end
+end
+
+function BLINDSIDE.is_dupe(string)
+    for _, v in ipairs(SMODS.ObjectTypes.bld_obj_excludejokers.cards) do
+        if v == string then
+        return true
+        end
+    end
+end
+
+--Checking if blindside is active
+function BLINDSIDE.hasBlindside()
+    if G and G.GAME and G.GAME.selected_back and G.GAME.selected_back.effect and G.GAME.selected_back.effect.center and G.GAME.selected_back.effect.center.config and G.GAME.selected_back.effect.center.config.extra then
+        if not G.GAME.selected_back.effect.center.config.extra.blindside then return false end
+        return true
+    end
+    return false
+end
+--add your crossmod rarities here:
+BLINDSIDE.crossmod_rarities = {
+    --{key = 'unik_exotic', background_color = G.C.UNIK_EXOTIC, text_color = G.C.WHITE, text = localize('k_unik_exotic')}}
+}
+--spawn_rate can be a function if you want
+function BLINDSIDE.add_crossmod_rarity(
+    args
+)
+    if not args.key or not args.background_colour or not args.text_colour or not args.text or not args.spawn_rate or not args.default_blind_key then
+        error ("You must specify a key, backgroundcolor, text color, loc text, default blind and spawn rate for a rarity!")
+    end
+    BLINDSIDE.crossmod_rarities[#BLINDSIDE.crossmod_rarities+1] = {key = args.key,background_colour = args.background_colour, text_colour = args.text_colour, loc_text = args.text,spawn_rate = args.spawn_rate or 0}
+
+    --key for objtype is bld_obj_blindcard_crossmod_ + key in case you want to do like
+    SMODS.ObjectType {
+        key = "bld_obj_blindcard_crossmod_" .. args.key,
+        default = args.default_blind_key,
+        inject_card = function(self, center)
+            SMODS.ObjectType.inject_card(self, center)
+            SMODS.insert_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. args.key], center)
+        end,
+        delete_card = function(self, center)
+            SMODS.ObjectType.delete_card(self, center)
+            SMODS.remove_pool(G.P_CENTER_POOLS["bld_obj_blindcard_crossmod_" .. args.key], center.key)
+        end,
+    }
+end
+
+--functionality checking to ignore discard or hand selection limit (Bell for instnace)
+function BLINDSIDE.ignore_play_limit(card)
+    if card and card.ability and card.ability.extra and type(card.ability.extra) == 'table' and card.ability.extra.ignore_hand_selection then
+        return true
+    end
+    return false
+end
+function BLINDSIDE.ignore_discard_limit(card)
+    if card and card.ability and card.ability.extra and type(card.ability.extra) == 'table' and card.ability.extra.ignore_discard_selection then
+        return true
+    end
+    return false
+end
+
+--allow play bellcheck
+local play_check = G.FUNCS.can_play
+G.FUNCS.can_play = function(e)
+    do
+        local bld_aij_exceeds_hand_limit = 0
+        for k, v in pairs(G.hand.highlighted) do
+            if BLINDSIDE.ignore_play_limit(v) and not v.debuff then
+                bld_aij_exceeds_hand_limit = bld_aij_exceeds_hand_limit + 1
+            end
+        end
+        if bld_aij_exceeds_hand_limit > 0 and not ((#G.hand.highlighted - bld_aij_exceeds_hand_limit) > math.max(G.GAME.starting_params.play_limit, 1) or G.GAME.blind.block_play or #G.hand.highlighted <= 0) then
+            e.config.colour = G.C.BLUE
+            e.config.button = 'play_cards_from_highlighted'
+            return
+        end
+    end
+    local ret = play_check(e)
+    return ret
+end
+
+--stubborn function + bellcheck
+local can_discardref = G.FUNCS.can_discard
+G.FUNCS.can_discard = function(e)
+    for key, value in pairs(G.hand.highlighted) do
+        --stubborn can be removed if desired
+        if value.ability and value.ability.extra and type(value.ability.extra) == 'table' and value.ability.extra.stubborn and value.config.center.config.extra.stubborn then
+            e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+            e.config.button = nil
+            return
+        end
+    end
+    if  G.GAME.current_round.discards_left > 0 then
+        local bld_aij_exceeds_hand_limit = 0
+        for k, v in pairs(G.hand.highlighted) do
+            if BLINDSIDE.ignore_discard_limit(v) and not v.debuff then
+                bld_aij_exceeds_hand_limit = bld_aij_exceeds_hand_limit + 1
+            end
+        end
+        if bld_aij_exceeds_hand_limit > 0 and not ((#G.hand.highlighted - bld_aij_exceeds_hand_limit) > math.max(G.GAME.starting_params.play_limit, 1) or G.GAME.blind.block_play or #G.hand.highlighted <= 0) then
+            e.config.colour = G.C.RED
+            e.config.button = 'discard_cards_from_highlighted'
+            return
+        end
+    end
+    can_discardref(e)
+end
+
+--exclusive tag hook only when the tag is added the first time it is generated (reroll tags, toss tags)
+local vessel2 = add_tag
+function add_tag(_tag)
+	local ret = vessel2(_tag)
+    if not _tag.ability or (_tag.ability and not _tag.ability.blindside_has_been_added) then
+        _tag:apply_to_run({type = 'self_tag_added', tag = _tag})
+        --hopefully this only applies ONCE!
+        _tag.ability.blindside_has_been_added = true
+    end
+    
+    return ret
+end
+
+
+--Self tag removal functionality, in case other tags delete tags, ie: reroll tags, toss tags, handcuff tags (UNIK's mod)
+local remove_ref = Tag.remove
+function Tag.remove(self)
+    if self.ability.blindside_has_been_added then
+        local triggered = self.triggered
+        self.triggered = nil
+        self.ability.blindside_has_been_added = nil
+        --temporarily remove triggered so it can do self_tag_removed
+        self:apply_to_run({type = 'self_tag_removed', tag = self})
+        if triggered then
+            self.triggered = true
+        end
+        
+    end
+    local ret = remove_ref(self)
+    
+    return ret
+end
+
+
+--end_round utilities
+local end_roundref = end_round
+function end_round()
+    if BLINDSIDE.hasBlindside() then
+        G.GAME.blindside_add_bones_probability = 0
+        for i,v in pairs(G.playing_cards) do
+            if v.ability and v.ability.extra and type(v.ability.extra) == 'table' and v.ability.extra.ikeeptrackoftriggers then
+                v.ability.extra.ikeeptrackoftriggers = false
+            end
+        end
+    end
+    local ret = end_roundref()
+
+    return ret
+end
+
+--simplifying playing with fire into some functions
+--change the base amount per joker and the message. Will default to 1. The message MUST be in v_dictionary to take in a variable.
+function BLINDSIDE.change_fire_amount(args)
+    local amount = args and args.amount or 1
+    amount = BLINDSIDE.mod_fire_amount(amount)
+    G.GAME.playing_with_fire_each = args and args.message_key or 'bld_playing_with_fire_each_num'
+    G.GAME.bld_fire_iteration = amount
+    --print("fire each message key: " .. G.GAME.playing_with_fire_each .. " , iteration: " .. G.GAME.bld_fire_iteration)
+end
+--add playing with fire. defaults to 1 time.
+function BLINDSIDE.add_fire(times)
+    local amount = times or 1
+    --initializes it if not already
+    G.GAME.bld_fire_iteration = G.GAME.bld_fire_iteration or 1
+    --adds amount of times
+    G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num or 0
+    G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + amount
+    --adds value stored in iteration, multiplied by times
+    G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.bld_fire_iteration) * amount
+    --print(" , iteration: " .. G.GAME.bld_fire_iteration .. " , times triggered: " .. G.GAME.playing_with_fire_num .. " , fire cash: $" .. G.GAME.playing_with_fire)
+end
+
+function BLINDSIDE.reset_fire()
+    G.GAME.playing_with_fire_num = 0
+    G.GAME.playing_with_fire = 0
+end
+
+--true: OK, false: gameover if toggled
+function BLINDSIDE.check_stake_compat()
+    local stake = SMODS.Stakes[SMODS.stake_from_index(G.GAME.stake)]
+    if BLINDSIDE.hasBlindside() and stake.blindside_stake then
+        return true
+    end
+    if not BLINDSIDE.hasBlindside() and not stake.blindside_stake then
+        return true
+    end
+    if BLINDSIDE.hasBlindside() and not stake.blindside_stake then
+        print("ERROR! STAKE IS NOT BLINDSIDE COMPATIBLE!")
+    end
+    if not BLINDSIDE.hasBlindside() and stake.blindside_stake then
+        print("ERROR! STAKE IS NOT VANILLA COMPATIBLE!")
+    end
+    if BLINDSIDE.config.bld_enable_non_blindside_stakes then
+        G.E_MANAGER:add_event(Event({
+            delay = 0,
+            trigger = 'immediate',
+            func = function()
+                G.GAME.incompatible_stake_error = true
+                G.STATE = G.STATES.GAME_OVER
+                G.STATE_COMPLETE = false 
                 return true
             end
-        end
+        }))
+    else
+        print("YOU'RE PLAYING WITH INCOMPATIBLE STAKES AND DECKS AT YOUR OWN RISK.")
     end
+    
+    
+end
 
-    function BLINDSIDE.is_relic(string)
-        for _, v in ipairs(SMODS.ObjectTypes.bld_obj_relics.cards) do
-            if v == string then
-            return true
-            end
-        end
-    end
+--hook to modify it via stuff like swearjar
+function BLINDSIDE.mod_fire_amount(amount)
+    local newamount = amount
+    local swearjar = G.GAME.used_vouchers.v_bld_swearjar 
+    newamount = newamount + (swearjar and 1 or 0)
+    return newamount
+end
 
-    function BLINDSIDE.is_dupe(string)
-        for _, v in ipairs(SMODS.ObjectTypes.bld_obj_excludejokers.cards) do
-            if v == string then
-            return true
-            end
-        end
-    end
 
     function BLINDSIDE.set_up_blindside()
+            G.GAME.blindside_current_operator = 0
             G.GAME.blind_rate = 4
             G.GAME.tarot_rate = 0
             G.GAME.planet_rate = 0
             G.GAME.bld_inversions = 0
+
             G.GAME.playing_with_fire = 0
             G.GAME.playing_with_fire_num = 0
+            G.GAME.playing_with_fire_each = 'bld_playing_with_fire_each_num'
+            G.GAME.bld_fire_iteration = 1
+            G.GAME.bld_xchips_fire_mode = false
             SMODS.change_booster_limit(1)
             G.GAME.starting_params.reroll_cost = 3
             G.GAME.banned_keys['p_buffoon_normal_1'] = true
@@ -165,6 +423,14 @@ function Blind:get_type()
     else return blind_get_type(self) end
 end
 
+--Blind refresh
+--cull all small/big/boss blinds not blindside
+local blindPool = SMODS.create_blind_pool
+function SMODS.create_blind_pool(blind_type, skip_cull)
+    local ret = blindPool(blind_type,skip_cull)
+    return ret
+end
+
 function get_new_small(current)
     G.GAME.perscribed_small = G.GAME.perscribed_small or {
     }
@@ -175,12 +441,25 @@ function get_new_small(current)
     end
     if G.FORCE_SMALL then return G.FORCE_SMALL end
 
-    local eligible_bosses = {bl_small = true}
+    -- Use SMODS object weight system when enabled
+    --print("Attempt small")
+    -- if SMODS.optional_features.object_weights then
+    --  --   print("weight1")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'small', seed = 'small'})
+    --  --   print(ret_boss)
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
+
+    local eligible_bosses = {bl_bld_joker = true}
     for k, v in pairs(G.P_BLINDS) do
+        local res, options = SMODS.add_to_pool(v)
+        options = options or {}
         if not v.small then
+            eligible_bosses[k] = nil
         elseif k == current then
         elseif v.in_pool and type(v.in_pool) == 'function' then
-            local res, options = v:in_pool()
+            --local res, options = v:in_pool()
             eligible_bosses[k] = res and true or nil
         elseif v.small.min <= math.max(1, G.GAME.round_resets.ante) then
             eligible_bosses[k] = true
@@ -190,7 +469,7 @@ function get_new_small(current)
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
 
-    if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+    if BLINDSIDE.hasBlindside() then
         for k, v in pairs(eligible_bosses) do
             if v and not BLINDSIDE.is_blindside(k) then
                 eligible_bosses[k] = nil
@@ -214,12 +493,27 @@ function get_new_big(current)
     end
     if G.FORCE_BIG then return G.FORCE_BIG end
 
-    local eligible_bosses = {bl_big = true}
+    --utilises the brand new SMODS thingy
+
+    -- Use SMODS object weight system when enabled
+   -- print("Attempt big")
+    -- if SMODS.optional_features.object_weights then
+    --    -- print("weight2")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'big',seed = 'big'})
+    --    -- print(ret_boss)
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
+
+    local eligible_bosses = {bl_bld_gros_michel = true}
     for k, v in pairs(G.P_BLINDS) do
+        local res, options = SMODS.add_to_pool(v)
+        options = options or {}
         if not v.big then
+            eligible_bosses[k] = nil
         elseif k == current then
         elseif v.in_pool and type(v.in_pool) == 'function' then
-            local res, options = v:in_pool()
+            --local res, options = v:in_pool()
             eligible_bosses[k] = res and true or nil
         elseif v.big.min <= math.max(1, G.GAME.round_resets.ante) then
             eligible_bosses[k] = true
@@ -229,7 +523,7 @@ function get_new_big(current)
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
 
-    if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+    if  BLINDSIDE.hasBlindside() then
         for k, v in pairs(eligible_bosses) do
             if v and not BLINDSIDE.is_blindside(k) then
                 eligible_bosses[k] = nil
@@ -238,58 +532,205 @@ function get_new_big(current)
     end
 
     local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
-    
+    if boss == 'bl_bld_gros_michel' or boss == 'bl_bld_cavendish' then
+        G.GAME.blindside_banana_generated = true
+        print("BANANA GENERATED")
+    end
     return boss
 end
 
 
+
+local poller = SMODS.poll_object
+function SMODS.poll_object(args)
+    local ret = poller(args)
+    if BLINDSIDE.hasBlindside() and args and args.type == 'Blind' and type(ret) == 'string' then
+        if ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
+            G.GAME.blindside_banana_generated = true
+            print("BANANA GENERATED")
+        end
+        if not BLINDSIDE.is_blindside(ret) then
+            warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
+            return 'bl_bld_joker'
+        end
+    end
+    return ret
+end
+
+local getter = SMODS.get_new_blind
+function SMODS.get_new_blind(blind_type)
+    local ret = getter(blind_type)
+    if BLINDSIDE.hasBlindside() and  not BLINDSIDE.is_blindside(ret) then
+        warn("MAJOR JOKER SPAWN FAILURE; fallback to bl_bld_joker")
+        return 'bl_bld_joker'
+    end
+    --print(ret)
+    if BLINDSIDE.is_blindside(ret) and ret == 'bl_bld_gros_michel' or ret == 'bl_bld_cavendish' then
+        G.GAME.blindside_banana_generated = true
+        print("BANANA GENERATED")
+    end
+    
+    return ret
+end
+
+function BLINDSIDE.chipsmodifyV2(operation,silent)
+    --talisman bignum compat
+    if BLINDSIDE.has_talisman() then
+        G.GAME.blind.mult = to_big(G.GAME.blind.mult)
+    end
+    if operation.chips_base and operation.chips_base ~= 0 then
+             G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.basechips = math.max(1,G.GAME.blind.basechips+operation.chips_base*get_blind_amount(G.GAME.round_resets.ante)*G.GAME.starting_params.ante_scaling)
+            G.hand_text_area.blind_chip_text:juice_up()
+                G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
+                if not silent then play_sound('chips1',0.95,1) end
+                return true
+            end}))
+        end
+        if operation.chips and operation.chips ~= 0 then
+             G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.basechips = math.max(1,G.GAME.blind.basechips+operation.chips)
+            G.hand_text_area.blind_chip_text:juice_up()
+                G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
+                if not silent then play_sound('chips1',0.95,1) end
+                return true
+            end}))
+        end
+        if operation.mult and operation.mult ~= 0 then
+            G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+                G.GAME.blind.mult = math.max(1,G.GAME.blind.mult + operation.mult)
+            G.hand_text_area.blind_mult_text:juice_up()
+                G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
+                if not silent then play_sound('multhit1') end
+                return true
+            end}))
+        end
+        if operation.x_chips and operation.x_chips ~= 1 then
+            G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.basechips = math.max(1,G.GAME.blind.basechips*operation.x_chips)
+            G.hand_text_area.blind_chip_text:juice_up()
+                G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
+                if not silent then play_sound('xchips',0.95,1) end
+                return true
+            end}))
+        end
+       
+        if operation.x_mult and operation.x_mult ~= 1 then
+            G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
+            G.GAME.blind.mult = math.max(1,G.GAME.blind.mult*operation.x_mult)
+            G.hand_text_area.blind_mult_text:juice_up()
+                G.GAME.blind.mult_text = G.GAME.blind.mult
+                if not silent then play_sound('multhit2',0.95,1) end
+                return true
+            end}))
+        end
+
+end
+--redoing the chipsmodifyfunction (except the old self) to become a lot more flexible and modular
 function BLINDSIDE.chipsmodify(mult, originalchips, xmult, xchips, silent)
+    --talisman bignum compat
+    if BLINDSIDE.has_talisman() then
+        G.GAME.blind.mult = to_big(G.GAME.blind.mult)
+    end
     if mult and mult ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-            if G.GAME.blind.mult ~= 1 or mult > 0 then
-                G.GAME.blind.mult = G.GAME.blind.mult + mult
-            end
-        G.hand_text_area.blind_mult_text:juice_up()
-            G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
-            if not silent then play_sound('multhit1') end
-            return true
-        end}))
+        BLINDSIDE.chipsmodifyV2({mult = mult},silent)
     end
-    if xmult and xmult ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-    if xmult and xmult > 0 then
-        G.GAME.blind.mult = G.GAME.blind.mult*xmult
+    if xmult and xmult ~= 1 and xmult and xmult ~= 0 then
+        BLINDSIDE.chipsmodifyV2({x_mult = xmult},silent)
     end
-        G.hand_text_area.blind_mult_text:juice_up()
-            G.GAME.blind.mult_text = number_format(G.GAME.blind.mult)
-            if not silent then play_sound('multhit2') end
-            return true
-        end}))
-    end
-    if xchips and xchips ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-    if xchips and xchips > 0 then
-        G.GAME.blind.basechips = G.GAME.blind.basechips*xchips
-    end
-        G.hand_text_area.blind_chip_text:juice_up()
-            G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
-            if not silent then play_sound('xchips') end
-            return true
-        end}))
+    if xchips and xchips ~= 1 and xchips and xchips ~= 0 then
+        BLINDSIDE.chipsmodifyV2({x_chips = xchips},silent)
     end
     if originalchips and originalchips ~= 0 then
-        G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.3, func = function()
-        G.GAME.blind.basechips = G.GAME.blind.basechips + originalchips
-        G.hand_text_area.blind_chip_text:juice_up()
-            G.GAME.blind.basechips_text = number_format(G.GAME.blind.basechips, 100000)
-            if not silent then play_sound('chips1') end
-            return true
-        end}))
+        BLINDSIDE.chipsmodifyV2({chips = originalchips},silent)
     end
 end
 
+--Adding functionality to modify the operator, at least temporarily
+function BLINDSIDE.arrowfunction(operator,first,second)
+    
+    if operator == -1 then
+        return first + second
+    elseif operator == -2 then
+        return first - second
+    elseif operator == -3 then
+        return first/second
+    elseif operator == 0 then
+        return first * second
+    elseif operator == 1 then
+        return first ^ second
+    elseif operator == 2 and not BLINDSIDE.has_talisman() then
+        return first ^ (first ^ (second - 1))
+    elseif BLINDSIDE.has_talisman() then
+        return to_big(first):arrow(operator,to_big(second))
+    end
+    return first * second
+end
+
+function BLINDSIDE.joker_operator(arrow)
+     G.E_MANAGER:add_event(Event({trigger = 'immediate', delay = 0, func = function()
+        local container = G.HUD_blind:get_UIE_by_ID('blindside_operator_text_7777')
+        if container then
+            play_sound('button', 1.1, 0.65)
+            if arrow == -1 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "+"
+            elseif arrow == -2 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "-"
+            elseif arrow == -3 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "/"
+            elseif arrow > 0 and arrow <= 5 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                local exponents = ""
+                for i = 1, G.GAME.blindside_current_operator do
+                    exponents = exponents + "^"
+                end
+                container.config.text = exponents
+            elseif arrow > 5 then
+                G.GAME.blindside_current_operator = arrow
+                container:juice_up()
+
+                container.config.text = "{" .. G.GAME.blindside_current_operator .. "}"
+            else
+                G.GAME.blindside_current_operator = 0
+                container:juice_up()
+                container.config.text = "X"
+            end
+            G.HUD_blind:recalculate()
+        end
+        return true
+    end}))
+    
+end
+
+
+function BLINDSIDE.has_talisman()
+	if (SMODS.Mods["cdataman"] or {}).can_load or next(SMODS.find_mod("cdataman")) then
+		return true
+	end
+	if (SMODS.Mods["Amulet"] or {}).can_load then
+		return true
+	end
+	if (SMODS.Mods and SMODS.Mods.Talisman) or (SMODS.Mods.Talisman and SMODS.Mods.Talisman.can_load) then
+		return true
+	end
+	return false
+end
+
+
 function BLINDSIDE.chipsupdate()
-    local final_chips = G.GAME.blind.basechips*G.GAME.blind.mult
+    G.GAME.blindside_current_operator = G.GAME.blindside_current_operator or 0
+    local final_chips = BLINDSIDE.arrowfunction(G.GAME.blindside_current_operator,G.GAME.blind.basechips,G.GAME.blind.mult) 
     local chip_mod -- iterate over ~120 ticks
     if G.GAME.blind.chips then
         chip_mod = (final_chips - G.GAME.blind.chips) / 120
@@ -298,10 +739,10 @@ function BLINDSIDE.chipsupdate()
     end
     local step = 0
     local greater = false
-    if final_chips > G.GAME.blind.chips then
+    if final_chips and final_chips > G.GAME.blind.chips then
         greater = true
     end
-    if final_chips ~= G.GAME.blind.chips then
+    if final_chips and final_chips ~= G.GAME.blind.chips then
         G.E_MANAGER:add_event(Event({trigger = 'after', blocking = true, delay = 0.3, func = function()
             G.GAME.blind.chips = G.GAME.blind.chips + G.SETTINGS.GAMESPEED * chip_mod
             if G.GAME.blind.chips < final_chips and greater then
@@ -333,6 +774,8 @@ function BLINDSIDE.chipsupdate()
             chips_UI:juice_up()
             return true
         end}))
+    else
+       -- print("There was a problem with setting the final chips!")
     end
 end
 
@@ -432,6 +875,13 @@ function CardArea:emplace(card, ...)
 end
 
 G.FUNCS.blind_draw_from_deck_to_hand = function(e)
+    --if you deplete handsize to 0, then GAME OVER!
+    if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and
+        G.hand.config.card_limit <= 0 and #G.hand.cards == 0 then 
+        end_round()
+        return true
+    end
+    G.GAME.can_draw_tech = true
     if debug_print then print("blind-drawing: " .. tostring(e)) end
     BLINDSIDE.draw_queued = true
     local hand_space = e
@@ -561,39 +1011,119 @@ G.FUNCS.blind_draw_from_deck_to_hand = function(e)
             return true
         end
     }))
+end
 
+--reworking tech blinds to work with smods's draw card functionality, it will only draw once no space remains (ie: hackysack, toss tag, legendary magnet, epic bellows)
+function BLINDSIDE.tech_draw()
     if not BLINDSIDE.tech_temp then
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                if G.GAME.tech_draw_primary_buffer and G.GAME.tech_draw_primary_buffer > 0 then
-                    BLINDSIDE.tech_temp = true
-                    G.FUNCS.blind_draw_from_deck_to_hand(math.floor(G.GAME.tech_draw_primary_buffer))
-                    BLINDSIDE.tech_temp = nil
-                    G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_buffer
-                    G.GAME.tech_draw_buffer = 0
-                elseif G.GAME.tech_draw_buffer and G.GAME.tech_draw_buffer > 0 then
-                    
-                end
-               return true
-            end
-        }))
-
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                G.E_MANAGER:add_event(Event({
-                    func = function()
-                        if not G.GAME.tech_draw_primary_buffer then
-                            G.GAME.tech_draw_primary_buffer = 0
-                        end
-                        G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_primary_buffer + (G.GAME.tech_draw_buffer or 0)
-                        G.GAME.tech_draw_buffer = 0
-                        return true
+        if BLINDSIDE.hasBlindside() and G.GAME.can_draw_tech then
+            --print("techdraw2")
+           -- print(G.GAME.tech_draw_primary_buffer)
+            G.GAME.can_draw_tech = nil
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    if G.GAME.tech_draw_primary_buffer and G.GAME.tech_draw_primary_buffer > 0 then
+                        
+                      --  print("techdraw3")
+                        BLINDSIDE.tech_temp = true
+                        G.FUNCS.blind_draw_from_deck_to_hand(math.floor(G.GAME.tech_draw_primary_buffer))
+                        BLINDSIDE.tech_temp = nil
+                        G.GAME.tech_draw_primary_buffer = 0
+                        --G.GAME.tech_draw_buffer = 0
+                    elseif G.GAME.tech_draw_buffer   and G.GAME.tech_draw_buffer > 0 then
+                        
                     end
-                }))
+                return true
+                end
+            }))
+
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            if not G.GAME.tech_draw_primary_buffer then
+                                G.GAME.tech_draw_primary_buffer = 0
+                            end
+                            G.GAME.tech_draw_primary_buffer = G.GAME.tech_draw_primary_buffer + (G.GAME.tech_draw_buffer or 0)
+                            G.GAME.tech_draw_buffer = 0
+                            G.E_MANAGER:add_event(Event({
+                                trigger = 'after',
+                                delay = 0.2,
+                                func = function()
+                                    save_run()
+                                    return true
+                                end
+                            }))
+                            return true
+                        end
+                    }))
+                    return true
+                end
+            }))
+
+        end
+    end
+end
+
+function BLINDSIDE.reshuffle()
+    if BLINDSIDE.hasBlindside() then
+        if #G.deck.cards < G.hand.config.card_limit - #G.hand.cards and G.hand.config.card_limit - #G.hand.cards >= 1 and #G.deck.cards <= 0 then
+            local discard_count = #G.discard.cards
+            for i=1, discard_count do --draw cards from deck
+                draw_card(G.discard, G.deck, i*100/discard_count,'up', nil ,nil, 0.005, i%2==0, nil, math.max((21-i)/20,0.7))
+            end
+            SMODS.calculate_context({reshuffle = true})
+            G.GAME.current_round.reshuffles_round = G.GAME.current_round.reshuffles_round + 1
+            delay(0.5)
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.7,
+            func = function()
+                G.deck:shuffle('beta'..G.GAME.round_resets.ante, true)
                 return true
             end
         }))
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    local cards_to_draw = {}
+                    local limit = G.hand.config.card_limit - #G.hand.cards
+                    local unfixed = not G.hand.config.fixed_limit
+                    local n = 0
+                    while n < #G.deck.cards do
+                        local card = G.deck.cards[#G.deck.cards-n]
+                        local mod = unfixed and (card.ability.card_limit - card.ability.extra_slots_used) or 0
+                        if limit - 1 + mod < 0 then
+                        else    
+                            limit = limit - 1 + mod
+                            table.insert(cards_to_draw, card)
+                            if limit <= 0 then break end
+                        end
+                        n = n + 1
+                    end
+                    hand_space = #cards_to_draw
+                    for i=1, hand_space do --draw cards from deckL
+                        if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK then 
+                            draw_card(G.deck,G.hand, i*100/hand_space,'up', true, cards_to_draw[i])
+                        else
+                            draw_card(G.deck,G.hand, i*100/hand_space,'up', true, cards_to_draw[i])
+                        end
+                    end
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.7,
+                        func = function()
+                            save_run()
+                            return true
+                        end
+                    }))
+                    return true
+                end
+            }))
+
+        end
     end
+    
 end
 
 
@@ -665,9 +1195,17 @@ function update_joker_hand_text(config, vals)
     end}))
 end
 
+--crane_active function to modify burn chances MUCH more easily.
+function BLINDSIDE.crane_active(card)
+    if next(find_joker('j_bld_crane')) and SMODS.pseudorandom_probability(card, pseudoseed('bld_crane'), 1, 2, 'bld_crane') then
+        return true
+    end
+    return false
+end
+
 function Card:start_burn(cardarea, cell_fix, dissolve_colours, silent, dissolve_time_fac, no_juice)
     if not self.destroyed then
-    if next(find_joker('j_bld_crane')) and SMODS.pseudorandom_probability(self, pseudoseed('bld_crane'), 1, 2, 'bld_crane') then
+    if BLINDSIDE.crane_active(self) then
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
         blockable = false,
@@ -699,6 +1237,9 @@ function Card:start_burn(cardarea, cell_fix, dissolve_colours, silent, dissolve_
     end
 
     dissolve_colours = dissolve_colours or (type(self.destroyed) == 'table' and self.destroyed.colours) or nil
+     G.GAME.blinds_burned_this_run = G.GAME.blinds_burned_this_run or 0
+        G.GAME.blinds_burned_this_run = G.GAME.blinds_burned_this_run + 1
+        --print("burned: " .. G.GAME.blinds_burned_this_run)
     dissolve_time_fac = dissolve_time_fac or (type(self.destroyed) == 'table' and self.destroyed.time) or nil
     local dissolve_time = 0.7*(dissolve_time_fac or 1)
     self.dissolve = 0
@@ -964,6 +1505,60 @@ G.FUNCS.shop_trinket_empty = function(e)
 end
 
 
+BLINDSIDE.vanilla_rarity_rates = {
+    basic = {rate = 0, weight = 2},
+    simple = {rate = 0.85, weight = 0},
+    premium = {rate = 0.15, weight = 1},
+    crude = {rate = 0, weight = 3}, --will be a special pool that replaces any blind 10% of the time.
+    legendary = {rate = 0, weight = 4},
+}
+
+function BLINDSIDE.poll_rarities(args,key)
+    local rarity_poll = pseudorandom(pseudoseed(key or ('bld_blind_rarity'..G.GAME.round_resets.ante))) -- Generate the poll value
+    local total_weight = 0
+    local rarity_weights = {}
+    for i,v in pairs(BLINDSIDE.vanilla_rarity_rates) do
+        total_weight = total_weight + v.rate
+        rarity_weights[i] = {rate = 0, name = "", weight = 0}
+        rarity_weights[i].rate = v.rate or 0
+        rarity_weights[i].name = i
+        rarity_weights[i].weight = v.weight
+    end
+    for i = 1, #BLINDSIDE.crossmod_rarities do
+        local rate = 0
+        if BLINDSIDE.crossmod_rarities[i].spawn_rate and type(BLINDSIDE.crossmod_rarities[i].spawn_rate) == 'function' then
+            rate = BLINDSIDE.crossmod_rarities[i].spawn_rate()
+        else
+            rate = BLINDSIDE.crossmod_rarities[i].spawn_rate
+        end
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key] = {rate = 0, name = "", weight = 0}
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key].rate = rate
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key].name = BLINDSIDE.crossmod_rarities[i].key
+        rarity_weights[BLINDSIDE.crossmod_rarities[i].key].weight = BLINDSIDE.crossmod_rarities[i].weight
+        total_weight = total_weight + rate
+    end
+   -- print(total_weight)
+    --print(rarity_weights)
+    --divide all by total weight
+    for i,v in pairs(rarity_weights) do
+        v.rate = v.rate/total_weight
+    end
+    -- print(rarity_weights)
+    -- print(rarity_poll)
+    -- print(" ")
+    --create "intervals" to determine breakpoints for rarity
+    local weight_i = 0
+    for i,v in pairs(rarity_weights) do
+        weight_i = weight_i + v.rate
+        --print(rarity_poll .. " " .. weight_i)
+        if rarity_poll < weight_i then
+            --print(v.rate .. " " .. v.name)
+            return v.weight 
+        end
+    end
+
+end
+
 function BLINDSIDE.poll_enhancement(args)
     args = args or {}
     local key = args.key or 'std_enhance'
@@ -1006,26 +1601,31 @@ function BLINDSIDE.poll_enhancement(args)
         if G.GAME.modifiers.enable_shop_curses and pseudorandom(pseudoseed('bld_blind_curse_in_shop')) > 0.9 then
             rarity = 3
         else
-            if (rand < 0.85) then
-                rarity = 0
-            elseif rand <= 1 then --(rand < 0.999) then
-                rarity = 1
-            else
-                rarity = 2
-            end
+            rarity = BLINDSIDE.poll_rarities({},key)
         end
+    elseif args.basic then
+        rarity = 2
+    elseif args.simple then
+        rarity = 0
+    elseif args.premium then
+        rarity = 1
     elseif args.cursed then
         rarity = 3
     elseif args.legendary then
         rarity = 4
     else
-        if (rand < 0.85) then
-        rarity = 0
-        elseif rand <= 1 then --(rand < 0.999) then
-            rarity = 1
-        else
-            rarity = 2
+        local forcecrossmodrarity = false
+        for i = 1, #BLINDSIDE.crossmod_rarities do
+            if args[BLINDSIDE.crossmod_rarities[i].key] then
+                rarity = BLINDSIDE.crossmod_rarities[i].weight
+            --    print(rarity)
+                forcecrossmodrarity = true
+            end
         end
+        if not forcecrossmodrarity then
+            rarity = BLINDSIDE.poll_rarities({},key)
+        end
+        
     end
 
     local available_enhancements = {}
@@ -1038,9 +1638,16 @@ function BLINDSIDE.poll_enhancement(args)
                 assert(G.P_CENTERS[v], ("Could not find enhancement \"%s\"."):format(v))
                 local wght = G.P_CENTERS[v].weight or 5
                 local multicolor = #G.P_CENTERS[v].config.extra.hues > 1
-                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4)
-                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4
-
+                local good_crossmod_rarity = false
+                for i = 1, #BLINDSIDE.crossmod_rarities do
+                    if wght == BLINDSIDE.crossmod_rarities[i].weight and rarity == BLINDSIDE.crossmod_rarities[i].weight then
+                        good_crossmod_rarity = true
+                        break
+                    end
+                end
+                
+                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 33 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
+                local good_colors = rarity == 2 or rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity 
                 if good_colors and good_rarity then
                     enhance_option = { key = v, weight = 5 }
                 else
@@ -1050,12 +1657,26 @@ function BLINDSIDE.poll_enhancement(args)
                 assert(G.P_CENTERS[v.key], ("Could not find enhancement \"%s\"."):format(v.key))
                 local wght = v.weight or 5
                 local multicolor = #v.config.extra.hues > 1
-                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4)
-                local good_colors = rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4
+                local good_crossmod_rarity = false
+                for i = 1, #BLINDSIDE.crossmod_rarities do
+                    if wght == BLINDSIDE.crossmod_rarities[i].weight and rarity == BLINDSIDE.crossmod_rarities[i].weight then
+                        good_crossmod_rarity = true
+                        break
+                    end
+                end
+                local good_rarity = (wght == 5 and rarity == 0) or (wght == 3 and rarity == 1) or (wght == 1 and rarity == 2) or (wght == 33 and rarity == 2) or (wght == 67 and rarity == 3) or (wght == 99 and rarity == 4) or good_crossmod_rarity
+                local good_colors = rarity == 2 or rarity == 0 or (multicolor and rand >= 0.95) or (not multicolor and rand < 0.95) or rarity == 3 or rarity == 4 or good_crossmod_rarity
 
                 if good_colors and good_rarity then
                     enhance_option = { key = v.key, weight = 5 }
                 else
+                    skip = true
+                end
+            end
+            --add in pool, banishing functions before here. Specifying skip = true makes it no longer spawn afterwards.
+            if not skip and  G.P_CENTERS[enhance_option.key].in_pool and type(G.P_CENTERS[enhance_option.key].in_pool) == 'function' then
+                if not SMODS.add_to_pool(G.P_CENTERS[enhance_option.key],args) then
+                -- print(enhance_option.key .. "NOT IN POOL!")
                     skip = true
                 end
             end
@@ -1231,7 +1852,7 @@ end
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
-        if (G.GAME.chips - G.GAME.blind.basechips*G.GAME.blind.mult >= 0 and not next(SMODS.find_card('j_bld_breadboard'))) or G.GAME.current_round.hands_left < 1 then
+        if (G.GAME.chips - BLINDSIDE.arrowfunction(G.GAME.blindside_current_operator,G.GAME.blind.basechips,G.GAME.blind.mult) >= 0 and not next(SMODS.find_card('j_bld_breadboard'))) or G.GAME.current_round.hands_left < 1 then
             G.STATE = G.STATES.NEW_ROUND
         else
             G.STATE = G.STATES.DRAW_TO_HAND
@@ -1252,7 +1873,7 @@ function upgrade_blinds(cards, flipped, silent)
             if card.config and card.config.center and card.config.center.upgrade then
                 SMODS.Stickers['bld_upgrade']:apply(card, true)
             else
-                print("no upgrade function")
+                warn("no upgrade function")
             end
         end
         return
@@ -1464,7 +2085,7 @@ function CardArea:shuffle(_seed, reshuffle)
         local priorities = {}
         local others = {}
         for k, v in pairs(self.cards) do
-            if (v.seal == 'bld_ruin' and not reshuffle) or (v.ability.extra and v.ability.extra.upgraded and G.GAME.used_vouchers["v_bld_thingamajig"] and reshuffle) then
+            if ((v.seal == 'bld_ruin' or (v.ability and v.ability.extra and type(v.ability.extra) == 'table' and v.ability.extra.shuffled_top_start)) and not reshuffle) or (v.ability.extra and (v.ability.extra.upgraded or v.ability.upgrade) and G.GAME.used_vouchers["v_bld_thingamajig"] and reshuffle) then
                 table.insert(priorities, v)
             else
                 table.insert(others, v)
@@ -1640,11 +2261,115 @@ G.FUNCS.blind_reroll_boss_button = function(e)
           return true
       end)
     }))
-  end
+end
 
---HOOK FOR CROSSMOD
-function BLINDSIDE.get_blindside_editions()
-    return {'e_bld_enameled', 'e_bld_finish', 'e_bld_mint'}
+--HOOKS FOR CROSSMOD
+--weights are currently not supported unfortunately
+
+
+
+--designed to take into account weights and stuff instead of a simple pseudorandom element.
+function BLINDSIDE.poll_trim(args)
+    local seed = args and args.seed or 'weight'
+    local total_rate = 0
+    local table = {}
+    for i,v in pairs(SMODS.ObjectTypes.bld_obj_enhancements.enhancements) do
+        --print(v)
+        -- print((G.P_SEALS[v].weight or 1) )
+        local weight = G.P_SEALS[v]:weight() or 1
+        table[#table+1] = {enhancement = v,weight = weight}
+        total_rate = total_rate + weight
+    end
+    local polled_rate = pseudorandom(pseudoseed(seed))*total_rate
+    local check_rate = 0
+    for _, v in ipairs(table) do
+        if polled_rate > check_rate and polled_rate <= check_rate + v.weight then
+            --print(v)
+            return v.enhancement
+        end
+        check_rate = check_rate + v.weight
+    end
+    error("NO ENHANCEMENT FOUND!!!!!!!")
+end
+function BLINDSIDE.poll_edition(args)
+    local seed = args and args.seed or 'poll_edition'
+    local blacklisted_editions = args and args.blacklist or {}
+    local legit_editions = {}
+    for i,v in pairs(G.P_CENTERS) do
+        if v.blindside_edition then
+            legit_editions[#legit_editions+1] = i
+        end
+    end
+    for i,v in pairs(legit_editions) do
+        -- print(v)
+        -- print((G.P_SEALS[v].weight or 1) )
+        local weight = G.P_CENTERS[v].weight or 1
+        table[#table+1] = {edition = v,weight = weight}
+        total_rate = total_rate + weight
+    end
+    local polled_rate = pseudorandom(pseudoseed(seed))*total_rate
+    local check_rate = 0
+    for _, v in ipairs(table) do
+        if polled_rate > check_rate and polled_rate <= check_rate + v.weight then
+            --print(v)
+            return v.edition
+        end
+        check_rate = check_rate + v.weight
+    end
+    error("NO EDITION FOUND!!!!!!!")
+end
+
+
+--exclusion syntax = {blacklist = true or whitelist = true}
+--exclusions will default to e_bld_shiny if not specified. You must put 'none' in place instead.
+function BLINDSIDE.get_blindside_editions(args)
+    local exclude
+    local blacklist = args.blacklist or nil
+    local whitelist = args.whitelist or nil
+    if not args then
+        exclude = {'e_bld_shiny'}
+        blacklist = true
+    elseif args == 'none' then
+        exclude = {}
+        blacklist = true
+        whitelist = nil
+    elseif (blacklist or whitelist) and not (blacklist and whitelist) and args.editions_list and type(args.editions_list) == 'table' then
+        exclude = args.editions_list
+    else
+        print("invalid table,returning default list")
+        return {"e_bld_enameled","e_bld_finish","e_bld_mint"}
+    end
+    local tabler = {}
+    for i,v in pairs(G.P_CENTERS) do
+        if v.blindside_edition then
+            tabler[#tabler+1] = i
+        end
+    end
+    
+    if blacklist then
+        for i = 1, #exclude do
+            for j = #tabler, 1,-1 do
+                if exclude[i] == tabler[j] then
+                    table.remove(tabler,j)
+                end
+            end
+        end
+    elseif whitelist then
+        tabler = {}
+        for i = 1, #exclude do
+            for j = 1, #BLINDSIDE.editions do
+                if exclude[i] == BLINDSIDE.editions[j] then
+                    tabler[#tabler+1] = BLINDSIDE.editions[j]
+                end
+            end
+        end
+    end
+    
+   -- print(tabler)
+    if #tabler < 1 then
+        error("problem with the edition get function, as it returned NOTHING!@!!!!!!")
+    end
+    return tabler
 end
 
 function tableContains(value, tbl)

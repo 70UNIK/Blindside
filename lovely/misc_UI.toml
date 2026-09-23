@@ -29,10 +29,11 @@ pattern = '''self:update_shop(dt)'''
 position = 'at'
 match_indent = true
 payload = '''
-if G.GAME.selected_back.effect.center.config.extra then
-    if not G.GAME.selected_back.effect.center.config.extra.blindside then return self:update_shop(dt) end
+if BLINDSIDE.hasBlindside() then
+    --print("BLINDSHOP")
     self:blindupdate_shop(dt)
 else
+    --print("NORMALSHOP")
 self:update_shop(dt)
 end
 
@@ -47,7 +48,7 @@ pattern = '''self.HUD_blind = UIBox{'''
 position = 'before'
 match_indent = true
 payload = '''
-if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+if BLINDSIDE.hasBlindside() then
     self.HUD_blind = UIBox{
         definition = create_UIBox_HUD_jokerblind(),
         config = {major = G.HUD:get_UIE_by_ID('row_blind_bottom'), align = 'bmi', offset = {x=0,y=-10}, bond = 'Weak'}
@@ -65,6 +66,49 @@ match_indent = true
 payload = '''
 end
 '''
+
+[[patches]]
+[patches.regex]
+target = '''=[SMODS _ "src/ui.lua"]'''
+pattern = '''(.*)G\.HUD\_blind \= UIBox\{(.*)
+(.*)
+(.*)
+(.*)\}(.*)'''
+position = 'after'
+match_indent = true
+payload = '''
+end
+'''
+
+[[patches]]
+[patches.regex]
+target = '''=[SMODS _ "src/ui.lua"]'''
+pattern = '''(.*)G\.HUD\_blind \= UIBox\{(.*)
+(.*)
+(.*)
+(.*)\}(.*)'''
+position = 'before'
+match_indent = true
+payload = '''
+if BLINDSIDE.hasBlindside() then
+    G.HUD_blind = UIBox{
+        definition = create_UIBox_HUD_jokerblind(),
+        config = {major = G.HUD:get_UIE_by_ID('row_blind_bottom'), align = 'bmi', offset = {x=0,y=-10}, bond = 'Weak'}
+    }
+else
+
+'''
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/ui.lua"]'''
+pattern = '''e.UIBox:add_child(badge, e)'''
+position = 'before'
+match_indent = true
+payload = '''
+'''
+
+
 
 # blindside blind chips area
 
@@ -198,10 +242,9 @@ if (G.GAME.playing_with_fire or 0) > 0 then
     if G.GAME.playing_with_fire >= 8 then
         unlock_card(G.P_CENTERS.b_bld_yellowdispenser)
     end
-    add_round_eval_row({dollars = G.GAME.playing_with_fire, number = G.GAME.playing_with_fire_num, bonus='true', name='custom', text = localize('bld_playing_with_fire') .. ' (' .. localize(G.GAME.playing_with_fire_each) .. ')', pitch = pitch})
+    add_round_eval_row({dollars = G.GAME.playing_with_fire, number = G.GAME.playing_with_fire_num, bonus='true', name='custom', text = localize('bld_playing_with_fire') .. ' (' .. localize{type = 'variable', key = G.GAME.playing_with_fire_each, vars = {G.GAME.bld_fire_iteration}} .. ')', pitch = pitch})
     dollars = dollars + G.GAME.playing_with_fire
-    G.GAME.playing_with_fire_num = 0
-    G.GAME.playing_with_fire = 0
+    BLINDSIDE.reset_fire()
 end
 '''
 match_indent = true
@@ -242,17 +285,6 @@ elseif config.name == 'bld_neon_hands' then
 elseif config.name == 'bld_neon_discards' then
     table.insert(left_text, {n=G.UIT.T, config={text = config.number, scale = 0.8*scale, colour = G.C.RED, shadow = true, juice = true}})
     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {" "..config.text}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
-'''
-match_indent = true
-
-
-[[patches]]
-[patches.pattern]
-target = '=[SMODS _ "src/utils.lua"]'
-pattern = '''if (area.config.type == 'joker' or area.config.type == 'hand') and not area.config.fixed_limit then'''
-position = "at"
-payload = '''
-if (area.config.type == 'joker' or area.config.type == 'hand' and not (G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside) ) and not area.config.fixed_limit then
 '''
 match_indent = true
 

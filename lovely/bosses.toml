@@ -36,7 +36,7 @@ pattern = '''local min_use = 100'''
 position = 'before'
 match_indent = true
 payload = '''
-if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+if BLINDSIDE.hasBlindside()  then
     for k, v in pairs(eligible_bosses) do
         if eligible_bosses[k] and not BLINDSIDE.is_blindside(k) then
             eligible_bosses[k] = nil
@@ -44,6 +44,33 @@ if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effe
     end
 end
 '''
+
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils/weights.lua"]'
+pattern = '''local min_use = 100'''
+position = 'before'
+match_indent = true
+payload = '''
+if BLINDSIDE.hasBlindside() then
+    for k, v in pairs(eligible_bosses) do
+        if eligible_bosses[k] and not BLINDSIDE.is_blindside(k) then
+            eligible_bosses[k] = nil
+        end
+    end
+end
+'''
+
+##crash fix
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils/weights.lua"]'''
+pattern = '''if eligible_bosses[k] > min_use and not G.P_BLINDS[k][blind_type].allow_duplicates then'''
+position = "at"
+match_indent = true
+payload = '''if type(eligible_bosses[k]) ~= 'boolean' and eligible_bosses[k] > min_use and not G.P_BLINDS[k][blind_type].allow_duplicates then '''
+
 
 [[patches]]
 [patches.pattern]
@@ -172,16 +199,29 @@ end
 
 # blind assists
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = 'functions/state_events.lua'
+pattern = '''SMODS.calculate_context\(\{(.*)end_of_round = true(.*)game_over = game_over(.*)'''
 match_indent = true
 position = 'after'
-pattern = '''
-    SMODS.calculate_context({end_of_round = true, game_over = game_over, beat_boss = G.GAME.blind.boss })
-'''
 payload = '''
+
 G.GAME.last_joker = G.GAME.blind.boss
+
 '''
+
+# actually registering if its end of ante for proper pillar functionality
+[[patches]]
+[patches.regex]
+target = 'functions/state_events.lua'
+pattern = '''SMODS.calculate_context\(\{(.*)end_of_round = true(.*)game_over = game_over(.*)'''
+match_indent = true
+position = 'after'
+payload = '''
+SMODS.calculate_context({bld_actually_defeated_boss = (G.GAME.blind_on_deck == 'Boss')})
+
+'''
+
 
 
 # blind assists

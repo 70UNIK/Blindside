@@ -1,5 +1,67 @@
 return {
 	["misc"] = {
+		quips = {
+			--default flippy quips, win and lose (5 win, 8 loss)
+            bld_blindside_flippy_win1 = {
+                "You're flipping it!"
+            },
+            bld_blindside_flippy_win2 = {
+                "No wonder all those 'decks'",
+                "are virtual, it'll be too much!"
+            },
+            bld_blindside_flippy_win3 = {
+                "Well done!"
+            },
+            bld_blindside_flippy_win4 = {
+                "Wow! You're quite skilled",
+                "in this!"
+            },
+            bld_blindside_flippy_win5 = {
+                "Looks like the Jokers",
+                "will have to lick",
+                "their wounds!"
+            },
+            bld_blindside_flippy_lose1 = {
+                "It seems like you're",
+                "too used to Vanilla,",
+                "would you like assistance?",
+            },
+            bld_blindside_flippy_lose2 = {
+                "What a flop!"
+            },
+            bld_blindside_flippy_lose3 = {
+                "Damn, those looked",
+                "stronger than they look...",
+            },
+            bld_blindside_flippy_lose4 = {
+                "Did you forget to",
+                "trim those Crudes today?"
+            },
+            bld_blindside_flippy_lose5 = {
+                "Maybe Vanilla's our speed..."
+            },
+            bld_blindside_flippy_lose6 = {
+                "Uh oh!"
+            },
+            bld_blindside_flippy_lose7 = {
+                "Time for us to flop",
+                "down and try again!"
+            },
+            bld_blindside_flippy_lose8 = {
+                "Hey, next time in your",
+                "next revive, please",
+                "be careful!"
+            },
+			bld_blindside_flippy_incompatible_stake = {
+				"I dont think you're",
+				"supposed to play Vanilla",
+				"stakes here!"
+			},
+			bld_incompatible_stake_vanilla = {
+				"YOU CAN'T PLAY",
+				"WITH THOSE ''''STAKES''''!",
+			}
+		},
 		["blind_tabs"] = {
 			["authors"] = "By Luna, Anne & Base",
 			["Description"] = "Blindside",
@@ -187,6 +249,13 @@ return {
 			['ui_bld_deck_view'] = 'Deck View',
 			["ph_mask_saved"] = "Saved by Ancient Mask",
 			["ph_defeat_this_joker_1"] = "Defeat this Joker",
+			bld_jchips = " JChips",
+			bld_jmult = " JMult",
+			bld_placeholder_perkeo = "(Random Joker)",
+			bld_ml_edition_seal_enhancement_explanation={
+                "Blinds may each have",
+                "one Edition or Trim",
+            },
 			['matryoshka_none'] = "None!",
 			['bld_fineart_dead'] = "Devalued!",
 			['k_base_blinds'] = "Base Blinds",
@@ -210,10 +279,17 @@ return {
 			['k_downgrade_ex'] = "Downgrade!",
 			['bld_hand_contains'] = "Hand contains ",
 			['k_rounds'] = "Rounds",
+			ph_up_ante_2_blindside="Raise all Jokers",
+            ph_up_ante_3_blindside="Refresh Jokers",
+            ph_choose_blind_2_blindside="next Joker",
+			bld_enable_non_blindside_stakes_label = "Disable incompatible stakes and decks",
+			bld_enable_non_blindside_stakes_desc = "If playing incompatible stakes with incompatible decks, cause instant Game Over",
 			},
 		["v_dictionary"] = {
 			["a_rmult"] = "-#1#",
 			["a_pchips"] = "-#1#%",
+			["bld_playing_with_fire_each_num"] = "$#1# each trigger",
+			["bld_playing_with_fire_each_xchips"] = "$#1# each XChips",
 			["ante_x_price_tag"] = "ANTE #1# PRICE TAG",
 		},
         ["suits_singular"] = {
@@ -1378,14 +1454,17 @@ return {
 					{"{C:blue}-#1#{} #2#"}
 				},
 			},
+			--crossmod compat: enable random multihues
 			["c_bld_assimilate"] = {
 				["name"] = "Assimilate",
 				["text"] = {
 					{"Select {C:attention}#1#{} Blinds of",
 					"only {C:attention}2 different hues"},
 					{"They are {C:red}destroyed{}, and",
-					"a {E:1}multicolor{} Blind of",
-					"their {C:attention}hues{} is created"},
+					"a random {E:1}multicolor{} Blind of",
+					"their {C:attention}hues{} is created",
+					"{C:inactive}(Up to {C:red}Premium{C:inactive})",
+				},
 				},
 			},
 			["c_bld_exorcise"] = {
@@ -2137,10 +2216,11 @@ return {
 			["bl_bld_perkeo"] = {
 				["name"] = "Perkeo",
 				["text"] = {
-					"Creates a",
-					"Negative",
+					"Randomises",
 					"Joker after",
-					"each hand"
+					"each hand",
+					"(Currently",
+					"#1#)",
 				},
 			},
 			["bl_bld_chicot"] = {
@@ -3414,7 +3494,7 @@ return {
 					{"{X:purple,C:white}Purple{}",
 					"{C:white,X:chips}X#1#{} Chips",
 					"to {C:attention}Joker"},
-					{"{C:attention}Stubborn"},
+					{"{C:red}Stubborn"},
 				},
 			},
 			["m_bld_thirst"] = {
@@ -3422,7 +3502,7 @@ return {
 				["text"] = {
 					{"{X:chips,C:white}Blue{}",
 					"{C:white,X:chips}X#1#{} Chips"},
-					{"{C:attention}Stubborn"},
+					{"{C:red}Stubborn"},
 				},
 			},
 			["m_bld_spent"] = {
@@ -3502,7 +3582,7 @@ return {
 					"{C:red}#1#{} Mult when",
 					"{C:attention}held in hand{},",
 					"then {C:attention}burns"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_bank"] = {
@@ -3570,6 +3650,7 @@ return {
 					"{X:dark_edition,C:white}Faded{}",
 					"When scoring, {C:red}destroys",
 					"another played Blind",
+					"after scoring",
 				},
 			},
 			["m_bld_death_upgraded"] = {
@@ -3578,6 +3659,7 @@ return {
 					"{X:dark_edition,C:white}Faded{}",
 					"When scoring, {C:red}destroys",
 					"played Blind {C:attention}to the left",
+					"after scoring",
 					"{C:inactive}(If one exists)"
 				},
 			},
@@ -3629,7 +3711,7 @@ return {
 				["text"] = {
 					{"{X:money,C:white}Yellow{}",
 					"{C:money}#1#{} and {C:attention}burns"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_tax"] = {
@@ -3639,7 +3721,7 @@ return {
 					"Takes {C:attention}half{} of all held",
 					"money more than {C:money}$20{}",
 					"{C:inactive}(Currently {C:money}-$#1#{C:inactive})"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_tax_upgraded"] = {
@@ -3649,23 +3731,23 @@ return {
 					"{C:attention}Doubles{} held money if",
 					"you have {C:money}$10{} or less",
 					"{C:inactive}(Currently {C:money}+$#1#{C:inactive})"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_famous"] = {
 				["name"] = "The Famous",
 				["text"] = {
 					"{X:chips,C:white}Blue{}",
-					"{C:attention}Forced to",
-					"{C:attention}be selected",
+					"{C:red}Forced to",
+					"{C:ared}be selected",
 				},
 			},
 			["m_bld_famous_upgraded"] = {
 				["name"] = "The Famous",
 				["text"] = {
 					{"{X:chips,C:white}Blue{}",
-					"{C:attention}Forced to",
-					"{C:attention}be selected"},
+					"{C:red}Forced to",
+					"{C:red}be selected"},
 					{"When discarded, {C:attention}burn{}",
 					"all discarded Blinds"}
 				},
@@ -3677,8 +3759,8 @@ return {
 					"{C:white,X:mult}X#1#{} Mult"},
 					{"{C:attention,E:1}Self-Scoring{} with a",
 					"{C:green}#2# in #3#{} chance"},
-					{"{C:attention}Forced to",
-					"{C:attention}be selected",}
+					{"{C:red}Forced to",
+					"{C:red}be selected",}
 				},
 			},
 			["m_bld_pill_upgraded"] = {
@@ -3687,8 +3769,8 @@ return {
 					{"{X:green,C:white}Green{}",
 					"{C:white,X:mult}X#1#{} Mult"},
 					{"Always scores"},
-					{"{C:attention}Forced to",
-					"{C:attention}be selected",}
+					{"{C:red}Forced to",
+					"{C:red}be selected",}
 				},
 			},
 			["m_bld_hurt"] = {
@@ -3718,7 +3800,7 @@ return {
 					"{C:money}-$#1#{}, then {C:money}+$#2#{} for",
 					"every other {X:black,C:white}Crude{}",
 					"Blind in played hand"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_grind_upgraded"] = {
@@ -3728,7 +3810,7 @@ return {
 					"{C:money}+$#2#{} for every",
 					"other {X:black,C:white}Crude{} Blind",
 					"in played hand"},
-					{"{C:attention}Stubborn"}
+					{"{C:red}Stubborn"}
 				},
 			},
 			["m_bld_work"] = {
@@ -3811,9 +3893,9 @@ return {
 				["text"] = {
 					{"{X:chips,C:white}Blue{}",
 					"{C:chips}+#1#{} Chips"},
-					{"{C:attention}+1{} Selection Limit",},
-					{"{C:attention}Forced to",
-					"{C:attention}be selected",}
+					{"{C:attention}Ignores{} selection limit",},
+					{"{C:red}Forced to",
+					"{C:red}be selected",}
 				},
 			},
 			["m_bld_violet_vessel"] = {
@@ -4242,7 +4324,7 @@ return {
 				["text"] = {
 					"If played hand contains",
 					"{C:attention}3{} or less Blinds,",
-					"{X:dark_edition,C:white}-#1#%{} Chips to Joker"
+					"{X:chips,C:white}X#1#{} Chips to Joker",
 				}
 			},
 			['j_bld_dicejail'] = {
@@ -4596,14 +4678,16 @@ return {
 				name = "Green Stake?",
 				text = {
 					"After {C:attention}Ante 1{}, decrease",
-					"{C:attention}Joker{} rewards by {C:money}$2"
+					"{C:attention}Joker{} rewards by {C:money}$2",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_black_deck"] = {
 				name = "Black Stake?",
 				text = {
 					"{C:blue}-1{} Hand on",
-					"{C:attention}Small{} and {C:attention}Big{} Jokers"
+					"{C:attention}Small{} and {C:attention}Big{} Jokers",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_magic_deck"] = {
@@ -4613,7 +4697,8 @@ return {
 					"{C:attention}2{} {X:black,C:white}Crude{} Blinds",
 					"{s:0.2} {}",
 					"{X:black,C:white}Crude{} Blinds may",
-					"appear in {C:attention}shops"
+					"appear in {C:attention}shops",
+						'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_anaglyph_deck"] = {
@@ -4621,21 +4706,24 @@ return {
 				text = {
 					"After defeating each",
 					"{C:attention}Boss Joker{}, choose {C:attention}1",
-					"of {C:attention}3{} {X:black,C:white}Crude{} Blinds"
+					"of {C:attention}3{} {X:black,C:white}Crude{} Blinds",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_zodiac_deck"] = {
 				name = "Zodiac Stake??",
 				text = {
 					"Face off against {C:red}tougher",
-					"{C:attention}Small{} and {C:attention}Big Jokers"
+					"{C:attention}Small{} and {C:attention}Big Jokers",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_plasma_deck"] = {
 				name = "Plasma Stake??",
 				text = {
 					"Required score scales",
-					"faster for each {C:attention}Ante"
+					"faster for each {C:attention}Ante",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 			["stake_bld_ghost_deck"] = {
@@ -4643,7 +4731,8 @@ return {
 				text = {
 					"Ante {C:attention}3{} Small Joker",
 					"and Ante {C:attention}5{} Big Joker",
-					"always {C:attention}Double Up"
+					"always {C:attention}Double Up",
+					'{s:0.8}Applies all previous stakes',
 				}
 			},
 		},
@@ -4762,7 +4851,8 @@ return {
 				["name"] = "Spooky Blind",
 				["text"] = {
 					"When scored,",
-					"{X:dark_edition,C:white}-#1#%{} Chips to Joker",
+					"{X:chips,C:white}X#1#{} Chips to Joker",
+					"then {X:chips,C:white}-X#2#{}",
 					"for each {C:attention}scoring",
 					"Blind sharing a {C:attention}hue",
 				}

@@ -14,7 +14,7 @@
         rare = true,
         calculate = function(self, card, context)
                 if context.cardarea == G.play and context.before then
-                    if SMODS.pseudorandom_probability(card, pseudoseed("flip"), card.ability.extra.chance, card.ability.extra.trigger, 'flip') and card.facing ~= 'back' then
+                    if SMODS.pseudorandom_probability(card, pseudoseed("plantflip"), card.ability.extra.chance, card.ability.extra.trigger, 'plantflip') and card.facing ~= 'back' then
                     for i=1, #G.play.cards do
                         if G.play.cards[i] ~= card then
                             G.play.cards[i].config.center.blind_debuff(G.play.cards[i], true)
@@ -31,7 +31,7 @@
                 end
         end,
         loc_vars = function(self, info_queue, card)
-            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'flip')
+            local chance, trigger = SMODS.get_probability_vars(card, card.ability.extra.chance, card.ability.extra.trigger, 'plantflip')
             return {
                 vars = {
                     card.ability.x_mult,

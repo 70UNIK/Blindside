@@ -16,21 +16,24 @@ SMODS.Edition {
             end
         end,
     config = {
- 		p_dollars = 2,
+ 		extra = {
+            dollars = 2,
+        }
     },
     in_shop = false,
     weight = 2,
+    blindside_edition = true,
     loc_vars = function(self, info_queue, card)
         return {
             vars = {
-                card.edition and card.edition.p_dollars or nil
+                card.edition and card.edition.extra.dollars or nil
             }
         }
     end,
     calculate = function(self, card, context)
-        if (context.pre_joker or (context.main_scoring and context.cardarea == G.play)) and card.facing ~= 'back' then
+        if ((context.main_scoring and (context.cardarea == G.play or context.cardarea == G.hand))) and card.facing ~= 'back' then
             return {
-                dollars = card.edition.p_dollars
+                dollars = card.edition.extra.dollars 
             }
         end
     end

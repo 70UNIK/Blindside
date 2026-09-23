@@ -21,7 +21,7 @@
             concept = "AstraLuna"
         },
         calculate = function(self, card, context)
-            if context.setting_blind and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and not context.perkeo then
+            if context.setting_blind and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
                 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                 G.E_MANAGER:add_event(Event({
                     func = (function()
@@ -41,7 +41,7 @@
             if context.using_consumeable and context.consumeable.ability.set == 'bld_obj_mineral' then
                 if #G.hand.cards > 0 then
                     G.hand:unhighlight_all()
-                    local enhancement = pseudorandom_element(SMODS.ObjectTypes.bld_obj_enhancements.enhancements, 'booster')
+                    local enhancement = BLINDSIDE.poll_trim()
                     local _cards = {}   
                     for k, v in ipairs(G.hand.cards) do
                         if not v.seal then

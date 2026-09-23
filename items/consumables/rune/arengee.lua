@@ -4,16 +4,22 @@ SMODS.Consumable {
     atlas = 'bld_consumable',
     pos = {x=2, y=5},
     config = {extra = {round = 2, charge = 2}},
+    --runes are used up if consumables are full
     keep_on_use = function(self, card)
+        local cards = 0
+        for i,v in pairs(G.consumeables.cards) do
+            if v ~= card then
+                cards = cards + 1
+            end
+        end
+        if cards >= G.consumeables.config.card_limit then
+            return false
+        end
         return true
     end,
     cost = 4,
     can_use = function(self, card)
-        if G.STATE == G.STATES.SELECTING_HAND then
-            return card.ability.extra.charge >= card.ability.extra.round
-        else
-            return false
-        end
+        return card.ability.extra.charge >= card.ability.extra.round
     end,
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = 'bld_active', set = 'Other'}

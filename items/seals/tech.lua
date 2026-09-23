@@ -19,6 +19,9 @@ SMODS.Seal {
     pools = {
         ["bld_obj_enhancements"] = true,
     },
+    weight = function(self, info_queue, card)
+        return 1
+    end,
     calculate = function(self, card, context)
         if context.main_eval and (context.hand_drawn and context.cardarea == G.hand and tableContains(card, context.hand_drawn)) or (context.other_drawn and context.cardarea == G.hand and tableContains(card, context.other_drawn)) then
             if not G.GAME.tech_draw_buffer then

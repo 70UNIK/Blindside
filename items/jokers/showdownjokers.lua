@@ -18,7 +18,7 @@ SMODS.Blind({
     boss_colour = HEX('e8b867'),
     mult = 16,
     base_dollars = 10,
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -34,6 +34,8 @@ SMODS.Blind({
     calculate = function(self, blind, context)
         if not blind.disabled and context.reshuffle then
             BLINDSIDE.chipsmodify(0, 0, 2)
+            BLINDSIDE.change_fire_amount({amount = 3})
+            BLINDSIDE.add_fire()
         end
     end,
     load = function()
@@ -42,18 +44,6 @@ SMODS.Blind({
     end
 })
 
-local can_discardref = G.FUNCS.can_discard
-G.FUNCS.can_discard = function(e)
-    for key, value in pairs(G.hand.highlighted) do
-        if value.config.center and value.config.center.config.extra and value.config.center.config.extra.stubborn then
-            e.config.colour = G.C.UI.BACKGROUND_INACTIVE
-            e.config.button = nil
-            return
-        end
-    end
-    can_discardref(e)
-end
-
 BLINDSIDE.Joker({
     key = 'triboulet',
     atlas = 'bld_joker',
@@ -61,7 +51,7 @@ BLINDSIDE.Joker({
     boss_colour = HEX('009CFD'),
     mult = 16,
     base_dollars = 10,
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -71,13 +61,14 @@ BLINDSIDE.Joker({
         end
     end,
     joker_set = function ()
-        for i, v in pairs(G.GAME.tags) do
-            if v:apply_to_run({type = 'real_round_before_start', card = card}) then break end
-        end
+        -- for i, v in pairs(G.GAME.tags) do
+        --     if v:apply_to_run({type = 'real_round_before_start', card = card}) then break end
+        -- end
         if not G.GAME.blind.disabled then
             for i = 1, 8, 1 do
                 local enhancement = 'm_bld_king'
                 local card = SMODS.create_card { set = "Base", enhancement = enhancement, area = G.discard }
+                card:add_to_deck()
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 card.playing_card = G.playing_card
                 table.insert(G.playing_cards, card)
@@ -87,6 +78,9 @@ BLINDSIDE.Joker({
                     func = function()
                             card:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                             G.deck:emplace(card)
+                            card.ability.tribuolet_generated = true
+                            BLINDSIDE.change_fire_amount({amount = 0.2})
+                            BLINDSIDE.add_fire()
                         return true
                     end
                 }))
@@ -94,6 +88,7 @@ BLINDSIDE.Joker({
             for i = 1, 8, 1 do
                 local enhancement = 'm_bld_queen'
                 local card = SMODS.create_card { set = "Base", enhancement = enhancement, area = G.discard }
+                card:add_to_deck()
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 card.playing_card = G.playing_card
                 table.insert(G.playing_cards, card)
@@ -103,9 +98,26 @@ BLINDSIDE.Joker({
                     func = function()
                             card:start_materialize({ G.C.SECONDARY_SET.Enhanced })
                             G.deck:emplace(card)
+                            card.ability.tribuolet_generated = true
+                            BLINDSIDE.change_fire_amount({amount = 0.2})
+                            BLINDSIDE.add_fire()
                         return true
                     end
                 }))
+            end
+        end
+    end,
+    disable = function(self)
+        for key, value in pairs(G.playing_cards) do
+            if value.ability.tribuolet_generated then
+                value:start_dissolve()
+            end
+        end
+    end,
+    joker_defeat = function ()
+        for key, value in pairs(G.playing_cards) do
+            if value.ability.tribuolet_generated then
+                value:start_dissolve()
             end
         end
     end,
@@ -121,7 +133,14 @@ local function get_new_perkeo_boss()
         return ret_boss
     end
     if G.FORCE_BOSS then return G.FORCE_BOSS end
-    
+    --  if SMODS.optional_features.object_weights then
+    --    -- print("weight2")
+    --     local ret_boss = SMODS.poll_object({type = 'Blind',  blind_type = 'boss',seed = 'boss'})
+    --    -- print(ret_boss)
+    --    G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] or 0
+    --     G.GAME.bosses_used[ret_boss] = G.GAME.bosses_used[ret_boss] + 1
+    --     return ret_boss
+    -- end
     local eligible_bosses = {}
     for k, v in pairs(G.P_BLINDS) do
         local res, options = SMODS.add_to_pool(v)
@@ -138,9 +157,9 @@ local function get_new_perkeo_boss()
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
 
-    if G.GAME.selected_back.effect.center.config.extra and G.GAME.selected_back.effect.center.config.extra.blindside then
+    if BLINDSIDE.hasBlindside() then
         for k, v in pairs(eligible_bosses) do
-            if eligible_bosses[k] and not G.P_BLINDS[k].mod or G.P_BLINDS[k].mod.id ~= 'Blindside' then
+            if eligible_bosses[k] and not BLINDSIDE.is_blindside(k) then
                 eligible_bosses[k] = nil
             end
         end
@@ -156,12 +175,13 @@ local function get_new_perkeo_boss()
     end
     for k, v in pairs(eligible_bosses) do
         if eligible_bosses[k] then
-            if eligible_bosses[k] > min_use then 
+            if type(eligible_bosses[k]) ~= "boolean" and eligible_bosses[k] > min_use then 
                 eligible_bosses[k] = nil
             end
         end
     end
     local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
+    G.GAME.bosses_used[boss] = G.GAME.bosses_used[boss] or 0
     G.GAME.bosses_used[boss] = G.GAME.bosses_used[boss] + 1
     
     return boss
@@ -177,10 +197,30 @@ BLINDSIDE.Joker({
     hands = {},
     boss = {min = 1, showdown = true},
     joker_set = function(self)
-        self.hands = {}
-        for _, poker_hand in ipairs(G.handlist) do
-            self.hands[poker_hand] = false
+        for i, v in pairs(G.GAME.tags) do
+            if v:apply_to_run({type = 'real_round_before_start', card = card}) then break end
         end
+        if not G.GAME.blind.disabled then
+            local blind = G.GAME.blind
+            self.hands = {}
+            for _, poker_hand in ipairs(G.handlist) do
+                self.hands[poker_hand] = false
+            end
+            blind.blindassist = get_new_perkeo_boss()
+            G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+                G.GAME.blindassist:set_assist_blind(G.P_BLINDS[blind.blindassist])
+                G.GAME.blindassist.states.visible = true
+                G.GAME.blindassist:change_dim(1.5,1.5)
+                G.GAME.blindassist.negative = true
+                play_sound('negative', 1.5, 0.4)
+                SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind, perkeo = true})
+                G.GAME.blind:set_text()
+                G.GAME.blind.active = true
+                G.GAME.blindassist.active = true
+            return true end }))
+            --blind.hands[context.scoring_name] = true
+        end
+        
     end,
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
@@ -190,6 +230,12 @@ BLINDSIDE.Joker({
         return false
         end
     end,
+    loc_vars = function(self, blind_on_deck)
+        return {vars = {G.GAME.blind and G.GAME.blind.blindassist and localize{type ='name_text', key = G.P_BLINDS[G.GAME.blind.blindassist].key, set = 'Blind'} or localize('bld_placeholder_perkeo') }}
+    end,
+    collection_loc_vars = function(self, blind_on_deck)
+        return {vars = {localize('bld_placeholder_perkeo')}}
+    end,
     calculate = function(self, blind, context)
         if context.setting_blind and not blind.disabled then
             for _, poker_hand in ipairs(G.handlist) do
@@ -198,14 +244,28 @@ BLINDSIDE.Joker({
             end
         end
         if context.after and not blind.disabled then
+            local oldBlindassist = blind.blindassist
+             G.E_MANAGER:add_event(Event({trigger = 'immediate', delay = 0.0, func = function()
+                if G.P_BLINDS[oldBlindassist].joker_defeat then
+                print("revert effects via defeat func")
+                G.P_BLINDS[oldBlindassist]:joker_defeat()
+            end
+            return true end }))
             blind.blindassist = get_new_perkeo_boss()
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+                blind.disabled = nil
+                G.GAME.blind.disabled = nil
+                
+                
                 G.GAME.blindassist:set_assist_blind(G.P_BLINDS[blind.blindassist])
                 G.GAME.blindassist.states.visible = true
                 G.GAME.blindassist:change_dim(1.5,1.5)
                 G.GAME.blindassist.negative = true
                 play_sound('negative', 1.5, 0.4)
                 SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind, perkeo = true})
+                G.GAME.blind:set_text()
+                G.GAME.blind.active = true
+                G.GAME.blindassist.active = true
             return true end }))
             blind.hands[context.scoring_name] = true
         end
@@ -249,7 +309,11 @@ function Blind:set_assist_blind(blind, reset, silent)
         self:set_text()
 
         local obj = self.config.blind
-        self.children.animatedSprite = AnimatedSprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ANIMATION_ATLAS[obj.config.atlas] or G.ANIMATION_ATLAS['bld_joker'],  obj.config.pos)
+        -- print(obj.config.atlas)
+        -- print(blind.atlas)
+        -- print(blind.key)
+        -- print(self.config.blind.atlas)
+        self.children.animatedSprite = AnimatedSprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ANIMATION_ATLAS[obj.config.atlas] or ( blind and G.ANIMATION_ATLAS[blind.atlas]) or (self.config.blind.atlas and G.ANIMATION_ATLAS[self.config.blind.atlas]) or G.ANIMATION_ATLAS['bld_joker'],  obj.config.pos or (self.config.blind.pos) or (blind.pos))
         self.children.animatedSprite.states = self.states
         G.GAME.last_blind = G.GAME.last_blind or {}
         G.GAME.last_blind.boss = self.boss
@@ -349,7 +413,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 10,
     hands = {},
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -362,9 +426,9 @@ BLINDSIDE.Joker({
         if context.after and not blind.disabled then
             local transformed = false
             for _, scored_card in ipairs(context.scoring_hand) do
-                if not scored_card.original then
-                    scored_card.original = copy3(scored_card.ability)
-                    scored_card.originaltype = copy3(scored_card.config.center)
+                if not scored_card.ability.chicot_original then
+                    scored_card.ability.chicot_original = copy3(scored_card.ability)
+                    scored_card.ability.originaltype = scored_card.config.center.key
                     transformed = true
                     local new_type = 'm_bld_big'
                     if scored_card:is_color("Red") or scored_card:is_color("Yellow") then
@@ -372,7 +436,7 @@ BLINDSIDE.Joker({
                     elseif scored_card:is_color("Blue") or scored_card:is_color("Purple") then
                         new_type = 'm_bld_small'
                     else
-                        if pseudorandom('flip') < 1/2 then
+                        if pseudorandom('chicoooo') < 1/2 then
                             new_type = 'm_bld_big'
                         else
                             new_type = 'm_bld_small'
@@ -389,18 +453,29 @@ BLINDSIDE.Joker({
                 end
             end
             if transformed then    
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_2" or "bld_playing_with_fire_each_1"
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + 1 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+                BLINDSIDE.change_fire_amount({amount = 3})
+                BLINDSIDE.add_fire()
+            --     G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
+            -- G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_2" or "bld_playing_with_fire_each_1"
+            --     G.GAME.playing_with_fire = G.GAME.playing_with_fire + 1 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
+            end
+        end
+    end,
+    disable = function()
+        for key, value in pairs(G.playing_cards) do
+            if value.ability.chicot_original then
+                value:set_ability(value.ability.originaltype)
+                value.ability = copy3(value.ability.chicot_original)
+                value.ability.chicot_original = nil
             end
         end
     end,
     joker_defeat = function()
         for key, value in pairs(G.playing_cards) do
-            if value.original then
-                value:set_ability(value.originaltype)
-                value.ability = copy3(value.original)
-                value.original = nil
+            if value.ability.chicot_original then
+                value:set_ability(value.ability.originaltype)
+                value.ability = copy3(value.ability.chicot_original)
+                value.ability.chicot_original = nil
             end
         end
     end
@@ -414,7 +489,7 @@ BLINDSIDE.Joker({
     mult = 16,
     base_dollars = 10,
     hands = {},
-    boss = {min = 1, showdown = true},
+    boss = {min = -66, showdown = true},
     in_pool = function(self, args)
         if G.GAME.selected_back.effect.center.config.extra then
             if not G.GAME.selected_back.effect.center.config.extra.blindside and G.GAME.round_resets.ante%6 == 0 then return false end
@@ -461,6 +536,8 @@ BLINDSIDE.Joker({
                         SMODS.recalc_debuff(_card)
                         _card:juice_up()
                         blind:wiggle()
+                        BLINDSIDE.change_fire_amount({amount = 3})
+                        BLINDSIDE.add_fire()
                     end
                 end
             end

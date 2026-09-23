@@ -5,14 +5,19 @@ SMODS.Consumable {
     pos = {x=0, y=5},
     config = {extra = {round = 2, charge = 2}},
     keep_on_use = function(self, card)
+        local cards = 0
+        for i,v in pairs(G.consumeables.cards) do
+            if v ~= card then
+                cards = cards + 1
+            end
+        end
+        if cards >= G.consumeables.config.card_limit then
+            return false
+        end
         return true
     end,
     can_use = function(self, card)
-        if G.STATE == G.STATES.SELECTING_HAND then
-            return card.ability.extra.charge >= card.ability.extra.round
-        else
-            return false
-        end
+        return card.ability.extra.charge >= card.ability.extra.round
     end,
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = 'bld_active', set = 'Other'}
@@ -25,6 +30,17 @@ SMODS.Consumable {
     end,
     cost = 4,
     use = function(self, card, area, copier)
+        local keep_on_use = true
+        local cards = 0
+        for i,v in pairs(G.consumeables.cards) do
+            if v ~= card then
+                cards = cards + 1
+            end
+        end
+        if cards >= G.consumeables.config.card_limit then
+            keep_on_use = false
+        end
+        
         card.ability.extra.charge = 0
         play_sound('bld_rune1', 1.1 + math.random()*0.1, 0.8)
         for i = 1, 5 do
@@ -41,6 +57,9 @@ SMODS.Consumable {
                 return true
             end
         }))
+        end
+        if not keep_on_use then
+            card:start_dissolve()
         end
         G.E_MANAGER:add_event(Event({
             trigger = 'after',

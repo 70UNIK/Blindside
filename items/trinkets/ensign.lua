@@ -11,7 +11,7 @@
             }
         },
         cost = 10,
-        blueprint_compat = false,
+        blueprint_compat = true,
         eternal_compat = true,
         credit = {
             art = "AstraLuna",
@@ -36,8 +36,8 @@
             end
         end,
         calculate = function(self, card, context)
-            if context.individual and context.cardarea == G.play and context.other_card:is_color("Yellow") and context.other_card.facing ~= "back" and not context.blueprint then
-                if card.ability.extra.count < card.ability.extra.trigger-1 then
+            if context.individual and context.cardarea == G.play and context.other_card:is_color("Yellow") and context.other_card.facing ~= "back" then
+                if card.ability.extra.count < card.ability.extra.trigger-1 and not context.blueprint and not context.repetition and not context.retrigger_joker then
                     card.ability.extra.count = card.ability.extra.count+1
                 else
                 card.ability.extra.count = 0

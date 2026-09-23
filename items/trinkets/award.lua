@@ -11,7 +11,7 @@
             }
         },
         cost = 10,
-        blueprint_compat = false,
+        blueprint_compat = true,
         eternal_compat = true,
         loc_vars = function (self, info_queue, card)
             return {

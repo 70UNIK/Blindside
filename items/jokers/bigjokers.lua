@@ -7,7 +7,7 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     loc_vars = function(self, blind)
         return { vars = { G.P_BLINDS['bl_bld_gros_michel'].mult*get_blind_amount(G.GAME.round_resets.ante)*G.GAME.starting_params.ante_scaling } }
     end,
@@ -15,7 +15,7 @@ BLINDSIDE.Joker({
         return { vars = { '6X Base' } }
     end,
     pool_override = function()
-        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante == 1
+        return not G.GAME.modifiers.enable_bld_tough_jokers and not G.GAME.blindside_banana_generated
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -42,10 +42,10 @@ BLINDSIDE.Joker({
                     end
                 }))
             else
-                BLINDSIDE.chipsmodify(2, 0, 0, 0)
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.used_vouchers.v_bld_swearjar and 3 or 2)
-                G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
+                
+                BLINDSIDE.chipsmodify(2 - (BLINDSIDE.has_canvas(context) and 1 or 0), 0, 0, 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
             end
         end
     end,
@@ -91,9 +91,9 @@ BLINDSIDE.Joker({
     collection_loc_vars = function(self)
         return { vars = { '8X Base' } }
     end,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante == 1
+        return G.GAME.modifiers.enable_bld_tough_jokers and not G.GAME.blindside_banana_generated
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -120,10 +120,9 @@ BLINDSIDE.Joker({
                     end
                 }))
             else
-                BLINDSIDE.chipsmodify(0, 0, 1.5, 0)
-                G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-                G.GAME.playing_with_fire = G.GAME.playing_with_fire + (G.GAME.used_vouchers.v_bld_swearjar and 3 or 2)
-                G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
+                BLINDSIDE.chipsmodify(0, 0, 1.5 - (BLINDSIDE.has_canvas(context) and 0.25 or 0), 0)
+                BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
             end
         end
     end,
@@ -163,9 +162,9 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante ~= 1 and G.GAME.round_resets.ante % 2 == 1
+        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.blindside_banana_generated and G.GAME.round_resets.ante % 2 == 1
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -189,16 +188,9 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and #G.play.cards % 2 == 1 then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
-            BLINDSIDE.chipsmodify(0, 0, 0, 1 + (hasWildCanvas and 0.155 or 0.31))
+            BLINDSIDE.change_fire_amount({amount = 2})
+            BLINDSIDE.add_fire()
+            BLINDSIDE.chipsmodify(0, 0, 0, 1 + (BLINDSIDE.has_canvas(context) and 0.155 or 0.31))
         end
     end,
 })
@@ -212,9 +204,9 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante % 2 == 0
+        return not G.GAME.modifiers.enable_bld_tough_jokers and G.GAME.round_resets.ante % 2 == 0 and G.GAME.blindside_banana_generated
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
@@ -238,20 +230,13 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and #G.play.cards % 2 == 0 then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_3" or "bld_playing_with_fire_each_2"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 + (G.GAME.used_vouchers.v_bld_swearjar and 1 or 0)
-            BLINDSIDE.chipsmodify(4 - (hasWildCanvas and 2 or 0), 0, 0)
+            BLINDSIDE.change_fire_amount({amount = 2})
+                BLINDSIDE.add_fire()
+            BLINDSIDE.chipsmodify(4 - (BLINDSIDE.has_canvas(context) and 2 or 0), 0, 0)
         end
     end,
 })
-
+--fix handname issues
 BLINDSIDE.Joker({
     key = 'slyjoker',
     atlas = 'bld_joker',
@@ -261,16 +246,16 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
             ease_hands_played(-1)
         end
 
-        if context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
+        if context.poker_hands and context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
             if has_group_of(2, context.poker_hands) then
                 BLINDSIDE.alert_debuff(self, true, localize('bld_hand_contains') .. localize('bld_blind_2oak', "poker_hands"))
             else
@@ -282,7 +267,7 @@ BLINDSIDE.Joker({
         end
         if context.before then
             BLINDSIDE.alert_debuff(self, false)
-            if context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
+            if context.poker_hands and context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
                 if has_group_of(2, context.poker_hands) then
                     for key, value in pairs(context.scoring_hand) do
                         value.config.center.blind_debuff(value, true)
@@ -294,16 +279,16 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and has_group_of(2, context.poker_hands) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 2- (hasWildCanvas and 0.5 or 0))
+            --a bit tricky:
+            --for these jokers:
+            --amount is multiplied by 2 or 1 
+            --addfire done multiple times
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(2)
+            -- G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
+            -- G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
+            -- G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
+            BLINDSIDE.chipsmodify(0, 0, 0, 2- (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -318,15 +303,15 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 8,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
             ease_hands_played(-1)
         end
-        if context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
+        if context.poker_hands and context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
             if has_group_of(3, context.poker_hands) then
                 BLINDSIDE.alert_debuff(self, true, localize('bld_hand_contains') .. localize('bld_blind_3oak', "poker_hands"))
             else
@@ -338,7 +323,7 @@ BLINDSIDE.Joker({
         end
         if context.before then
             BLINDSIDE.alert_debuff(self, false)
-            if context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
+            if context.poker_hands and context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
                 if has_group_of(3, context.poker_hands) then
                     for key, value in pairs(context.scoring_hand) do
                         value.config.center.blind_debuff(value, true)
@@ -350,16 +335,13 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and has_group_of(3, context.poker_hands) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 3 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 3- (hasWildCanvas and 0.5 or 0))
+            
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(3)
+            -- G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
+            -- G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
+            -- G.GAME.playing_with_fire = G.GAME.playing_with_fire + 3 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
+            BLINDSIDE.chipsmodify(0, 0, 0, 3- (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -374,15 +356,15 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 9,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
             ease_hands_played(-1)
         end
-        if context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
+        if context.poker_hands and  context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
             if (next(context.poker_hands['bld_blind_2pair']) or next(context.poker_hands['bld_blind_fullhouse']) or next(context.poker_hands['bld_blind_quadruple_down'])) then
                 BLINDSIDE.alert_debuff(self, true, localize('bld_hand_contains') .. localize('bld_blind_2pair', "poker_hands"))
             else
@@ -394,7 +376,7 @@ BLINDSIDE.Joker({
         end
         if context.before then
             BLINDSIDE.alert_debuff(self, false)
-            if context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
+            if context.poker_hands and context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
                 if (next(context.poker_hands['bld_blind_2pair']) or next(context.poker_hands['bld_blind_fullhouse']) or next(context.poker_hands['bld_blind_quadruple_down'])) then
                     for key, value in pairs(context.scoring_hand) do
                         value.config.center.blind_debuff(value, true)
@@ -406,16 +388,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (next(context.poker_hands['bld_blind_2pair']) or next(context.poker_hands['bld_blind_fullhouse']) or next(context.poker_hands['bld_blind_quadruple_down'])) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 3 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 3- (hasWildCanvas and 0.5 or 0))
+
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(3)
+            BLINDSIDE.chipsmodify(0, 0, 0, 3- (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -430,15 +406,15 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 10,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
             ease_hands_played(-1)
         end
-        if context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
+        if context.poker_hands and  context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
             if next(context.poker_hands['bld_raise']) then
                 BLINDSIDE.alert_debuff(self, true, localize('bld_hand_contains') .. localize('bld_raise', "poker_hands"))
             else
@@ -451,7 +427,7 @@ BLINDSIDE.Joker({
         end
         if context.before then
             BLINDSIDE.alert_debuff(self, false)
-            if context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
+            if context.poker_hands and context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
                 if next(context.poker_hands['bld_raise']) then
                     for key, value in pairs(context.scoring_hand) do
                         value.config.center.blind_debuff(value, true)
@@ -463,16 +439,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and next(context.poker_hands['bld_raise']) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 4 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 4- (hasWildCanvas and 1 or 0))
+
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(4)
+            BLINDSIDE.chipsmodify(0, 0, 0, 4- (BLINDSIDE.has_canvas(context) and 1 or 0))
             blind.active = false
         end
     end,
@@ -488,15 +458,15 @@ BLINDSIDE.Joker({
     base_dollars = 6,
     order = 11,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.round_resets.ante ~= 1 and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
+        return G.GAME.blindside_banana_generated and not (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5) and G.GAME.modifiers.enable_bld_tough_jokers
     end,
     calculate = function(self, blind, context)
         if context.setting_blind and G.GAME.modifiers.enable_bld_deplete_hands and G.GAME.current_round.hands_left > 1 then
             ease_hands_played(-1)
         end
-        if context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
+        if context.poker_hands and  context.scoring_name and G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.disabled and blind.active then
             if has_group_of(5, context.poker_hands) then
                 BLINDSIDE.alert_debuff(self, true, localize('bld_hand_contains') .. localize('bld_blind_flush', "poker_hands"))
             else
@@ -508,7 +478,7 @@ BLINDSIDE.Joker({
         end
         if context.before then
             BLINDSIDE.alert_debuff(self, false)
-            if context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
+            if context.poker_hands and context.scoring_hand and not G.GAME.blind.disabled and G.GAME.modifiers.enable_bld_deadly_small_big and blind.active then
                 if has_group_of(5, context.poker_hands) then
                     for key, value in pairs(context.scoring_hand) do
                         value.config.center.blind_debuff(value, true)
@@ -520,16 +490,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and has_group_of(5, context.poker_hands) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 4 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 4- (hasWildCanvas and 1 or 0))
+            
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(4)
+            BLINDSIDE.chipsmodify(0, 0, 0, 4- (BLINDSIDE.has_canvas(context) and 1 or 0))
             blind.active = false
         end
     end,
@@ -544,9 +508,9 @@ BLINDSIDE.Joker({
     base_dollars = 12,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local cond1 = context.poker_hands and has_group_of(3, context.poker_hands)
@@ -584,16 +548,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 3 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 3 - (hasWildCanvas and 0.5 or 0))
+              
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(3)
+            BLINDSIDE.chipsmodify(0, 0, 0, 3 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -610,7 +568,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 12,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -624,9 +582,9 @@ BLINDSIDE.Joker({
     base_dollars = 12,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local cond2 = context.poker_hands and has_group_of(3, context.poker_hands)
@@ -664,16 +622,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 4 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 4 - (hasWildCanvas and 0.5 or 0))
+              
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(4)
+            BLINDSIDE.chipsmodify(0, 0, 0, 4 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -690,7 +642,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 12,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -704,9 +656,9 @@ BLINDSIDE.Joker({
     base_dollars = 12,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local cond2 = context.poker_hands and has_group_of(5, context.poker_hands)
@@ -744,16 +696,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 4 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 4 - (hasWildCanvas and 0.5 or 0))
+              
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(4)
+            BLINDSIDE.chipsmodify(0, 0, 0, 4 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -770,7 +716,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 12,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -784,9 +730,9 @@ BLINDSIDE.Joker({
     base_dollars = 12,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local cond1 = context.poker_hands and has_group_of(5, context.poker_hands)
@@ -824,16 +770,11 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and (cond1 or cond2) then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 4 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 4 - (hasWildCanvas and 0.5 or 0))
+
+              
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(4)
+            BLINDSIDE.chipsmodify(0, 0, 0, 4 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -850,7 +791,7 @@ BLINDSIDE.Joker({
     mult = 12,
     base_dollars = 12,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })
@@ -864,9 +805,9 @@ BLINDSIDE.Joker({
     base_dollars = 12,
     order = 7,
     active = true,
-    big = {min = 1},
+    big = {min = -66},
     pool_override = function()
-        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5
+        return G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante == 5 or (G.GAME.modifiers.enable_bld_elites and G.GAME.round_resets.ante > 7)
     end,
     calculate = function(self, blind, context)
         local cond1 = context.poker_hands and has_group_of(2, context.poker_hands)
@@ -899,16 +840,10 @@ BLINDSIDE.Joker({
             blind.active = true
         end
         if context.after and not G.GAME.blind.disabled and blind.active and cond1 then
-            local hasWildCanvas = false
-            for i = 1, #context.scoring_hand do
-                if (context.scoring_hand[i].seal == "bld_wild" or #context.scoring_hand[i].ability.extra.hues >= 2) and context.scoring_hand[i].facing ~= "back" and next(SMODS.find_card('j_bld_canvas')) then
-                    hasWildCanvas = true
-                end
-            end
-            G.GAME.playing_with_fire_num = G.GAME.playing_with_fire_num + 1
-            G.GAME.playing_with_fire_each = G.GAME.used_vouchers.v_bld_swearjar and "bld_playing_with_fire_each_big_joker_2" or "bld_playing_with_fire_each_big_joker_1"
-            G.GAME.playing_with_fire = G.GAME.playing_with_fire + 2 * (G.GAME.used_vouchers.v_bld_swearjar and 2 or 1)
-            BLINDSIDE.chipsmodify(0, 0, 0, 2 - (hasWildCanvas and 0.5 or 0))
+              
+            BLINDSIDE.change_fire_amount({amount = 1,message_key = 'bld_playing_with_fire_each_xchips'})
+            BLINDSIDE.add_fire(2)
+            BLINDSIDE.chipsmodify(0, 0, 0, 2 - (BLINDSIDE.has_canvas(context) and 0.5 or 0))
             blind.active = false
         end
     end,
@@ -925,7 +860,7 @@ BLINDSIDE.Joker({
     mult = 18,
     base_dollars = 12,
     order = 23,
-    small = {min = 1},
+    small = {min = -66},
     active = true,
     is_assistant = true
 })

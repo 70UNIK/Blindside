@@ -1,0 +1,60 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+
+### taken from all in jest's ice cards
+# Bell (1/4)
+# Force the bell to always be selectable
+# CardArea:can_highlight()
+[[patches]] 
+[patches.pattern]
+target = "cardarea.lua"
+pattern = '''
+if G.CONTROLLER.HID.controller then
+'''
+position = "before"
+payload = '''
+if self.config.type == 'hand' then
+    if (BLINDSIDE.ignore_play_limit(card) or BLINDSIDE.ignore_discard_limit(card)) and not card.debuff then
+        return true
+    end
+end
+'''
+match_indent = true
+
+# bell (2/4)
+# Force the bell to always be selectable
+# CardArea:can_highlight()
+[[patches]] 
+[patches.regex]
+target = "cardarea.lua"
+pattern = '''
+(.*)if(.*)not(.*)silent(.*)then(.*)play\_sound(.*)(.*)end
+(.*)end
+'''
+position = "after"
+payload = '''
+local ice2 = {}
+for k, v in pairs(self.highlighted) do
+    if (BLINDSIDE.ignore_play_limit(v) or BLINDSIDE.ignore_discard_limit(v)) and not self.highlighted[k].debuff then
+        ice2[#ice2+1] = v
+    end
+end
+if not card.highlighted and #ice2 >= 1 then
+    if (#self.highlighted - #ice2) >= self.config.highlighted_limit then
+        card:highlight(false)
+    else
+        self.highlighted[#self.highlighted+1] = card
+        card:highlight(true)
+        if not silent then play_sound('cardSlide1') end
+    end
+end
+if (BLINDSIDE.ignore_play_limit(card) or BLINDSIDE.ignore_discard_limit(card)) and not card.debuff and not card.highlighted then
+    self.highlighted[#self.highlighted+1] = card
+    card:highlight(true)
+    if not silent then play_sound('cardSlide1') end
+end
+'''
+match_indent = true

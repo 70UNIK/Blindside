@@ -15,7 +15,8 @@
             concept = "base4"
         },
         calculate = function(self, card, context)
-            if context.before and tableContains(card, context.scoring_hand) then
+            if context.after and tableContains(card, context.scoring_hand) then
+                local tobedestroyed = nil
                 if card.ability.extra.upgraded then
                     local myindex = 0
 
@@ -38,16 +39,16 @@
                     end
 
                     if #choices > 0 then
-                        card.ability.extra.victim = choose_stuff(choices, 1, pseudoseed('bld_death'))[1]
+                        tobedestroyed = choose_stuff(choices, 1, pseudoseed('bld_death'))[1]
                     end
                 end
-                if card.ability.extra.victim then
-                    SMODS.calculate_context({remove_playing_cards = true, removed = {card.ability.extra.victim}, scoring_hand = context.scoring_hand})
-                    card.ability.extra.victim.destroyed = true
-                    G.E_MANAGER:add_event(Event({trigger = 'before', delay = 1, func = function()
-                        card.ability.extra.victim:start_dissolve()
+                if tobedestroyed then
+                    SMODS.calculate_context({remove_playing_cards = true, removed = {tobedestroyed}, scoring_hand = context.scoring_hand})
+                    tobedestroyed.destroyed = true
+                    G.E_MANAGER:add_event(Event({delay = 1, func = function()
+                        tobedestroyed:start_dissolve()
                         card_eval_status_text(
-                            card.ability.extra.victim,
+                            tobedestroyed,
                             'extra',
                             nil, nil, nil,
                             {message = "Destroyed!", colour = G.C.ORANGE, instant = true}
