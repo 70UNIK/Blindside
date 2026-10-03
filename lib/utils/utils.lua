@@ -147,7 +147,7 @@ G.FUNCS.can_discard = function(e)
                 bld_aij_exceeds_hand_limit = bld_aij_exceeds_hand_limit + 1
             end
         end
-        if bld_aij_exceeds_hand_limit > 0 and not ((#G.hand.highlighted - bld_aij_exceeds_hand_limit) > math.max(G.GAME.starting_params.play_limit, 1) or G.GAME.blind.block_play or #G.hand.highlighted <= 0) then
+        if bld_aij_exceeds_hand_limit > 0 and not ((#G.hand.highlighted - bld_aij_exceeds_hand_limit) > math.max(G.GAME.starting_params.discard_limit, 1) or G.GAME.blind.block_play or #G.hand.highlighted <= 0) then
             e.config.colour = G.C.RED
             e.config.button = 'discard_cards_from_highlighted'
             return
