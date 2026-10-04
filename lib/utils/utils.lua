@@ -1867,7 +1867,7 @@ else
     end
 end
 
-function upgrade_blinds(cards, flipped, silent)
+function upgrade_blinds(cards, flipped, silent,from_card)
     if silent then
         for key, card in pairs(cards) do
             if card.config and card.config.center and card.config.center.upgrade then
@@ -1892,6 +1892,9 @@ function upgrade_blinds(cards, flipped, silent)
             for k, card in ipairs(cards) do
                 play_sound('bld_clang', 1.1, 1)
                 card:juice_up(0.8, 0.5)
+                if from_card and type(from_card) == "table" and from_card.juice_up then
+                    from_card:juice_up(1, 1)
+                end
             end
         return true end }))
         delay(0.4)
@@ -1899,6 +1902,9 @@ function upgrade_blinds(cards, flipped, silent)
             for k, card in ipairs(cards) do
                 play_sound('bld_clang', 0.9, 0.8)
                 card:juice_up(0.8, 0.5)
+                if from_card and type(from_card) == "table" and from_card.juice_up then
+                    from_card:juice_up(1, 1)
+                end
             end 
         return true end }))
         delay(0.3)
@@ -1906,6 +1912,9 @@ function upgrade_blinds(cards, flipped, silent)
             for k, card in ipairs(cards) do
                 play_sound('bld_clang', 1, 0.9)
                 card:juice_up(0.8, 0.5)
+                if from_card and type(from_card) == "table" and from_card.juice_up then
+                    from_card:juice_up(1, 1)
+                end
             end
         return true end }))
         G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.2,func = function() 

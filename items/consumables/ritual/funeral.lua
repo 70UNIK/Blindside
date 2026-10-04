@@ -8,7 +8,7 @@ SMODS.Consumable {
     },
     pos = {x=5, y=3},
     use = function(self, card, area)
-        upgrade_blinds(G.hand.highlighted)
+        upgrade_blinds(G.hand.highlighted,nil,nil,card)
 
         delay(0.6)
         local best_hand, second_best_hand = nil, nil

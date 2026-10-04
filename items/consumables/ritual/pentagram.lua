@@ -29,7 +29,7 @@ SMODS.Consumable {
         for i = 1, 3 do
             cards[i] = SMODS.add_card { set = "Base", enhancement = enhancements[i] }
         end
-        upgrade_blinds(cards, nil, true)
+        upgrade_blinds(cards, nil, true,card)
         SMODS.calculate_context({ playing_card_added = true, cards = cards })
         delay(0.6)
 

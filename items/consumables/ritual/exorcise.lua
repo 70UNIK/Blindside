@@ -11,7 +11,7 @@ SMODS.Consumable {
         return #G.hand.highlighted > 1 and #G.hand.highlighted <= 3
     end,
     use = function(self, card, area)
-        upgrade_blinds(G.hand.highlighted)
+        upgrade_blinds(G.hand.highlighted,nil,nil,card)
         if G.jokers.cards and #G.jokers.cards > 0 then
             local destroy = pseudorandom_element(G.jokers.cards, pseudoseed('exorcise'))
             G.E_MANAGER:add_event(Event({

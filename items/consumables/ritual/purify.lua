@@ -27,7 +27,7 @@ SMODS.Consumable {
         end
 
         delay(0.6)
-        upgrade_blinds(do_upgrades)
+        upgrade_blinds(do_upgrades,nil,nil,card)
     end,
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = {key = 'bld_modifiers', set = 'Other'}

@@ -13,7 +13,7 @@ SMODS.Consumable {
         end
     end,
     use = function(self, card, area)
-        upgrade_blinds({G.hand.highlighted[1]})
+        upgrade_blinds({G.hand.highlighted[1]},nil,nil,card)
     end,
     loc_vars = function(self, info_queue, card)
         return {

@@ -19,7 +19,7 @@ SMODS.Consumable {
             end
         end
         local chosen_cards = choose_stuff(choose_cards, math.min(card.ability.extra.upgrade, #choose_cards), 'eruption')
-        upgrade_blinds(chosen_cards, nil, false)
+        upgrade_blinds(chosen_cards, nil, false,card)
 
         G.E_MANAGER:add_event(Event({
             func = function ()
